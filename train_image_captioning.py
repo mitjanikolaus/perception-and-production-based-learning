@@ -102,7 +102,6 @@ def main(args):
             'loss': best_val_loss,
         }, CHECKPOINT_PATH_IMAGE_CAPTIONING)
 
-
     def validate_model(model, dataloader):
         print(f"EVAL")
         model.eval()

@@ -223,8 +223,6 @@ class ImageCaptioner(nn.Module):
         self.lstm = nn.LSTM(input_size=visual_embedding_size, hidden_size=lstm_hidden_size, num_layers=1, batch_first=True)
         self.fc = nn.Linear(lstm_hidden_size, self.vocab_size)
 
-        self.loss_function = torch.nn.CrossEntropyLoss(ignore_index=0)
-
         self.max_caption_length = max_caption_length
 
     def init_hidden(self, batch_size):
@@ -265,7 +263,6 @@ class ImageCaptioner(nn.Module):
         output = self.fc(output)
         output = output.transpose(1, 2)
         return output
-
 
     def forward_decode(self, images, decode_type="greedy"):
         """ Forward propagation at test time (no teacher forcing)."""
@@ -334,7 +331,7 @@ class ImageCaptioner(nn.Module):
                 input_next_timestep = torch.argmax(scores_for_timestep, dim=1)
             else:
                 # sample from the distribution
-                input_next_timestep = torch.multinomial(torch.softmax(scores_for_timestep, -1), 1).squeeze()
+                input_next_timestep = torch.multinomial(torch.softmax(scores_for_timestep, -1), 1).squeeze(1)
 
             scores[indices_incomplete_sequences, t, :] = scores_for_timestep[
                 indices_incomplete_sequences
@@ -343,15 +340,27 @@ class ImageCaptioner(nn.Module):
         scores = scores.transpose(1, 2)
         return scores, decode_lengths
 
+    def perplexity(self, images, captions, caption_lengths):
+        """Return perplexities of captions given images."""
 
-    def calc_loss(self, scores, target_captions, caption_lengths):
+        scores = self.forward(images, captions, caption_lengths)
+
+        loss = self.calc_loss(scores, captions, caption_lengths, reduction="none")
+
+        # sum up cross entropies of all words
+        loss = loss.sum(dim=1)
+        perplexities = torch.exp(loss)
+
+        return perplexities
+
+    def calc_loss(self, scores, target_captions, caption_lengths, reduction="mean"):
         # Since we decoded starting with the image features, the targets are all words after <start>, up to <end>
         target_captions = target_captions[:, 1:]
 
         # Trim produced captions' lengths to target lengths for loss calculation
         scores = scores[:, :, :target_captions.shape[1]]
 
-        return self.loss_function(scores, target_captions)
+        return F.cross_entropy(scores, target_captions, ignore_index=0, reduction=reduction)
 
 
 class VisualRefSpeakerDiscriminativeOracle(nn.Module):
@@ -427,9 +436,10 @@ class VisualRefSpeakerDiscriminativeOracle(nn.Module):
         # Pad all captions in batch to equal length
         output_captions = self.pad_messages(output_captions)
 
-        # out: sender RNN init hidden state
-        # out: sequence, logits, entropy
-        return output_captions, None, None
+        logits = torch.zeros_like(output_captions).to(device)
+        entropy = logits
+
+        return output_captions, logits, entropy
 
 
 class VisualRefListenerOracle(nn.Module):

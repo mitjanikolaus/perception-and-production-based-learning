@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 import egg.core as core
 from egg.core import ConsoleLogger, Callback, Interaction, SenderReceiverRnnReinforce
-from dataset import VisualRefCaptionDataset
+from dataset import VisualRefGameDataset
 from models import (
     VisualRefSpeakerDiscriminativeOracle,
     VisualRefListenerOracle,
@@ -133,8 +133,8 @@ def loss(_sender_input, _message, _receiver_input, receiver_output, labels):
 
 
 def main(args):
-    train_dataset = VisualRefCaptionDataset(
-        DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], args.batch_size
+    train_dataset = VisualRefGameDataset(
+        DATA_PATH, IMAGES_FILENAME["train"], args.batch_size
     )
     train_loader = DataLoader(
         train_dataset,
@@ -143,8 +143,8 @@ def main(args):
         num_workers=0,
         pin_memory=False,
     )
-    val_dataset = VisualRefCaptionDataset(
-        DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], args.batch_size
+    val_dataset = VisualRefGameDataset(
+        DATA_PATH, IMAGES_FILENAME["val"], args.batch_size
     )
     val_loader = DataLoader(
         val_dataset,

@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 import egg.core as core
 from egg.core import ConsoleLogger, Callback, Interaction
-from dataset import VisualRefCaptionDataset
+from dataset import VisualRefGameDataset
 from game import OracleSenderReceiverRnnSupervised
 from models import (
     VisualRefSpeakerDiscriminativeOracle,
@@ -35,8 +35,8 @@ from utils import decode_caption, VisualRefLoggingStrategy
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def main(args):
-    train_dataset = VisualRefCaptionDataset(
-        DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], args.batch_size
+    train_dataset = VisualRefGameDataset(
+        DATA_PATH, IMAGES_FILENAME["train"], args.batch_size
     )
     train_loader = DataLoader(
         train_dataset,
@@ -45,8 +45,8 @@ def main(args):
         num_workers=0,
         pin_memory=False,
     )
-    val_dataset = VisualRefCaptionDataset(
-        DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], args.batch_size
+    val_dataset = VisualRefGameDataset(
+        DATA_PATH, IMAGES_FILENAME["val"], args.batch_size
     )
     val_loader = DataLoader(
         val_dataset,
