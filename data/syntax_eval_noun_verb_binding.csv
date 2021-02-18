@@ -44,7 +44,7 @@ img_id,target_sentence,distractor_sentence
 164,mike is going to the barbecue,jenny is going to the barbecue
 165,mike is sitting,jenny is sitting
 165,jenny is standing,mike is standing
-166,mike is kicking s snake,jenny is kicking a snake
+166,mike is kicking a snake,jenny is kicking a snake
 166,jenny sits on the ground,mike sits on the ground
 167,mike is standing,jenny is standing
 167,jenny is sitting,mike is sitting

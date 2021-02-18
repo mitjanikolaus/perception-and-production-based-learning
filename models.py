@@ -221,6 +221,7 @@ class ImageCaptioner(nn.Module):
         self.word_embedding = nn.Embedding(self.vocab_size, word_embedding_size)
 
         self.lstm = nn.LSTM(input_size=visual_embedding_size, hidden_size=lstm_hidden_size, num_layers=1, batch_first=True)
+        self.dropout = nn.Dropout(p=0.2)
         self.fc = nn.Linear(lstm_hidden_size, self.vocab_size)
 
         self.max_caption_length = max_caption_length
@@ -260,6 +261,7 @@ class ImageCaptioner(nn.Module):
         lstm_out, hidden = self.lstm(packed_inputs, hidden)
         output, _ = pad_packed_sequence(lstm_out, batch_first=True)
 
+        output = self.dropout(output)
         output = self.fc(output)
         output = output.transpose(1, 2)
         return output
