@@ -91,7 +91,7 @@ def get_args():
         "--checkpoint", default=CHECKPOINT_PATH_IMAGE_CAPTIONING, type=str,
     )
     parser.add_argument(
-        "--eval-csv", default="data/syntax_eval_noun_verb_binding.csv", type=str,
+        "--eval-csv", default="data/syntax_eval_agent_vs_patient.csv", type=str,
     )
 
     return core.init(parser)
