@@ -43,7 +43,7 @@ def print_model_output(output, target_captions, image_ids, vocab, num_captions=1
 def print_sample_model_output(model, dataloader, vocab, num_captions=1):
     images, captions, caption_lengths, image_ids = next(iter(dataloader))
 
-    output, decode_lengths = model.forward_decode(images, decode_type="sample")
+    output, decode_lengths = model.forward_decode(images, decode_type="greedy")
 
     print_model_output(output, captions, image_ids, vocab, num_captions)
 
@@ -110,7 +110,7 @@ def main(args):
 
             val_losses = []
             for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
-                output, decode_lengths = model.forward_decode(images, decode_type="sample")
+                output, decode_lengths = model.forward_decode(images, decode_type="greedy")
 
                 loss = model.calc_loss(output, captions, caption_lengths)
 

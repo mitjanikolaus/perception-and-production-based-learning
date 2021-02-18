@@ -198,7 +198,7 @@ class ImageEmbedding(nn.Module):
 
 class ImageCaptioner(nn.Module):
     def __init__(self, word_embedding_size, visual_embedding_size, lstm_hidden_size, vocab, max_caption_length,
-                 fine_tune_resnet=True):
+                 fine_tune_resnet=True, dropout=0.2):
         super(ImageCaptioner, self).__init__()
 
         resnet = resnet50(pretrained=True)
@@ -221,7 +221,7 @@ class ImageCaptioner(nn.Module):
         self.word_embedding = nn.Embedding(self.vocab_size, word_embedding_size)
 
         self.lstm = nn.LSTM(input_size=visual_embedding_size, hidden_size=lstm_hidden_size, num_layers=1, batch_first=True)
-        self.dropout = nn.Dropout(p=0.2)
+        self.dropout = nn.Dropout(p=dropout)
         self.fc = nn.Linear(lstm_hidden_size, self.vocab_size)
 
         self.max_caption_length = max_caption_length
