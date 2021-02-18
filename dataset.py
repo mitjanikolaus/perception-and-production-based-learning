@@ -1,6 +1,8 @@
 import os
 import pickle
 
+import nltk
+import pandas as pd
 import h5py as h5py
 import imageio
 from skimage.transform import resize
@@ -11,7 +13,7 @@ import numpy as np
 from torchvision import transforms
 
 
-from preprocess import MEAN_ABSTRACT_SCENES, STD_ABSTRACT_SCENES
+from preprocess import MEAN_ABSTRACT_SCENES, STD_ABSTRACT_SCENES, encode_caption, show_image
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -103,6 +105,7 @@ class SyntaxEvalDataset(Dataset):
         data_folder,
         features_filename,
         captions_filename,
+        vocab,
         features_scale_factor=1 / 255.0,
     ):
         """
@@ -111,7 +114,7 @@ class SyntaxEvalDataset(Dataset):
         :param data_indices: dataset split, indices of images that should be included
         :param features_scale_factor: Additional scale factor, applied before normalization
         """
-        images = h5py.File(
+        self.images = h5py.File(
             os.path.join(data_folder, features_filename), "r"
         )
 
@@ -124,25 +127,33 @@ class SyntaxEvalDataset(Dataset):
         # Set pytorch transformation pipeline
         self.normalize = transforms.Normalize(mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES)
 
-        self.data = []
+        self.vocab = vocab
 
-        # TODO dummy dataset for now
-        img_id = 0
-        img_target = images[str(img_id)]
-        caption = captions[img_id][1]
+        data_file = "data/syntax_eval_noun_verb_binding.csv"
+        self.data = pd.read_csv(data_file)
 
-        img_distractor = imageio.imread(f"data/{img_id}.png")
+        # self.data = []
+        #
+        # # TODO dummy dataset for now
+        # img_id = 0
+        # img_target = images[str(img_id)]
+        # caption = captions[img_id][1]
+        #
+        # img_distractor = imageio.imread(f"data/{img_id}.png")
+        #
+        # # discard transparency channel
+        # img_distractor = img_distractor[..., :3]
+        #
+        # # downscale to 224x224 pixes (optimized for resnet)
+        # img_distractor = resize(img_distractor, (224, 224), preserve_range=True).astype("uint8")
+        #
+        # self.data.append((img_target, img_distractor, caption))
 
-        # discard transparency channel
-        img_distractor = img_distractor[..., :3]
 
-        # downscale to 224x224 pixes (optimized for resnet)
-        img_distractor = resize(img_distractor, (224, 224), preserve_range=True).astype("uint8")
+    def get_image_features(self, id, channels_first=True, normalize=True):
+        image_data = self.images[str(id)][()]
 
-        self.data.append((img_target, img_distractor, caption))
-
-
-    def get_image_features(self, image_data, channels_first=True, normalize=True):
+        # show_image(image_data)
 
         image = torch.FloatTensor(image_data)
 
@@ -158,15 +169,17 @@ class SyntaxEvalDataset(Dataset):
         return image
 
     def __getitem__(self, i):
-        img_target, img_distractor, caption = self.data[i]
-        img_target = self.get_image_features(img_target)
-        img_distractor = self.get_image_features(img_distractor)
 
-        caption = torch.tensor(caption)
+        img_id, target_sentence, distractor_sentence = self.data.iloc[i]
+        img = self.get_image_features(img_id)
 
-        caption_length = torch.tensor(len(caption))
+        target_sentence = nltk.word_tokenize(target_sentence)
+        target_sentence = torch.tensor(encode_caption(target_sentence, self.vocab))
 
-        return img_target, img_distractor, caption, caption_length
+        distractor_sentence = nltk.word_tokenize(distractor_sentence)
+        distractor_sentence = torch.tensor(encode_caption(distractor_sentence, self.vocab))
+
+        return img, target_sentence, distractor_sentence
 
     def __len__(self):
         length = len(self.data)

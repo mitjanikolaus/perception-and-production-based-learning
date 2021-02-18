@@ -36,6 +36,12 @@ DATASET_SIZE = 10020
 MEAN_ABSTRACT_SCENES = [107.36, 177.26, 133.54]
 STD_ABSTRACT_SCENES = [49.11, 45.28, 75.83]
 
+MAX_CAPTION_LEN = 25
+TOKEN_PADDING = "<pad>"
+TOKEN_START = "<sos>"
+TOKEN_END = "<eos>"
+
+
 def encode_caption(caption, vocab):
     return (
         [vocab.stoi[TOKEN_START]]
@@ -43,17 +49,15 @@ def encode_caption(caption, vocab):
         + [vocab.stoi[TOKEN_END]]
     )
 
+
 def encode_captions(captions, vocab):
     return [encode_caption(caption, vocab) for caption in captions]
 
-MAX_CAPTION_LEN = 25
-TOKEN_PADDING = "<pad>"
-TOKEN_START = "<sos>"
-TOKEN_END = "<eos>"
 
 def show_image(img_data):
     plt.imshow(img_data), plt.axis('off')
     plt.show()
+
 
 def preprocess_images_and_captions(
     dataset_folder,

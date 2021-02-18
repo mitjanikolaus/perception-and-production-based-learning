@@ -7,7 +7,6 @@ __pycache__/
 *.swp
 *.swo
 
-data/
 .idea/
 # C extensions
 *.so

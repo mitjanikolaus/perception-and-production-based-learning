@@ -43,19 +43,21 @@ def main(args):
         captions = pickle.load(file)
 
     for img_id, image in images.items():
+        print(img_id)
         for caption in captions[int(img_id)]:
             print(decode_caption(caption, vocab))
+        print("\n")
         show_image(image)
 
-        img_distractor = imageio.imread(f"data/{img_id}.png")
-
-        # discard transparency channel
-        img_distractor = img_distractor[..., :3]
-
-        # downscale to 224x224 pixes (optimized for resnet)
-        img_distractor = resize(img_distractor, (224, 224), preserve_range=True).astype("uint8")
-
-        show_image(img_distractor)
+        # img_distractor = imageio.imread(f"data/{img_id}.png")
+        #
+        # # discard transparency channel
+        # img_distractor = img_distractor[..., :3]
+        #
+        # # downscale to 224x224 pixes (optimized for resnet)
+        # img_distractor = resize(img_distractor, (224, 224), preserve_range=True).astype("uint8")
+        #
+        # show_image(img_distractor)
 
 
 def get_args():

@@ -4,6 +4,7 @@ import argparse
 import pickle
 import os
 
+import numpy as np
 
 import torch
 import torch.distributions
@@ -22,6 +23,7 @@ from preprocess import (
 from train_image_captioning import (
     CHECKPOINT_PATH_IMAGE_CAPTIONING,
 )
+from utils import decode_caption, show_image
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -47,31 +49,41 @@ def main(args):
 
     model.load_state_dict(checkpoint["model_state_dict"])
 
+    # TODO fix for batching
     test_images_loader = torch.utils.data.DataLoader(
-        SyntaxEvalDataset(DATA_PATH, IMAGES_FILENAME["test"], CAPTIONS_FILENAME["test"]),
-        batch_size=args.batch_size,
+        SyntaxEvalDataset(DATA_PATH, IMAGES_FILENAME["test"], CAPTIONS_FILENAME["test"], vocab),
+        batch_size=1,
         shuffle=True,
         num_workers=0,
         pin_memory=False,
     )
 
     model = model.to(device)
-
     model.eval()
+
+    accuracies = []
     with torch.no_grad():
-        for batch_idx, (img_target, img_distractor, caption, caption_length) in enumerate(
+        for batch_idx, (img, target_caption, distractor_caption) in enumerate(
             test_images_loader
         ):
-            images = torch.cat((img_target, img_distractor))
-            captions = torch.cat((caption, caption))
-            caption_lengths = torch.tensor([caption_length, caption_length])
+            images = torch.cat((img, img))
+            captions = torch.cat((target_caption, distractor_caption))
+            caption_lengths = torch.tensor([target_caption.shape[1], distractor_caption.shape[1]])
 
             perplexities = model.perplexity(images, captions, caption_lengths)
-            print(f"Perplexity target: {perplexities[0]}")
-            print(f"Perplexity distra: {perplexities[1]}")
 
-    core.close()
+            print(f"Target    : {decode_caption(target_caption[0], vocab)}")
+            print(f"Distractor: {decode_caption(distractor_caption[0], vocab)}")
 
+            print(f"Perplexity target    : {perplexities[0]}")
+            print(f"Perplexity distractor: {perplexities[1]}")
+
+            if perplexities[0] < perplexities[1]:
+                accuracies.append(1)
+            else:
+                accuracies.append(0)
+
+    print(f"\n\n\nAccuracy: {np.mean(accuracies)}")
 
 def get_args():
     parser = argparse.ArgumentParser()
