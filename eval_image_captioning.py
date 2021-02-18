@@ -51,7 +51,7 @@ def main(args):
 
     # TODO fix for batching
     test_images_loader = torch.utils.data.DataLoader(
-        SyntaxEvalDataset(DATA_PATH, IMAGES_FILENAME["test"], CAPTIONS_FILENAME["test"], vocab),
+        SyntaxEvalDataset(DATA_PATH, IMAGES_FILENAME["test"], CAPTIONS_FILENAME["test"], args.eval_csv, vocab),
         batch_size=1,
         shuffle=True,
         num_workers=0,
@@ -89,6 +89,9 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--checkpoint", default=CHECKPOINT_PATH_IMAGE_CAPTIONING, type=str,
+    )
+    parser.add_argument(
+        "--eval-csv", default="data/syntax_eval_noun_verb_binding.csv", type=str,
     )
 
     return core.init(parser)

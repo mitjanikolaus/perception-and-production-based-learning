@@ -43,11 +43,14 @@ def main(args):
         captions = pickle.load(file)
 
     for img_id, image in images.items():
-        print(img_id)
+        # print(img_id)
         for caption in captions[int(img_id)]:
-            print(decode_caption(caption, vocab))
-        print("\n")
-        show_image(image)
+            decoded_caption = decode_caption(caption, vocab)
+            if "jenny" in decoded_caption and "mike" in decoded_caption:
+                if (not "mike and jenny" in decoded_caption) and (not "jenny and mike" in decoded_caption):
+                    distractor = decoded_caption.replace("jenny","XXXX").replace("mike","jenny").replace("XXXX","mike")
+                    print(f"{img_id},{decoded_caption},{distractor}")
+                    show_image(image)
 
         # img_distractor = imageio.imread(f"data/{img_id}.png")
         #

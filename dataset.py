@@ -105,6 +105,7 @@ class SyntaxEvalDataset(Dataset):
         data_folder,
         features_filename,
         captions_filename,
+        eval_csv,
         vocab,
         features_scale_factor=1 / 255.0,
     ):
@@ -129,8 +130,7 @@ class SyntaxEvalDataset(Dataset):
 
         self.vocab = vocab
 
-        data_file = "data/syntax_eval_noun_verb_binding.csv"
-        self.data = pd.read_csv(data_file)
+        self.data = pd.read_csv(eval_csv)
 
         # self.data = []
         #
