@@ -23,7 +23,7 @@ from preprocess import (
     DATA_PATH, show_image,
 )
 from train_image_captioning import (
-    CHECKPOINT_PATH_IMAGE_CAPTIONING,
+    CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
 )
 from utils import decode_caption
 

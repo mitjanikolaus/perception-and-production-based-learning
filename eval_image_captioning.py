@@ -21,7 +21,7 @@ from preprocess import (
     DATA_PATH,
 )
 from train_image_captioning import (
-    CHECKPOINT_PATH_IMAGE_CAPTIONING,
+    CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
 )
 from utils import decode_caption, show_image
 
@@ -87,7 +87,7 @@ def main(args):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--checkpoint", default=CHECKPOINT_PATH_IMAGE_CAPTIONING, type=str,
+        "--checkpoint", default=CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST, type=str,
     )
     parser.add_argument(
         "--eval-csv", default="data/syntax_eval_agent_vs_patient.csv", type=str,

@@ -24,6 +24,7 @@ from utils import print_caption
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST = os.path.join(Path.home(), "data/egg/visual_ref/checkpoints/image_captioning_best.pt")
 CHECKPOINT_PATH_IMAGE_CAPTIONING = os.path.join(Path.home(), "data/egg/visual_ref/checkpoints/image_captioning.pt")
 
 
@@ -54,8 +55,8 @@ def print_sample_model_output(model, dataloader, vocab, num_captions=1):
 
 def main(args):
     # create model checkpoint directory
-    if not os.path.exists(os.path.dirname(CHECKPOINT_PATH_IMAGE_CAPTIONING)):
-        os.makedirs(os.path.dirname(CHECKPOINT_PATH_IMAGE_CAPTIONING))
+    if not os.path.exists(os.path.dirname(CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)):
+        os.makedirs(os.path.dirname(CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST))
 
     train_loader = DataLoader(
         CaptionDataset(
@@ -114,13 +115,13 @@ def main(args):
 
     model_image_captioning = model_image_captioning.to(device)
 
-    def save_model(model, optimizer, best_val_loss, epoch):
+    def save_model(model, optimizer, best_val_loss, epoch, path):
         torch.save({
             'epoch': epoch,
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
             'loss': best_val_loss,
-        }, CHECKPOINT_PATH_IMAGE_CAPTIONING)
+        }, path)
 
     def validate_model(model, dataloader, print_images_loader):
         print(f"EVAL")
@@ -159,12 +160,18 @@ def main(args):
                 print(f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss}")
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
-                    save_model(model_image_captioning, optimizer, best_val_loss, epoch)
+                    save_model(model_image_captioning, optimizer, best_val_loss, epoch, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)
+                else:
+                    save_model(model_image_captioning, optimizer, best_val_loss, epoch, CHECKPOINT_PATH_IMAGE_CAPTIONING)
+
 
         val_loss = validate_model(model_image_captioning, val_images_loader, print_captions_loader)
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            save_model(model_image_captioning, optimizer, best_val_loss, epoch)
+            save_model(model_image_captioning, optimizer, best_val_loss, epoch, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)
+        else:
+            save_model(model_image_captioning, optimizer, best_val_loss, epoch, CHECKPOINT_PATH_IMAGE_CAPTIONING)
+
         print(f'End of epoch: {epoch} | train loss: {np.mean(losses)} | best val loss: {best_val_loss}\n\n')
 
     core.close()
