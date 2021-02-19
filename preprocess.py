@@ -41,6 +41,7 @@ TOKEN_PADDING = "<pad>"
 TOKEN_START = "<sos>"
 TOKEN_END = "<eos>"
 
+VAL_SET_SIZE = 0.1
 
 def encode_caption(caption, vocab):
     return (
@@ -151,7 +152,7 @@ def preprocess_images_and_captions(
     all_indices = list(captions.keys())
     indices = {}
     indices["train"], indices["test"] = train_test_split(all_indices, test_size=0.1, random_state=RANDOM_SEED)
-    indices["train"], indices["val"] = train_test_split(indices["train"], test_size=0.01, random_state=RANDOM_SEED)
+    indices["train"], indices["val"] = train_test_split(indices["train"], test_size=VAL_SET_SIZE, random_state=RANDOM_SEED)
 
     for split in ["train", "val", "test"]:
         images_split = [images[i] for i in indices[split]]
