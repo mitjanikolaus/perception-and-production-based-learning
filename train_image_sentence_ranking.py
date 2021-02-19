@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 
 import egg.core as core
 from dataset import CaptionDataset
-from models import ImageSentenceRanker
+from models.image_sentence_ranking.ranking_model import ImageSentenceRanker
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,

@@ -2,60 +2,10 @@ import torch
 from torch import nn
 import torchvision
 
-from models.image_captioning.captioning_model import CaptioningModelDecoder
+from models.image_captioning.captioning_model import CaptioningModel
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
-class SAT(nn.Module):
-    def __init__(
-        self,
-        word_embedding_size,
-        lstm_hidden_size,
-        vocab,
-        max_caption_length,
-        dropout=0.2,
-        pretrained_embeddings=None,
-        fine_tune_decoder_word_embeddings=True,
-        fine_tune_resnet=False,
-    ):
-        super().__init__()
-        self.encoder = Encoder(fine_tune_resnet)
-        self.decoder = SATDecoder(
-            word_embedding_size,
-            lstm_hidden_size,
-            vocab,
-            max_caption_length,
-            dropout,
-            pretrained_embeddings,
-            fine_tune_decoder_word_embeddings,
-        )
-
-    def forward(self, images, target_captions=None, caption_lengths=None):
-        if caption_lengths is not None:
-            caption_lengths = caption_lengths - 1
-        encoded_images = self.encoder(images)
-        return self.decoder(encoded_images, target_captions, caption_lengths)
-
-    def decode_nucleus_sampling(self, images, num_samples, top_p):
-        encoded_images = self.encoder(images)
-        return self.decoder.nucleus_sampling(encoded_images, beam_size=num_samples, top_p=top_p)
-
-    def loss(self, scores, target_captions, decode_lengths, alphas, reduction="mean"):
-        return self.decoder.loss(scores, target_captions, decode_lengths, alphas, reduction)
-
-    def perplexity(self, images, captions, caption_lengths):
-        """Return perplexities of captions given images."""
-
-        scores, decode_lengths, alphas = self.forward(images, captions, caption_lengths)
-
-        loss = self.loss(scores, captions, caption_lengths, alphas, reduction="none")
-
-        # sum up cross entropies of all words
-        loss = loss.sum(dim=1)
-        perplexities = torch.exp(loss)
-
-        return perplexities
 
 
 class Encoder(nn.Module):
@@ -111,7 +61,7 @@ class Encoder(nn.Module):
                 p.requires_grad = enable_fine_tuning
 
 
-class SATDecoder(CaptioningModelDecoder):
+class Show_Attend_And_Tell(CaptioningModel):
     ENCODER_DIM = 2048
     ATTENTION_DIM = 512
     ALPHA_C = 1.0
@@ -123,16 +73,18 @@ class SATDecoder(CaptioningModelDecoder):
         vocab,
         max_caption_length,
         dropout=0.2,
+        fine_tune_resnet=False,
         pretrained_embeddings=None,
         fine_tune_decoder_word_embeddings=True,
     ):
-        super(SATDecoder, self).__init__(
+        super(Show_Attend_And_Tell, self).__init__(
             vocab,
             word_embedding_size,
             max_caption_length,
             pretrained_embeddings,
             fine_tune_decoder_word_embeddings,
         )
+        self.encoder = Encoder(fine_tune_resnet)
 
         self.attention = AttentionModule(
             self.ENCODER_DIM, lstm_hidden_size, self.ATTENTION_DIM,
@@ -205,7 +157,7 @@ class SATDecoder(CaptioningModelDecoder):
         states = [decoder_hidden_state, decoder_cell_state]
         return scores, states, alpha
 
-    def loss(self, scores, target_captions, decode_lengths, alphas, reduction):
+    def loss(self, scores, target_captions, decode_lengths, alphas, reduction="mean"):
         loss = self.loss_cross_entropy(scores, target_captions, decode_lengths, reduction)
 
         # Add doubly stochastic attention regularization

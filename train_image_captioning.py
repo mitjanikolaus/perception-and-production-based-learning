@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader
 
 import egg.core as core
 from dataset import CaptionDataset
-from models.image_captioning.show_attend_tell import SAT
+from models.image_captioning.show_attend_and_tell import Show_Attend_And_Tell
 from preprocess import IMAGES_FILENAME, CAPTIONS_FILENAME, VOCAB_FILENAME, MAX_CAPTION_LEN, \
     DATA_PATH
 from utils import print_caption
@@ -48,7 +48,7 @@ def print_captions(captions, target_captions, image_ids, vocab, num_captions=1):
 def print_sample_model_output(model, dataloader, vocab, num_captions=1):
     images, target_captions, caption_lengths, image_ids = next(iter(dataloader))
 
-    captions, _, _ = model.decode_nucleus_sampling(images, num_samples=1, top_p=0.9)
+    captions, _, _ = model.decode_nucleus_sampling(images, 1, top_p=0.9)
 
     print_captions(captions, target_captions, image_ids, vocab, num_captions)
 
@@ -108,7 +108,7 @@ def main(args):
     dropout = 0.2
     # model_image_captioning = ImageCaptioner(word_embedding_size, visual_embedding_size, lstm_hidden_size, vocab,
     #                                         MAX_CAPTION_LEN, fine_tune_resnet=args.fine_tune_resnet)
-    model_image_captioning = SAT(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN, dropout, fine_tune_resnet=False)
+    model_image_captioning = Show_Attend_And_Tell(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN, dropout, fine_tune_resnet=False)
 
     # uses command-line parameters we passed to core.init
     optimizer = core.build_optimizer(model_image_captioning.parameters())
@@ -137,10 +137,8 @@ def main(args):
 
                 val_losses.append(loss.mean().item())
 
-            val_loss = np.mean(val_losses)
-
         model.train()
-        return val_loss
+        return np.mean(val_losses)
 
     best_val_loss = math.inf
     for epoch in range(args.n_epochs):

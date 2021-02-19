@@ -11,12 +11,12 @@ from utils import TOKEN_START, decode_caption, TOKEN_END
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-class CaptioningModelDecoder(nn.Module):
+class CaptioningModel(nn.Module):
 
     TEACHER_FORCING_RATIO = 1
 
     def __init__(self, vocab, word_embedding_size, max_caption_length, pretrained_embeddings=None, fine_tune_decoder_word_embeddings=True):
-        super(CaptioningModelDecoder, self).__init__()
+        super(CaptioningModel, self).__init__()
 
         self.vocab_size = len(vocab)
         self.vocab = vocab
@@ -57,15 +57,19 @@ class CaptioningModelDecoder(nn.Module):
 
         return next_words
 
-    def forward(self, encoder_output, target_captions=None, decode_lengths=None):
+    def forward(self, images, target_captions=None, decode_lengths=None):
         """
         Forward propagation.
 
-        :param encoder_output: output features of the encoder
+        :param images: input images
         :param target_captions: encoded target captions, shape: (batch_size, max_caption_length)
         :param decode_lengths: caption lengths, shape: (batch_size, 1)
         :return: scores for vocabulary, decode lengths, weights
         """
+        # Do not decode at last timestep (after EOS token)
+        if decode_lengths is not None:
+            decode_lengths = decode_lengths - 1
+        encoder_output = self.encoder(images)
 
         batch_size = encoder_output.size(0)
 
@@ -288,10 +292,11 @@ class CaptioningModelDecoder(nn.Module):
             ]
         return sorted_sequences, sorted_alphas, beam
 
-    def nucleus_sampling(self, encoder_output, beam_size, top_p, print_beam=False):
+    def decode_nucleus_sampling(self, images, num_samples, top_p, print_beam=False):
         """Generate and return the top k sequences using nucleus sampling."""
+        encoder_output = self.encoder(images)
 
-        current_beam_width = beam_size
+        current_beam_width = num_samples
 
         encoder_dim = encoder_output.size()[-1]
 
@@ -300,16 +305,16 @@ class CaptioningModelDecoder(nn.Module):
 
         # We'll treat the problem as having a batch size of k
         encoder_output = encoder_output.expand(
-            beam_size, encoder_output.size(1), encoder_dim
+            num_samples, encoder_output.size(1), encoder_dim
         )
 
         # Tensor to store top k sequences; now they're just <start>
         top_k_sequences = torch.full(
-            (beam_size, 1), self.vocab[TOKEN_START], dtype=torch.int64, device=device
+            (num_samples, 1), self.vocab[TOKEN_START], dtype=torch.int64, device=device
         )
 
         # Tensor to store top k sequences' scores; now they're just 0
-        top_k_scores = torch.zeros(beam_size, device=device)
+        top_k_scores = torch.zeros(num_samples, device=device)
 
         # Lists to store completed sequences, scores, and alphas and the full decoding beam
         complete_seqs = []
@@ -388,7 +393,7 @@ class CaptioningModelDecoder(nn.Module):
             encoder_output = encoder_output[incomplete_inds]
             top_k_scores = top_k_scores[incomplete_inds]
 
-        if len(complete_seqs) < beam_size:
+        if len(complete_seqs) < num_samples:
             complete_seqs.extend(top_k_sequences.tolist())
             complete_seqs_scores.extend(top_k_scores)
 
@@ -399,6 +404,19 @@ class CaptioningModelDecoder(nn.Module):
             )
         ]
         return sorted_sequences, None, None
+
+    def perplexity(self, images, captions, caption_lengths):
+        """Return perplexities of captions given images."""
+
+        scores, decode_lengths, alphas = self.forward(images, captions, caption_lengths)
+
+        loss = self.loss(scores, captions, caption_lengths, alphas, reduction="none")
+
+        # sum up cross entropies of all words
+        loss = loss.sum(dim=1)
+        perplexities = torch.exp(loss)
+
+        return perplexities
 
 
 def print_current_beam(top_k_sequences, top_k_scores, vocab):
