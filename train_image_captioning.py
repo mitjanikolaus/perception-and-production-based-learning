@@ -82,6 +82,20 @@ def main(args):
         collate_fn=CaptionDataset.pad_collate,
     )
 
+    #TODO
+    print_captions_loader = torch.utils.data.DataLoader(
+        CaptionDataset(
+            DATA_PATH,
+            IMAGES_FILENAME["val"],
+            CAPTIONS_FILENAME["val"],
+        ),
+        batch_size=1,
+        shuffle=True,
+        num_workers=0,
+        pin_memory=False,
+        collate_fn=CaptionDataset.pad_collate,
+    )
+
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
     print("Loading vocab from {}".format(vocab_path))
     with open(vocab_path, "rb") as file:
@@ -108,11 +122,11 @@ def main(args):
             'loss': best_val_loss,
         }, CHECKPOINT_PATH_IMAGE_CAPTIONING)
 
-    def validate_model(model, dataloader):
+    def validate_model(model, dataloader, print_images_loader):
         print(f"EVAL")
         model.eval()
         with torch.no_grad():
-            # print_sample_model_output(model, dataloader, vocab, PRINT_SAMPLE_CAPTIONS)
+            print_sample_model_output(model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS)
 
             val_losses = []
             for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
@@ -141,13 +155,13 @@ def main(args):
             optimizer.step()
 
             if batch_idx % args.log_frequency == 0:
-                val_loss = validate_model(model_image_captioning, val_images_loader)
+                val_loss = validate_model(model_image_captioning, val_images_loader, print_captions_loader)
                 print(f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss}")
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
                     save_model(model_image_captioning, optimizer, best_val_loss, epoch)
 
-        val_loss = validate_model(model_image_captioning, val_images_loader)
+        val_loss = validate_model(model_image_captioning, val_images_loader, print_captions_loader)
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             save_model(model_image_captioning, optimizer, best_val_loss, epoch)
