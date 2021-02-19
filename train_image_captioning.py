@@ -45,11 +45,11 @@ def print_captions(captions, target_captions, image_ids, vocab, num_captions=1):
 
 
 def print_sample_model_output(model, dataloader, vocab, num_captions=1):
-    images, captions, caption_lengths, image_ids = next(iter(dataloader))
+    images, target_captions, caption_lengths, image_ids = next(iter(dataloader))
 
     captions, _, _ = model.decode_nucleus_sampling(images, num_samples=1, top_p=0.9)
 
-    print_captions(captions, captions, image_ids, vocab, num_captions)
+    print_captions(captions, target_captions, image_ids, vocab, num_captions)
 
 
 def main(args):
