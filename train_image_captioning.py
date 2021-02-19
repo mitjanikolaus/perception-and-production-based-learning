@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader
 
 import egg.core as core
 from dataset import CaptionDataset
-from models import ImageCaptioner
+from models.image_captioning.show_attend_tell import SAT
 from preprocess import IMAGES_FILENAME, CAPTIONS_FILENAME, VOCAB_FILENAME, MAX_CAPTION_LEN, \
     DATA_PATH
 from utils import print_caption
@@ -27,25 +27,29 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 CHECKPOINT_PATH_IMAGE_CAPTIONING = os.path.join(Path.home(), "data/egg/visual_ref/checkpoints/image_captioning.pt")
 
 
-PRINT_SAMPLE_CAPTIONS = 5
+PRINT_SAMPLE_CAPTIONS = 1
 
 
 def print_model_output(output, target_captions, image_ids, vocab, num_captions=1):
     captions_model = torch.argmax(output, dim=1)
+    print_captions(captions_model, target_captions, image_ids, vocab, num_captions)
+
+
+def print_captions(captions, target_captions, image_ids, vocab, num_captions=1):
     for i in range(num_captions):
         print(f"Image ID: {image_ids[i]}")
         print("Target: ", end="")
         print_caption(target_captions[i], vocab)
         print("Model output: ", end="")
-        print_caption(captions_model[i], vocab)
+        print_caption(captions[i], vocab)
 
 
 def print_sample_model_output(model, dataloader, vocab, num_captions=1):
     images, captions, caption_lengths, image_ids = next(iter(dataloader))
 
-    output, decode_lengths = model.forward_decode(images, decode_type="greedy")
+    captions, _, _ = model.decode_nucleus_sampling(images, num_samples=1, top_p=0.9)
 
-    print_model_output(output, captions, image_ids, vocab, num_captions)
+    print_captions(captions, captions, image_ids, vocab, num_captions)
 
 
 def main(args):
@@ -86,8 +90,10 @@ def main(args):
     word_embedding_size = 512
     visual_embedding_size = 512
     lstm_hidden_size = 512
-    model_image_captioning = ImageCaptioner(word_embedding_size, visual_embedding_size, lstm_hidden_size, vocab,
-                                            MAX_CAPTION_LEN, fine_tune_resnet=args.fine_tune_resnet)
+    dropout = 0.2
+    # model_image_captioning = ImageCaptioner(word_embedding_size, visual_embedding_size, lstm_hidden_size, vocab,
+    #                                         MAX_CAPTION_LEN, fine_tune_resnet=args.fine_tune_resnet)
+    model_image_captioning = SAT(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN, dropout, fine_tune_resnet=False)
 
     # uses command-line parameters we passed to core.init
     optimizer = core.build_optimizer(model_image_captioning.parameters())
@@ -106,13 +112,13 @@ def main(args):
         print(f"EVAL")
         model.eval()
         with torch.no_grad():
-            print_sample_model_output(model, dataloader, vocab, PRINT_SAMPLE_CAPTIONS)
+            # print_sample_model_output(model, dataloader, vocab, PRINT_SAMPLE_CAPTIONS)
 
             val_losses = []
             for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
-                output, decode_lengths = model.forward_decode(images, decode_type="greedy")
+                scores, decode_lengths, alphas = model(images)
 
-                loss = model.calc_loss(output, captions, caption_lengths)
+                loss = model.loss(scores, captions, decode_lengths, alphas)
 
                 val_losses.append(loss.mean().item())
 
@@ -125,9 +131,9 @@ def main(args):
     for epoch in range(args.n_epochs):
         losses = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(train_loader):
-            output = model_image_captioning(images, captions, caption_lengths)
+            scores, decode_lengths, alphas = model_image_captioning(images, captions, caption_lengths)
 
-            loss = model_image_captioning.calc_loss(output, captions, caption_lengths)
+            loss = model_image_captioning.loss(scores, captions, decode_lengths, alphas)
             losses.append(loss.mean().item())
 
             optimizer.zero_grad()
@@ -148,6 +154,7 @@ def main(args):
         print(f'End of epoch: {epoch} | train loss: {np.mean(losses)} | best val loss: {best_val_loss}\n\n')
 
     core.close()
+
 
 def get_args():
     parser = argparse.ArgumentParser()

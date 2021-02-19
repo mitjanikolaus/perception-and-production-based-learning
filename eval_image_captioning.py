@@ -11,8 +11,8 @@ import torch.distributions
 import torch.utils.data
 
 import egg.core as core
-from dataset import CaptionDataset, SyntaxEvalDataset
-from models import ImageCaptioner
+from dataset import SyntaxEvalDataset
+from models.image_captioning.show_attend_tell import SAT
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -36,16 +36,15 @@ def main(args):
 
     print("Loading model checkpoint from {}".format(args.checkpoint))
     checkpoint = torch.load(args.checkpoint, map_location=device)
+
     word_embedding_size = 512
     visual_embedding_size = 512
     lstm_hidden_size = 512
-    model = ImageCaptioner(
-        word_embedding_size,
-        visual_embedding_size,
-        lstm_hidden_size,
-        vocab,
-        MAX_CAPTION_LEN,
-    )
+    dropout = 0.2
+    # model_image_captioning = ImageCaptioner(word_embedding_size, visual_embedding_size, lstm_hidden_size, vocab,
+    #                                         MAX_CAPTION_LEN, fine_tune_resnet=args.fine_tune_resnet)
+    model = SAT(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN, dropout,
+                                 fine_tune_resnet=False)
 
     model.load_state_dict(checkpoint["model_state_dict"])
 
