@@ -14,7 +14,6 @@ import torch.utils.data
 
 import egg.core as core
 from dataset import CaptionDataset, SyntaxEvalDataset
-from models import ImageCaptioner
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -46,11 +45,15 @@ def main(args):
         # print(img_id)
         for caption in captions[int(img_id)]:
             decoded_caption = decode_caption(caption, vocab)
-            if "jenny" in decoded_caption and "mike" in decoded_caption:
-                if (not "mike and jenny" in decoded_caption) and (not "jenny and mike" in decoded_caption):
-                    distractor = decoded_caption.replace("jenny","XXXX").replace("mike","jenny").replace("XXXX","mike")
-                    print(f"{img_id},{decoded_caption},{distractor}")
-                    show_image(image)
+            # if "jenny" in decoded_caption and "mike" in decoded_caption:
+            #     if (not "mike and jenny" in decoded_caption) and (not "jenny and mike" in decoded_caption):
+            #         distractor = decoded_caption.replace("jenny","XXXX").replace("mike","jenny").replace("XXXX","mike")
+            #         print(f"{img_id},{decoded_caption},{distractor}")
+            #         show_image(image)
+
+            if (not "mike and jenny" in decoded_caption) and (not "jenny and mike" in decoded_caption):
+                print(f"{img_id},{decoded_caption}")
+        show_image(image)
 
         # img_distractor = imageio.imread(f"data/{img_id}.png")
         #

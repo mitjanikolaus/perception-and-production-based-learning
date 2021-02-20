@@ -132,24 +132,6 @@ class SyntaxEvalDataset(Dataset):
 
         self.data = pd.read_csv(eval_csv)
 
-        # self.data = []
-        #
-        # # TODO dummy dataset for now
-        # img_id = 0
-        # img_target = images[str(img_id)]
-        # caption = captions[img_id][1]
-        #
-        # img_distractor = imageio.imread(f"data/{img_id}.png")
-        #
-        # # discard transparency channel
-        # img_distractor = img_distractor[..., :3]
-        #
-        # # downscale to 224x224 pixes (optimized for resnet)
-        # img_distractor = resize(img_distractor, (224, 224), preserve_range=True).astype("uint8")
-        #
-        # self.data.append((img_target, img_distractor, caption))
-
-
     def get_image_features(self, id, channels_first=True, normalize=True):
         image_data = self.images[str(id)][()]
 
@@ -169,7 +151,6 @@ class SyntaxEvalDataset(Dataset):
         return image
 
     def __getitem__(self, i):
-
         img_id, target_sentence, distractor_sentence = self.data.iloc[i]
         img = self.get_image_features(img_id)
 
