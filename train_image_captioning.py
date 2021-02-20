@@ -106,9 +106,7 @@ def main(args):
     visual_embedding_size = 512
     lstm_hidden_size = 512
     dropout = 0.2
-    # model_image_captioning = ImageCaptioner(word_embedding_size, visual_embedding_size, lstm_hidden_size, vocab,
-    #                                         MAX_CAPTION_LEN, fine_tune_resnet=args.fine_tune_resnet)
-    model_image_captioning = ShowAttendAndTell(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN, dropout, fine_tune_resnet=False)
+    model_image_captioning = ShowAttendAndTell(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN, dropout, fine_tune_resnet=args.fine_tune_resnet)
 
     # uses command-line parameters we passed to core.init
     optimizer = core.build_optimizer(model_image_captioning.parameters())
@@ -131,7 +129,7 @@ def main(args):
 
             val_losses = []
             for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
-                scores, decode_lengths, alphas = model(images)
+                scores, decode_lengths, alphas = model(images, captions, caption_lengths)
 
                 loss = model.loss(scores, captions, decode_lengths, alphas)
 
@@ -161,7 +159,6 @@ def main(args):
                     save_model(model_image_captioning, optimizer, best_val_loss, epoch, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)
                 else:
                     save_model(model_image_captioning, optimizer, best_val_loss, epoch, CHECKPOINT_PATH_IMAGE_CAPTIONING)
-
 
         val_loss = validate_model(model_image_captioning, val_images_loader, print_captions_loader)
         if val_loss < best_val_loss:
