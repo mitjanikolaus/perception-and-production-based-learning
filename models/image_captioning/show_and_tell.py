@@ -43,7 +43,7 @@ def set_fine_tuning_enabled(self, enable_fine_tuning):
             param.requires_grad = enable_fine_tuning
 
 
-class Show_And_Tell(CaptioningModel):
+class ShowAndTell(CaptioningModel):
 
     def __init__(
         self,
@@ -57,7 +57,7 @@ class Show_And_Tell(CaptioningModel):
         pretrained_embeddings=None,
         fine_tune_decoder_word_embeddings=True,
     ):
-        super(Show_And_Tell, self).__init__(
+        super(ShowAndTell, self).__init__(
             vocab,
             word_embedding_size,
             max_caption_length,

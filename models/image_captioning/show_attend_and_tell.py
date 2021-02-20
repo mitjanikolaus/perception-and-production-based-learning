@@ -61,7 +61,7 @@ class Encoder(nn.Module):
                 p.requires_grad = enable_fine_tuning
 
 
-class Show_Attend_And_Tell(CaptioningModel):
+class ShowAttendAndTell(CaptioningModel):
     ENCODER_DIM = 2048
     ATTENTION_DIM = 512
     ALPHA_C = 1.0
@@ -77,7 +77,7 @@ class Show_Attend_And_Tell(CaptioningModel):
         pretrained_embeddings=None,
         fine_tune_decoder_word_embeddings=True,
     ):
-        super(Show_Attend_And_Tell, self).__init__(
+        super(ShowAttendAndTell, self).__init__(
             vocab,
             word_embedding_size,
             max_caption_length,

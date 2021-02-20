@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader
 
 import egg.core as core
 from dataset import CaptionDataset
-from models.image_captioning.show_attend_and_tell import Show_Attend_And_Tell
+from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from preprocess import IMAGES_FILENAME, CAPTIONS_FILENAME, VOCAB_FILENAME, MAX_CAPTION_LEN, \
     DATA_PATH
 from utils import print_caption
@@ -108,7 +108,7 @@ def main(args):
     dropout = 0.2
     # model_image_captioning = ImageCaptioner(word_embedding_size, visual_embedding_size, lstm_hidden_size, vocab,
     #                                         MAX_CAPTION_LEN, fine_tune_resnet=args.fine_tune_resnet)
-    model_image_captioning = Show_Attend_And_Tell(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN, dropout, fine_tune_resnet=False)
+    model_image_captioning = ShowAttendAndTell(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN, dropout, fine_tune_resnet=False)
 
     # uses command-line parameters we passed to core.init
     optimizer = core.build_optimizer(model_image_captioning.parameters())
