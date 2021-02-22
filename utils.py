@@ -19,14 +19,6 @@ def print_caption(caption, vocab):
     caption = decode_caption(caption, vocab)
     print(caption)
 
-def show_image(image_data):
-    image_data = image_data.reshape(image_data.shape[1], image_data.shape[2], image_data.shape[0])
-
-    plt.imshow(image_data)
-    plt.show()
-
-
-
 @dataclass
 class VisualRefLoggingStrategy(LoggingStrategy):
 

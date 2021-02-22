@@ -12,13 +12,9 @@ import matplotlib.pyplot as plt
 import egg.core as core
 from egg.core import ConsoleLogger, Callback, Interaction, SenderReceiverRnnReinforce
 from dataset import VisualRefGameDataset
-from models import (
-    VisualRefSpeakerDiscriminativeOracle,
-    VisualRefListenerOracle,
-    ImageSentenceRanker,
-    VisualRefSenderFunctional,
-    RnnSenderReinforceVisualRef,
-)
+from models.image_sentence_ranking.ranking_model import ImageSentenceRanker
+from models.interactive.models import VisualRefListenerOracle, VisualRefSpeakerDiscriminativeOracle, \
+    VisualRefSenderFunctional, RnnSenderReinforceVisualRef
 from preprocess import (
     DATA_PATH,
     IMAGES_FILENAME,

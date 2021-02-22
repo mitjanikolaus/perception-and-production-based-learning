@@ -23,7 +23,7 @@ from preprocess import (
 from train_image_captioning import (
     CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
 )
-from utils import decode_caption, show_image
+from utils import decode_caption
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
