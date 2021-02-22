@@ -122,7 +122,7 @@ def main(args):
         }, path)
 
     def validate_model(model, dataloader, print_images_loader):
-        print(f"EVAL")
+        print(f"Evaluating on {len(dataloader.dataset)} examples")
         model.eval()
         with torch.no_grad():
             print_sample_model_output(model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS)

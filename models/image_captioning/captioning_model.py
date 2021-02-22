@@ -41,14 +41,12 @@ class CaptioningModel(nn.Module):
         for p in self.word_embedding.parameters():
             p.requires_grad = fine_tune
 
-    def update_previous_word(self, scores, target_words, t):
-        if self.training:
+    def update_previous_word(self, scores, target_words, t, use_teacher_forcing):
+        if use_teacher_forcing:
             if random.random() < self.TEACHER_FORCING_RATIO:
                 use_teacher_forcing = True
             else:
                 use_teacher_forcing = False
-        else:
-            use_teacher_forcing = False
 
         if use_teacher_forcing:
             next_words = target_words[:, t + 1]
@@ -66,6 +64,10 @@ class CaptioningModel(nn.Module):
         :param decode_lengths: caption lengths, shape: (batch_size, 1)
         :return: scores for vocabulary, decode lengths, weights
         """
+        use_teacher_forcing = True
+        if decode_lengths == None:
+            use_teacher_forcing = False
+
         # Do not decode at last timestep (after EOS token)
         if decode_lengths is not None:
             decode_lengths = decode_lengths - 1
@@ -76,7 +78,7 @@ class CaptioningModel(nn.Module):
         # Flatten image
         encoder_output = encoder_output.view(batch_size, -1, encoder_output.size(-1))
 
-        if not self.training:
+        if not use_teacher_forcing:
             decode_lengths = torch.full(
                 (batch_size,),
                 self.max_caption_length,
@@ -101,7 +103,7 @@ class CaptioningModel(nn.Module):
         )
 
         for t in range(max(decode_lengths)):
-            if not self.training:
+            if not use_teacher_forcing:
                 # Find all sequences where an <end> token has been produced in the last timestep
                 ind_end_token = (
                     torch.nonzero(prev_words == self.vocab[TOKEN_END])
@@ -127,7 +129,7 @@ class CaptioningModel(nn.Module):
 
             # Update the previously predicted words
             prev_words = self.update_previous_word(
-                scores_for_timestep, target_captions, t
+                scores_for_timestep, target_captions, t, use_teacher_forcing
             )
 
             scores[indices_incomplete_sequences, t, :] = scores_for_timestep[
