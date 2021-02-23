@@ -13,7 +13,7 @@ import torch.distributions
 import torch.utils.data
 
 import egg.core as core
-from dataset import CaptionDataset, SyntaxEvalDataset
+from dataset import CaptionDataset, SemanticsEvalDataset
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,

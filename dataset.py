@@ -94,7 +94,7 @@ class CaptionDataset(Dataset):
         return images.to(device), padded_captions.to(device), sequence_lengths.to(device), image_ids
 
 
-class SyntaxEvalDataset(Dataset):
+class SemanticsEvalDataset(Dataset):
     """
     PyTorch Dataset that provides sets of target and distractor images for syntax learning evaluation
     """
