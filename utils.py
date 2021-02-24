@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from typing import Optional, Dict
 
 import torch
@@ -9,6 +11,10 @@ from preprocess import TOKEN_START, TOKEN_END, TOKEN_PADDING
 import matplotlib.pyplot as plt
 
 SPECIAL_CHARACTERS = [TOKEN_START, TOKEN_END, TOKEN_PADDING]
+
+CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST = os.path.join(Path.home(), "data/egg/visual_ref/checkpoints/image_captioning_best.pt")
+CHECKPOINT_PATH_IMAGE_CAPTIONING = os.path.join(Path.home(), "data/egg/visual_ref/checkpoints/image_captioning.pt")
+
 
 def decode_caption(caption, vocab):
     words = [vocab.itos[word] for word in caption if vocab.itos[word] not in SPECIAL_CHARACTERS]

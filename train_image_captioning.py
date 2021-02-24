@@ -16,16 +16,15 @@ import torch.utils.data
 from torch.utils.data import DataLoader
 
 import egg.core as core
-from dataset import CaptionDataset
+from dataset import CaptionDataset, SemanticsEvalDataset
+from eval_semantics import eval_semantics_score
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from preprocess import IMAGES_FILENAME, CAPTIONS_FILENAME, VOCAB_FILENAME, MAX_CAPTION_LEN, \
     DATA_PATH
-from utils import print_caption
+from utils import print_caption, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST, CHECKPOINT_PATH_IMAGE_CAPTIONING
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST = os.path.join(Path.home(), "data/egg/visual_ref/checkpoints/image_captioning_best.pt")
-CHECKPOINT_PATH_IMAGE_CAPTIONING = os.path.join(Path.home(), "data/egg/visual_ref/checkpoints/image_captioning.pt")
 
 
 PRINT_SAMPLE_CAPTIONS = 1
@@ -57,6 +56,11 @@ def main(args):
     # create model checkpoint directory
     if not os.path.exists(os.path.dirname(CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)):
         os.makedirs(os.path.dirname(CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST))
+
+    vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
+    print("Loading vocab from {}".format(vocab_path))
+    with open(vocab_path, "rb") as file:
+        vocab = pickle.load(file)
 
     train_loader = DataLoader(
         CaptionDataset(
@@ -97,10 +101,13 @@ def main(args):
         collate_fn=CaptionDataset.pad_collate,
     )
 
-    vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
-    print("Loading vocab from {}".format(vocab_path))
-    with open(vocab_path, "rb") as file:
-        vocab = pickle.load(file)
+    semantic_test_images_loader = torch.utils.data.DataLoader(
+        SemanticsEvalDataset(DATA_PATH, IMAGES_FILENAME["test"], CAPTIONS_FILENAME["test"], "data/semantics_eval_persons.csv", vocab),
+        batch_size=1,
+        shuffle=True,
+        num_workers=0,
+        pin_memory=False,
+    )
 
     word_embedding_size = 512
     visual_embedding_size = 512
@@ -121,11 +128,12 @@ def main(args):
             'loss': best_val_loss,
         }, path)
 
-    def validate_model(model, dataloader, print_images_loader):
+    def validate_model(model, dataloader, print_images_loader, semantic_images_loader):
         print(f"Evaluating on {len(dataloader.dataset)} examples")
         model.eval()
         with torch.no_grad():
             print_sample_model_output(model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS)
+            eval_semantics_score(model, semantic_images_loader, vocab)
 
             val_losses = []
             for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
@@ -142,6 +150,19 @@ def main(args):
     for epoch in range(args.n_epochs):
         losses = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(train_loader):
+            if batch_idx % args.log_frequency == 0:
+                val_loss = validate_model(model_image_captioning, val_images_loader, print_captions_loader,
+                                          semantic_test_images_loader)
+                print(f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss}")
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    save_model(model_image_captioning, optimizer, best_val_loss, epoch,
+                               CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)
+                else:
+                    save_model(model_image_captioning, optimizer, best_val_loss, epoch,
+                               CHECKPOINT_PATH_IMAGE_CAPTIONING)
+
+            # Forward pass
             scores, decode_lengths, alphas = model_image_captioning(images, captions, caption_lengths)
 
             loss = model_image_captioning.loss(scores, captions, decode_lengths, alphas)
@@ -151,16 +172,8 @@ def main(args):
             loss.backward()
             optimizer.step()
 
-            if batch_idx % args.log_frequency == 0:
-                val_loss = validate_model(model_image_captioning, val_images_loader, print_captions_loader)
-                print(f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss}")
-                if val_loss < best_val_loss:
-                    best_val_loss = val_loss
-                    save_model(model_image_captioning, optimizer, best_val_loss, epoch, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)
-                else:
-                    save_model(model_image_captioning, optimizer, best_val_loss, epoch, CHECKPOINT_PATH_IMAGE_CAPTIONING)
 
-        val_loss = validate_model(model_image_captioning, val_images_loader, print_captions_loader)
+        val_loss = validate_model(model_image_captioning, val_images_loader, print_captions_loader, semantic_test_images_loader)
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             save_model(model_image_captioning, optimizer, best_val_loss, epoch, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)

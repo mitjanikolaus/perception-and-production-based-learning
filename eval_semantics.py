@@ -21,12 +21,55 @@ from preprocess import (
     MAX_CAPTION_LEN,
     DATA_PATH,
 )
-from train_image_captioning import (
-    CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
-)
-from utils import decode_caption
+from utils import decode_caption, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+def eval_semantics_score(model, dataloader, vocab, debug=False):
+    model.eval()
+
+    accuracies = []
+    with torch.no_grad():
+        for batch_idx, (img, target_caption, distractor_caption) in enumerate(
+                dataloader
+        ):
+            images = torch.cat((img, img))
+            captions = torch.cat((target_caption, distractor_caption))
+            caption_lengths = torch.tensor([target_caption.shape[1], distractor_caption.shape[1]])
+
+            if debug:
+                print(f"Target    : {decode_caption(target_caption[0], vocab)}")
+                print(f"Distractor: {decode_caption(distractor_caption[0], vocab)}")
+
+            if isinstance(model, ShowAttendAndTell):
+                perplexities = model.perplexity(images, captions, caption_lengths)
+
+                if debug:
+                    print(f"Perplexity target    : {perplexities[0]}")
+                    print(f"Perplexity distractor: {perplexities[1]}")
+
+                if perplexities[0] < perplexities[1]:
+                    accuracies.append(1)
+                else:
+                    accuracies.append(0)
+            else:
+                # Assuming ranking model
+                images_embedded, captions_embedded = model(
+                    images, captions, caption_lengths
+                )
+
+                similarities = cosine_sim(images_embedded, captions_embedded)[0]
+
+                if debug:
+                    print(f"Similarity target    : {similarities[0]}")
+                    print(f"Similarity distractor: {similarities[1]}")
+
+                if similarities[0] > similarities[1]:
+                    accuracies.append(1)
+                else:
+                    accuracies.append(0)
+
+    print(f"Semantics accuracy: {np.mean(accuracies)}")
 
 
 def main(args):
@@ -74,47 +117,9 @@ def main(args):
     )
 
     model = model.to(device)
-    model.eval()
 
-    accuracies = []
-    with torch.no_grad():
-        for batch_idx, (img, target_caption, distractor_caption) in enumerate(
-            test_images_loader
-        ):
-            images = torch.cat((img, img))
-            captions = torch.cat((target_caption, distractor_caption))
-            caption_lengths = torch.tensor([target_caption.shape[1], distractor_caption.shape[1]])
+    eval_semantics_score(model, test_images_loader, vocab, debug=True)
 
-            print(f"Target    : {decode_caption(target_caption[0], vocab)}")
-            print(f"Distractor: {decode_caption(distractor_caption[0], vocab)}")
-
-            if isinstance(model, ShowAttendAndTell):
-                perplexities = model.perplexity(images, captions, caption_lengths)
-
-                print(f"Perplexity target    : {perplexities[0]}")
-                print(f"Perplexity distractor: {perplexities[1]}")
-
-                if perplexities[0] < perplexities[1]:
-                    accuracies.append(1)
-                else:
-                    accuracies.append(0)
-            else:
-                # Assuming ranking model
-                images_embedded, captions_embedded = model(
-                    images, captions, caption_lengths
-                )
-
-                similarities = cosine_sim(images_embedded, captions_embedded)[0]
-
-                print(f"Similarity target    : {similarities[0]}")
-                print(f"Similarity distractor: {similarities[1]}")
-
-                if similarities[0] > similarities[1]:
-                    accuracies.append(1)
-                else:
-                    accuracies.append(0)
-
-    print(f"\n\n\nAccuracy: {np.mean(accuracies)}")
 
 
 def get_args():
@@ -123,7 +128,7 @@ def get_args():
         "--checkpoint", default=CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST, type=str,
     )
     parser.add_argument(
-        "--eval-csv", default="data/semantics_eval_actors.csv", type=str,
+        "--eval-csv", default="data/semantics_eval_persons.csv", type=str,
     )
 
     return core.init(parser)

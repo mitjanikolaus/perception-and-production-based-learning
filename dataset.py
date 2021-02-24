@@ -51,6 +51,8 @@ class CaptionDataset(Dataset):
         # Set pytorch transformation pipeline
         self.normalize = transforms.Normalize(mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES)
 
+        self.image_ids = [int(i) for i in list(self.images.keys())]
+
     def get_image_features(self, id, channels_first=True, normalize=True):
         image_data = self.images[str(id)][()]
 
@@ -68,7 +70,7 @@ class CaptionDataset(Dataset):
         return image
 
     def __getitem__(self, i):
-        image_id = i // self.CAPTIONS_PER_IMAGE
+        image_id = self.image_ids[i // self.CAPTIONS_PER_IMAGE]
         caption_id = i % self.CAPTIONS_PER_IMAGE
 
         image = self.get_image_features(image_id)

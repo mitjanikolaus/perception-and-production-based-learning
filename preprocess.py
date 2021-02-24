@@ -127,7 +127,7 @@ def preprocess_images_and_captions(
         os.makedirs(output_folder)
 
     # Print the most frequent words
-    print(f"Most frequent words: {word_freq.most_common(10)}")
+    print(f"Most frequent words: {word_freq.most_common(1000)}")
 
     # Create vocab
     vocab = Vocab(word_freq, specials=[TOKEN_PADDING, Vocab.UNK, TOKEN_START, TOKEN_END], min_freq=vocab_min_freq)
@@ -141,28 +141,26 @@ def preprocess_images_and_captions(
     # Discard images with not enough captions
     images = {id: image for id, image in enumerate(images)}
     images = {id: image for id, image in images.items() if len(captions[id]) == CAPTIONS_PER_IMAGE}
-    captions = [captions_image for id, captions_image in captions.items() if id in images.keys()]
-    images = list(images.values())
-    captions = {id: captions_image for id, captions_image in enumerate(captions)}
+    captions = {id: captions_image for id, captions_image in captions.items() if id in images.keys()}
 
     # Encode the captions using the vocab
     captions = {id: encode_captions(captions_image, vocab) for id, captions_image in captions.items()}
 
     # Create dataset splits
-    all_indices = list(captions.keys())
+    all_indices = list(images.keys())
     indices = {}
     indices["train"], indices["test"] = train_test_split(all_indices, test_size=0.1, random_state=RANDOM_SEED)
     indices["train"], indices["val"] = train_test_split(indices["train"], test_size=VAL_SET_SIZE, random_state=RANDOM_SEED)
 
     for split in ["train", "val", "test"]:
-        images_split = [images[i] for i in indices[split]]
-        captions_split = {image_id: captions[old_id] for image_id, old_id in enumerate(indices[split])}
+        images_split = {i: images[i] for i in indices[split]}
+        captions_split = {i: captions[i] for i in indices[split]}
 
         # Create hdf5 file and dataset for the images
         images_dataset_path = os.path.join(output_folder, IMAGES_FILENAME[split])
         print("Creating image dataset at {}".format(images_dataset_path))
         with h5py.File(images_dataset_path, "a") as h5py_file:
-            for img_id, img in tqdm(enumerate(images_split)):
+            for img_id, img in tqdm(images_split.items()):
                 # Read image and save it to hdf5 file
                 h5py_file.create_dataset(
                     str(img_id), (224, 224, 3), dtype="uint8", data=img
