@@ -25,7 +25,7 @@ META_DATA_DICT = pd.read_csv(META_DATA_DICT_PATH, sep="\t", index_col=0, names=[
 OBJECTS_ANIMALS = ["dog", "cat"]
 OBJECTS_INANIMATE = ["hamburger", "pizza"]
 
-VERBS_LOWER_BODY = ["sitting", "standing", "running", "jumping"]
+VERBS_LOWER_BODY = ["sitting", "standing", "running"]
 VERBS_UPPER_BODY = ["eating", "playing", "waving", "throwing"]
 
 VOCAB_TO_OBJECT_NAMES = {

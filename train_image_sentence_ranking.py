@@ -53,11 +53,8 @@ def validate_model(model, dataloader, semantic_images_loaders, vocab):
             loss = model.loss(images_embedded, captions_embedded)
             val_losses.append(loss.mean().item())
 
-        val_loss = np.mean(val_losses)
-        print(f"val loss: {val_loss}")
-
-        val_acc = np.mean(val_accuracies)
-        print(f"val acc: {val_acc}")
+    val_loss = np.mean(val_losses)
+    val_acc = np.mean(val_accuracies)
 
     return val_loss, val_acc, semantic_accuracies
 
@@ -131,8 +128,8 @@ def main(params):
         semantic_accuracies_over_time = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(train_loader):
             if batch_idx % VAL_INTERVAL == 0:
-                val_loss, _, semantic_accuracies = validate_model(model, val_images_loader, semantics_eval_loaders, vocab)
-                print(f"Batch {batch_idx}: train loss: {np.mean(losses)} val loss: {val_loss}")
+                val_loss, val_acc, semantic_accuracies = validate_model(model, val_images_loader, semantics_eval_loaders, vocab)
+                print(f"Batch {batch_idx}: train loss: {np.mean(losses)} val loss: {val_loss} val acc: {val_acc}")
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
                     save_model(model, optimizer, best_val_loss, epoch)

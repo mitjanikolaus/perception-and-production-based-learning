@@ -8,11 +8,9 @@ img_id,target_sentence,distractor_sentence
 1235,mike is eating a hamburger,mike is eating a pizza
 1235,mike has a hamburger,mike has a pizza
 130,jenny is excited to eat some pizza,jenny is excited to eat some hamburger
-130,mike is excited to have pizza for lunch,mike is excited to have hamburger for lunch
 1300,jenny looks at the pizza,jenny looks at the hamburger
 1300,mike and jenny enjoy a pizza for lunch,mike and jenny enjoy a hamburger for lunch
 1301,mike is sharing a pizza with jenny,mike is sharing a hamburger with jenny
-1301,mike is bringing jenny pizza,mike is bringing jenny hamburger
 1309,mike throws a pizza in the air,mike throws a hamburger in the air
 1309,mike threw the pizza in the air,mike threw the hamburger in the air
 1312,jenny kicks a ball into the pizza,jenny kicks a ball into the hamburger
@@ -81,11 +79,9 @@ img_id,target_sentence,distractor_sentence
 4710,jenny is holding the pizza,jenny is holding the hamburger
 4710,mike is holding the pizza,mike is holding the hamburger
 4710,jenny and mike are sharing a pizza at the park,jenny and mike are sharing a hamburger at the park
-4712,jenny is offering mike pizza,jenny is offering mike hamburger
 4886,the dog is about to eat the pizza,the dog is about to eat the hamburger
 4886,theres a pizza in the grass,theres a hamburger in the grass
 4888,mike is carrying a pizza,mike is carrying a hamburger
-4888,mike has pizza,mike has hamburger
 4888,mike wont let jenny have the pizza,mike wont let jenny have the hamburger
 4888,the dog wants the pizza that mike has,the dog wants the hamburger that mike has
 5102,jenny made a pizza for mike,jenny made a hamburger for mike
@@ -100,11 +96,8 @@ img_id,target_sentence,distractor_sentence
 5149,the dog is looking for the hamburger,the dog is looking for the pizza
 5149,the duck wants jennys hamburger,the duck wants jennys pizza
 5149,jenny is bringing a hamburger to mike,jenny is bringing a pizza to mike
-5205,there is pizza on the table,there is hamburger on the table
 5205,the pizza is on the table,the hamburger is on the table
-5208,mike and jenny will have pizza for lunch,mike and jenny will have hamburger for lunch
 5208,the pizza was on the table behind mike,the hamburger was on the table behind mike
-5208,jenny was hungry for pizza,jenny was hungry for hamburger
 5365,theres a pizza on a grill,theres a hamburger on a grill
 5537,jenny is offering mike some pizza,jenny is offering mike some hamburger
 5537,the dog is looking at the pizza,the dog is looking at the hamburger
@@ -121,7 +114,6 @@ img_id,target_sentence,distractor_sentence
 5781,mike is sad that he dropped the pizza,mike is sad that he dropped the hamburger
 5781,mike dropped the pizza,mike dropped the hamburger
 5781,jenny is worried that mike dropped the pizza,jenny is worried that mike dropped the hamburger
-5781,mike and jenny were going to have pizza for lunch,mike and jenny were going to have hamburger for lunch
 5832,jenny dropped the hamburger on the ground,jenny dropped the pizza on the ground
 5845,mike is holding a pizza,mike is holding a hamburger
 5922,mike makes a hamburger,mike makes a pizza
@@ -152,7 +144,6 @@ img_id,target_sentence,distractor_sentence
 6876,jenny is holding out the pizza,jenny is holding out the hamburger
 6876,mike is sitting and waiting for the pizza,mike is sitting and waiting for the hamburger
 6902,the dog is looking at the pizza,the dog is looking at the hamburger
-6902,there is pizza on the table,there is hamburger on the table
 6930,there is a hamburger on the table,there is a pizza on the table
 6930,the mustard is by the hamburger,the mustard is by the pizza
 6977,jenny is kicking a hamburger,jenny is kicking a pizza
@@ -164,8 +155,6 @@ img_id,target_sentence,distractor_sentence
 7493,jenny has a hamburger,jenny has a pizza
 7601,mike has a pizza,mike has a hamburger
 7601,the duck wants some pizza too,the duck wants some hamburger too
-7601,mike <unk> mr duck pizza,mike <unk> mr duck hamburger
-7601,mr duck hates pizza,mr duck hates hamburger
 7656,there is a pizza on the table,there is a hamburger on the table
 7673,mike wants his hamburger,mike wants his pizza
 7695,jenny is running with a hamburger,jenny is running with a pizza
@@ -197,7 +186,6 @@ img_id,target_sentence,distractor_sentence
 8635,the bear has a hamburger,the bear has a pizza
 9061,a hamburger is on the table,a pizza is on the table
 9071,there is a pizza on the picnic table,there is a hamburger on the picnic table
-9071,mike made pizza for lunch,mike made hamburger for lunch
 9071,jenny is happy that mike made pizza,jenny is happy that mike made hamburger
 9075,mike has a big pizza,mike has a big hamburger
 9075,mike is holding a pizza,mike is holding a hamburger
@@ -205,7 +193,6 @@ img_id,target_sentence,distractor_sentence
 9077,mike has a pizza and a kite,mike has a hamburger and a kite
 9310,mike made a pizza,mike made a hamburger
 9310,the owl gets the first slice of pizza,the owl gets the first slice of hamburger
-9310,jenny is mad because pizza is not for owls,jenny is mad because hamburger is not for owls
 9310,an owl is near a pizza,an owl is near a hamburger
 9385,mike is hungry for the pizza,mike is hungry for the hamburger
 9385,the pizza is on the ground,the hamburger is on the ground
