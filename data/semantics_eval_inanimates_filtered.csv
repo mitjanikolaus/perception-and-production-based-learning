@@ -1,0 +1,217 @@
+img_id,target_sentence,distractor_sentence
+1103,mike is holding the hamburger out,mike is holding the pizza out
+1192,mike is holding a hamburger,mike is holding a pizza
+1195,jenny wants the hamburger,jenny wants the pizza
+1195,a hamburger is on the table,a pizza is on the table
+1216,mike had a baseball and a hamburger,mike had a baseball and a pizza
+1216,the baseball is next to the hamburger,the baseball is next to the pizza
+1235,mike is eating a hamburger,mike is eating a pizza
+1235,mike has a hamburger,mike has a pizza
+130,jenny is excited to eat some pizza,jenny is excited to eat some hamburger
+130,mike is excited to have pizza for lunch,mike is excited to have hamburger for lunch
+1300,jenny looks at the pizza,jenny looks at the hamburger
+1300,mike and jenny enjoy a pizza for lunch,mike and jenny enjoy a hamburger for lunch
+1301,mike is sharing a pizza with jenny,mike is sharing a hamburger with jenny
+1301,mike is bringing jenny pizza,mike is bringing jenny hamburger
+1309,mike throws a pizza in the air,mike throws a hamburger in the air
+1309,mike threw the pizza in the air,mike threw the hamburger in the air
+1312,jenny kicks a ball into the pizza,jenny kicks a ball into the hamburger
+1312,mike looks sadly at the pizza,mike looks sadly at the hamburger
+1312,jenny kicked the football onto the pizza,jenny kicked the football onto the hamburger
+1312,mike is sad about the pizza,mike is sad about the hamburger
+1344,jenny has a pizza,jenny has a hamburger
+1344,jenny has a pizza,jenny has a hamburger
+137,jenny puts the pizza beside the pie,jenny puts the hamburger beside the pie
+137,the pie and pizza are on the table,the pie and hamburger are on the table
+137,jenny is offering a pizza,jenny is offering a hamburger
+1417,the dog is eating the hamburger,the dog is eating the pizza
+1417,the dog is eating the hamburger,the dog is eating the pizza
+1490,there is a pizza and a soda on the table,there is a hamburger and a soda on the table
+1490,mike wants the first slice of pizza,mike wants the first slice of hamburger
+1490,a soda is next to the pizza,a soda is next to the hamburger
+1590,mike wants to give hamburger a bear,mike wants to give pizza a bear
+1590,jenny also wants a hamburger too,jenny also wants a pizza too
+1594,mike offers the bear a hamburger,mike offers the bear a pizza
+1594,mike is giving the bear a hamburger,mike is giving the bear a pizza
+1794,mike has a hamburger,mike has a pizza
+1794,mike is eating a hamburger,mike is eating a pizza
+1798,mike is holding a hamburger,mike is holding a pizza
+1842,there is a hot dog and a hamburger on the table,there is a hot dog and a pizza on the table
+2070,jenny brought mike a hamburger,jenny brought mike a pizza
+2070,jenny put ketchup on the hamburger,jenny put ketchup on the pizza
+2076,mike wants the hamburger,mike wants the pizza
+2076,jenny is sad to share the hamburger,jenny is sad to share the pizza
+2077,jenny is holding a hamburger over the fire,jenny is holding a pizza over the fire
+2077,jenny is holding a hamburger,jenny is holding a pizza
+2174,mike is holding a hamburger and ketchup,mike is holding a pizza and ketchup
+2385,the pizza is on the table,the hamburger is on the table
+2385,a pizza is on the table,a hamburger is on the table
+2575,jenny enjoys her hamburger for lunch,jenny enjoys her pizza for lunch
+258,mike is holding a hamburger and soda,mike is holding a pizza and soda
+2804,the bear is eating a hamburger,the bear is eating a pizza
+2804,a bear is eating the hamburger,a bear is eating the pizza
+2911,the hamburger is on the grass near the campfire,the pizza is on the grass near the campfire
+3338,mike has a hamburger,mike has a pizza
+3380,mike is eating hamburger in the <unk>,mike is eating pizza in the <unk>
+3380,jenny is mad because she wants a hamburger,jenny is mad because she wants a pizza
+3382,mike is holding a hamburger,mike is holding a pizza
+3396,there is a hamburger on the dog,there is a pizza on the dog
+3396,the hamburger is on the dogs back,the pizza is on the dogs back
+3495,mike is eating a hamburger,mike is eating a pizza
+3535,a cat is eating a hamburger in the sandbox,a cat is eating a pizza in the sandbox
+3535,jennys hamburger is in the sandbox,jennys pizza is in the sandbox
+4053,mike made a pizza,mike made a hamburger
+4053,mike is holding a pizza and frowning,mike is holding a hamburger and frowning
+4058,mike is holding a pizza,mike is holding a hamburger
+4058,mike is holding a pizza,mike is holding a hamburger
+4138,the bear has a hamburger,the bear has a pizza
+4138,the screaming bear is holding a hamburger,the screaming bear is holding a pizza
+4139,the bear is holding a hamburger,the bear is holding a pizza
+4139,the bear is holding a hamburger,the bear is holding a pizza
+4188,mike is eating a hamburger,mike is eating a pizza
+4188,mike is holding a hamburger,mike is holding a pizza
+4377,a cat is sitting by a pizza,a cat is sitting by a hamburger
+4377,a snake is slithering toward the pizza,a snake is slithering toward the hamburger
+4377,the cat and snake eat a pizza,the cat and snake eat a hamburger
+4459,there is a pizza on the table,there is a hamburger on the table
+4459,the large pizza is on the table,the large hamburger is on the table
+4641,mike is holding a hamburger,mike is holding a pizza
+4673,jenny tries to give a hamburger to the duck,jenny tries to give a pizza to the duck
+4673,jenny made a hamburger,jenny made a pizza
+4710,jenny is holding the pizza,jenny is holding the hamburger
+4710,mike is holding the pizza,mike is holding the hamburger
+4710,jenny and mike are sharing a pizza at the park,jenny and mike are sharing a hamburger at the park
+4712,jenny is offering mike pizza,jenny is offering mike hamburger
+4886,the dog is about to eat the pizza,the dog is about to eat the hamburger
+4886,theres a pizza in the grass,theres a hamburger in the grass
+4888,mike is carrying a pizza,mike is carrying a hamburger
+4888,mike has pizza,mike has hamburger
+4888,mike wont let jenny have the pizza,mike wont let jenny have the hamburger
+4888,the dog wants the pizza that mike has,the dog wants the hamburger that mike has
+5102,jenny made a pizza for mike,jenny made a hamburger for mike
+5102,jenny made a pizza,jenny made a hamburger
+5102,the dog is looking at the pizza,the dog is looking at the hamburger
+5107,mike is eating pizza,mike is eating hamburger
+5107,mike is eating a big pizza,mike is eating a big hamburger
+5142,jenny wants to eat her hamburger,jenny wants to eat her pizza
+5143,the duck wants jennys hamburger,the duck wants jennys pizza
+5143,jenny held the hamburger away from the duck,jenny held the pizza away from the duck
+5143,mike wanted jenny to throw him the hamburger,mike wanted jenny to throw him the pizza
+5149,the dog is looking for the hamburger,the dog is looking for the pizza
+5149,the duck wants jennys hamburger,the duck wants jennys pizza
+5149,jenny is bringing a hamburger to mike,jenny is bringing a pizza to mike
+5205,there is pizza on the table,there is hamburger on the table
+5205,the pizza is on the table,the hamburger is on the table
+5208,mike and jenny will have pizza for lunch,mike and jenny will have hamburger for lunch
+5208,the pizza was on the table behind mike,the hamburger was on the table behind mike
+5208,jenny was hungry for pizza,jenny was hungry for hamburger
+5365,theres a pizza on a grill,theres a hamburger on a grill
+5537,jenny is offering mike some pizza,jenny is offering mike some hamburger
+5537,the dog is looking at the pizza,the dog is looking at the hamburger
+5537,jenny is holding a pizza,jenny is holding a hamburger
+556,the owl is sitting on the hamburger,the owl is sitting on the pizza
+556,the owl is on the hamburger,the owl is on the pizza
+556,the hamburger is on the grill,the pizza is on the grill
+5577,the hamburger is on the table,the pizza is on the table
+5577,mike can not reach the hamburger,mike can not reach the pizza
+5577,jenny is surprised that the hamburger is on the table,jenny is surprised that the pizza is on the table
+5607,jenny has a pizza for lunch,jenny has a hamburger for lunch
+5654,mike is camping with pizza,mike is camping with hamburger
+5654,the snake slithers up to the pizza,the snake slithers up to the hamburger
+5781,mike is sad that he dropped the pizza,mike is sad that he dropped the hamburger
+5781,mike dropped the pizza,mike dropped the hamburger
+5781,jenny is worried that mike dropped the pizza,jenny is worried that mike dropped the hamburger
+5781,mike and jenny were going to have pizza for lunch,mike and jenny were going to have hamburger for lunch
+5832,jenny dropped the hamburger on the ground,jenny dropped the pizza on the ground
+5845,mike is holding a pizza,mike is holding a hamburger
+5922,mike makes a hamburger,mike makes a pizza
+5922,mike is laughing at the floating hamburger,mike is laughing at the floating pizza
+6127,the cat has the pizza,the cat has the hamburger
+6358,mike holds a hamburger,mike holds a pizza
+6358,mike has a hamburger,mike has a pizza
+6415,mike has a hamburger,mike has a pizza
+6444,mike has a hamburger,mike has a pizza
+6445,mike has a hamburger in his hand,mike has a pizza in his hand
+6533,the cat wants the pizza,the cat wants the hamburger
+6533,mike is sitting by the pizza,mike is sitting by the hamburger
+6622,the pizza was on the ground,the hamburger was on the ground
+6622,the pizza is on the ground,the hamburger is on the ground
+6636,the pizza is on the table,the hamburger is on the table
+6636,a pizza is on the table,a hamburger is on the table
+6679,jenny made a pizza,jenny made a hamburger
+6679,jenny made a pizza,jenny made a hamburger
+6800,there is a hotdog and a hamburger on the table,there is a hotdog and a pizza on the table
+6800,there is a hamburger on the picnic table,there is a pizza on the picnic table
+6870,jenny is holding a pizza,jenny is holding a hamburger
+6870,jenny is holding a pizza,jenny is holding a hamburger
+6872,jenny is giving mike a pizza,jenny is giving mike a hamburger
+6872,mike is waiting to try the pizza,mike is waiting to try the hamburger
+6872,jenny is carrying the pizza to mike,jenny is carrying the hamburger to mike
+6872,jenny baked the pizza,jenny baked the hamburger
+6876,jenny has a pizza,jenny has a hamburger
+6876,jenny is holding out the pizza,jenny is holding out the hamburger
+6876,mike is sitting and waiting for the pizza,mike is sitting and waiting for the hamburger
+6902,the dog is looking at the pizza,the dog is looking at the hamburger
+6902,there is pizza on the table,there is hamburger on the table
+6930,there is a hamburger on the table,there is a pizza on the table
+6930,the mustard is by the hamburger,the mustard is by the pizza
+6977,jenny is kicking a hamburger,jenny is kicking a pizza
+6977,jenny is kicking the hamburger,jenny is kicking the pizza
+7010,there is a pizza on the table,there is a hamburger on the table
+7010,the is pie and pizza on the table,the is pie and hamburger on the table
+7251,the hamburger is on the table,the pizza is on the table
+7493,jenny has made a hamburger,jenny has made a pizza
+7493,jenny has a hamburger,jenny has a pizza
+7601,mike has a pizza,mike has a hamburger
+7601,the duck wants some pizza too,the duck wants some hamburger too
+7601,mike <unk> mr duck pizza,mike <unk> mr duck hamburger
+7601,mr duck hates pizza,mr duck hates hamburger
+7656,there is a pizza on the table,there is a hamburger on the table
+7673,mike wants his hamburger,mike wants his pizza
+7695,jenny is running with a hamburger,jenny is running with a pizza
+7695,the dog is smiling at jennys hamburger,the dog is smiling at jennys pizza
+7695,jenny is running with a hamburger,jenny is running with a pizza
+8052,jenny has a hamburger in her mouth,jenny has a pizza in her mouth
+8076,the bear stole the hamburger and pie,the bear stole the pizza and pie
+8079,the bear has a hamburger and a pie,the bear has a pizza and a pie
+8089,mike has a pizza and baseball,mike has a hamburger and baseball
+8089,mike has a pizza,mike has a hamburger
+8141,the soccer might hit the pizza,the soccer might hit the hamburger
+8141,the pizza is on the table,the hamburger is on the table
+8141,a pizza is sitting on the picnic table,a hamburger is sitting on the picnic table
+8254,there is a pizza beside the fire,there is a hamburger beside the fire
+8276,mike is holding a hamburger,mike is holding a pizza
+8360,mike is holding the pizza,mike is holding the hamburger
+8360,mike is sharing pizza with jenny,mike is sharing hamburger with jenny
+8368,jenny is afraid its going too hit her pizza,jenny is afraid its going too hit her hamburger
+841,jenny holds a hamburger,jenny holds a pizza
+841,jenny is holding a hamburger,jenny is holding a pizza
+8570,mike is eating a hamburger,mike is eating a pizza
+858,the pizza is on the picnic table,the hamburger is on the picnic table
+858,there is a pizza on the table,there is a hamburger on the table
+8585,mike is holding a hamburger,mike is holding a pizza
+8585,mike has a hamburger,mike has a pizza
+8613,the bear wants some pizza too,the bear wants some hamburger too
+8613,the pizza and soda were on the table,the hamburger and soda were on the table
+8635,the bear is holding a hamburger,the bear is holding a pizza
+8635,the bear has a hamburger,the bear has a pizza
+9061,a hamburger is on the table,a pizza is on the table
+9071,there is a pizza on the picnic table,there is a hamburger on the picnic table
+9071,mike made pizza for lunch,mike made hamburger for lunch
+9071,jenny is happy that mike made pizza,jenny is happy that mike made hamburger
+9075,mike has a big pizza,mike has a big hamburger
+9075,mike is holding a pizza,mike is holding a hamburger
+9075,jenny is excited to eat pizza,jenny is excited to eat hamburger
+9077,mike has a pizza and a kite,mike has a hamburger and a kite
+9310,mike made a pizza,mike made a hamburger
+9310,the owl gets the first slice of pizza,the owl gets the first slice of hamburger
+9310,jenny is mad because pizza is not for owls,jenny is mad because hamburger is not for owls
+9310,an owl is near a pizza,an owl is near a hamburger
+9385,mike is hungry for the pizza,mike is hungry for the hamburger
+9385,the pizza is on the ground,the hamburger is on the ground
+9543,mike holds a hamburger,mike holds a pizza
+9545,mike is eating a hamburger,mike is eating a pizza
+9545,mike is eating a hamburger,mike is eating a pizza
+963,the table has a hot dog and a pizza on it,the table has a hot dog and a hamburger on it
+963,the pizza is near the hot dog on the table,the hamburger is near the hot dog on the table
+965,jenny sees the pizza on the table,jenny sees the hamburger on the table

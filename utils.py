@@ -8,8 +8,6 @@ from dataclasses import dataclass
 from egg.core import Interaction, LoggingStrategy
 from preprocess import TOKEN_START, TOKEN_END, TOKEN_PADDING
 
-import matplotlib.pyplot as plt
-
 SPECIAL_CHARACTERS = [TOKEN_START, TOKEN_END, TOKEN_PADDING]
 
 CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST = os.path.join(
@@ -25,7 +23,7 @@ SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING = os.path.join(
 SEMANTICS_EVAL_FILES = [
     "data/semantics_eval_persons.csv",
     "data/semantics_eval_animals_filtered.csv",
-    "data/semantics_eval_inanimates.csv",
+    "data/semantics_eval_inanimates_filtered.csv",
     "data/semantics_eval_verbs_intransitive.csv",
     "data/semantics_eval_agent_patient_filtered.csv",
 ]
