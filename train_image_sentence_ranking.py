@@ -15,6 +15,7 @@ from torch.utils.data import DataLoader
 
 import egg.core as core
 from dataset import CaptionDataset
+from eval_semantics import get_semantics_eval_dataloader, eval_semantics_score
 from models.image_sentence_ranking.ranking_model import ImageSentenceRanker
 from preprocess import (
     IMAGES_FILENAME,
@@ -22,15 +23,43 @@ from preprocess import (
     VOCAB_FILENAME,
     DATA_PATH,
 )
+from utils import SEMANTICS_EVAL_FILES, SEMANTIC_ACCURACIES_PATH_RANKING, CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING = os.path.join(
-    Path.home(), "data/egg/visual_ref/checkpoints/image_sentence_ranking.pt"
-)
-
-
 VAL_INTERVAL = 100
+
+
+def validate_model(model, dataloader, semantic_images_loaders, vocab):
+    print(f"EVAL")
+    semantic_accuracies = {}
+    model.eval()
+    with torch.no_grad():
+        for name, semantic_images_loader in semantic_images_loaders.items():
+            acc = eval_semantics_score(model, semantic_images_loader, vocab)
+            print(f"Accuracy for {name}: {acc}")
+            semantic_accuracies[name] = acc
+
+        val_losses = []
+        val_accuracies = []
+        for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
+            images_embedded, captions_embedded = model(
+                images, captions, caption_lengths
+            )
+
+            acc = model.accuracy_discrimination(images_embedded, captions_embedded)
+            val_accuracies.append(acc)
+
+            loss = model.loss(images_embedded, captions_embedded)
+            val_losses.append(loss.mean().item())
+
+        val_loss = np.mean(val_losses)
+        print(f"val loss: {val_loss}")
+
+        val_acc = np.mean(val_accuracies)
+        print(f"val acc: {val_acc}")
+
+    return val_loss, val_acc, semantic_accuracies
 
 
 def main(params):
@@ -65,10 +94,14 @@ def main(params):
     with open(vocab_path, "rb") as file:
         vocab = pickle.load(file)
 
+    semantics_eval_loaders = {
+        file: get_semantics_eval_dataloader(file, vocab) for file in SEMANTICS_EVAL_FILES
+    }
+
     word_embedding_size = 100
     joint_embeddings_size = 512
     lstm_hidden_size = 512
-    model_ranking = ImageSentenceRanker(
+    model = ImageSentenceRanker(
         word_embedding_size,
         joint_embeddings_size,
         lstm_hidden_size,
@@ -77,9 +110,9 @@ def main(params):
     )
 
     # uses command-line parameters we passed to core.init
-    optimizer = core.build_optimizer(model_ranking.parameters())
+    optimizer = core.build_optimizer(model.parameters())
 
-    model_ranking = model_ranking.to(device)
+    model = model.to(device)
 
     def save_model(model, optimizer, best_val_loss, epoch):
         torch.save(
@@ -92,59 +125,37 @@ def main(params):
             CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING,
         )
 
-    def validate_model(model, dataloader):
-        print(f"EVAL")
-        model.eval()
-        with torch.no_grad():
-            val_losses = []
-            val_accuracies = []
-            for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
-                images_embedded, captions_embedded = model_ranking(
-                    images, captions, caption_lengths
-                )
-
-                acc = model_ranking.accuracy_discrimination(images_embedded, captions_embedded)
-                val_accuracies.append(acc)
-
-                loss = model_ranking.loss(images_embedded, captions_embedded)
-                val_losses.append(loss.mean().item())
-
-            val_loss = np.mean(val_losses)
-            print(f"val loss: {val_loss}")
-
-            val_acc = np.mean(val_accuracies)
-            print(f"val acc: {val_acc}")
-
-        model.train()
-        return val_loss, val_acc
-
     best_val_loss = math.inf
     for epoch in range(opts.n_epochs):
         losses = []
+        semantic_accuracies_over_time = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(train_loader):
-            images_embedded, captions_embedded = model_ranking(
+            if batch_idx % VAL_INTERVAL == 0:
+                val_loss, _, semantic_accuracies = validate_model(model, val_images_loader, semantics_eval_loaders, vocab)
+                print(f"Batch {batch_idx}: train loss: {np.mean(losses)} val loss: {val_loss}")
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    save_model(model, optimizer, best_val_loss, epoch)
+                semantic_accuracies_over_time.append(semantic_accuracies)
+                pickle.dump(semantic_accuracies_over_time, open(SEMANTIC_ACCURACIES_PATH_RANKING, "wb"))
+
+            model.train()
+            images_embedded, captions_embedded = model(
                 images, captions, caption_lengths
             )
 
-            loss = model_ranking.loss(images_embedded, captions_embedded)
+            loss = model.loss(images_embedded, captions_embedded)
             losses.append(loss.mean().item())
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            if batch_idx % VAL_INTERVAL == 0:
-                print(f"Batch {batch_idx}: train loss: {np.mean(losses)}")
-                val_loss, _ = validate_model(model_ranking, val_images_loader)
-                if val_loss < best_val_loss:
-                    best_val_loss = val_loss
-                    save_model(model_ranking, optimizer, best_val_loss, epoch)
-
         print(f"Train Epoch: {epoch}, train loss: {np.mean(losses)}")
-        val_loss, _ = validate_model(model_ranking, val_images_loader)
+        val_loss, _, _ = validate_model(model, val_images_loader, semantics_eval_loaders, vocab)
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            save_model(model_ranking, optimizer, best_val_loss, epoch)
+            save_model(model, optimizer, best_val_loss, epoch)
 
     core.close()
 
