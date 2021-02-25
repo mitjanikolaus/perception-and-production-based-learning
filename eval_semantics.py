@@ -63,7 +63,7 @@ def eval_semantics_score(model, dataloader, vocab, verbose=False):
 
                 if perplexities[0] < perplexities[1]:
                     accuracies.append(1)
-                else:
+                elif perplexities[0] > perplexities[1]:
                     accuracies.append(0)
             else:
                 # Assuming ranking model
@@ -79,7 +79,7 @@ def eval_semantics_score(model, dataloader, vocab, verbose=False):
 
                 if similarities[0] > similarities[1]:
                     accuracies.append(1)
-                else:
+                elif similarities[0] < similarities[1]:
                     accuracies.append(0)
 
             if batch_idx > EVAL_MAX_SAMPLES:
