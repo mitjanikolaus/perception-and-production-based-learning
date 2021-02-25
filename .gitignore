@@ -109,4 +109,6 @@ venv.bak/
 .mypy_cache/
 
 
-egg/zoo/visual_ref/out/
+out/
+
+
