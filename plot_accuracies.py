@@ -13,7 +13,7 @@ from utils import SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING
 
 
 def main(args):
-    scores = pickle.load(open(SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING, "rb"))
+    scores = pickle.load(open(args.scores_file, "rb"))
     scores = pd.DataFrame(scores)
     sns.lineplot(data=scores)
     plt.show()
@@ -25,7 +25,7 @@ def get_args():
         "--scores-file", default=SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING, type=str,
     )
 
-    return core.init(parser)
+    return parser.parse_args()
 
 
 if __name__ == "__main__":

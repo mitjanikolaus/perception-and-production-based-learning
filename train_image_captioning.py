@@ -163,9 +163,9 @@ def main(args):
         )
 
     best_val_loss = math.inf
+    semantic_accuracies_over_time = []
     for epoch in range(args.n_epochs):
         losses = []
-        semantic_accuracies_over_time = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(
             train_loader
         ):

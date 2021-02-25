@@ -123,9 +123,9 @@ def main(params):
         )
 
     best_val_loss = math.inf
+    semantic_accuracies_over_time = []
     for epoch in range(opts.n_epochs):
         losses = []
-        semantic_accuracies_over_time = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(train_loader):
             if batch_idx % VAL_INTERVAL == 0:
                 val_loss, val_acc, semantic_accuracies = validate_model(model, val_images_loader, semantics_eval_loaders, vocab)
