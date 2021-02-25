@@ -21,8 +21,9 @@ META_DATA_DICT_PATH = os.path.expanduser("~/data/abstract_scenes/AbstractScenes_
 
 META_DATA_DICT = pd.read_csv(META_DATA_DICT_PATH, sep="\t", index_col=0, names=["id"]).T
 
-OBJECTS_ANIMALS = ["dog", "bear", "cat", "snake", "owl", "duck"]
-OBJECTS_INANIMATE = ["ball", "hat", "tree", "table", "sandbox", "slide"]
+# OBJECTS_ANIMALS = ["dog", "bear", "cat", "snake", "owl", "duck"]
+OBJECTS_ANIMALS = ["dog", "cat"]
+OBJECTS_INANIMATE = ["hamburger", "pizza"]
 
 VERBS_LOWER_BODY = ["sitting", "standing", "running", "jumping"]
 VERBS_UPPER_BODY = ["eating", "playing", "waving", "throwing"]
@@ -42,6 +43,8 @@ VOCAB_TO_OBJECT_NAMES = {
     "table": ["Table"],
     "sandbox": ["Sandbox"],
     "slide": ["Slide"],
+    "hamburger": ["Hamburger"],
+    "pizza": ["Pizza"],
 }
 
 
@@ -126,9 +129,9 @@ def generate_eval_set_agent_patient(image_ids, meta_data, images, captions, voca
                     target_sentence = " ".join(decoded_caption)
                     distractor_sentence = " ".join(distractor)
                     samples.append({"img_id": img_id, "target_sentence": target_sentence, "distractor_sentence": distractor_sentence})
-                    print(f"{img_id},{target_sentence},{distractor_sentence}")
+                    # print(f"{img_id},{target_sentence},{distractor_sentence}")
 
-                    show_image(images[str(img_id)])
+                    # show_image(images[str(img_id)])
     data = pd.DataFrame(samples)
     return data
 
