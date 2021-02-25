@@ -1,0 +1,429 @@
+img_id,target_sentence,distractor_sentence
+10002,jenny is happy to see mike,mike is happy to see jenny
+10004,mike is throwing the basketball to jenny,jenny is throwing the basketball to mike
+1003,jenny is waving to mike,mike is waving to jenny
+1033,mike is <unk> jenny to play baseball,jenny is <unk> mike to play baseball
+1047,jenny is mad that mike is not coming to eat with her,mike is mad that jenny is not coming to eat with her
+1079,mike is running toward jenny,jenny is running toward mike
+1079,mike is happy but jenny is crying,jenny is happy but mike is crying
+108,mike kicked the football too far for jenny to catch it,jenny kicked the football too far for mike to catch it
+1082,jenny is looking for mike,mike is looking for jenny
+1103,jenny is surprised mike <unk> with the dog,mike is surprised jenny <unk> with the dog
+112,mike is kicking the ball to jenny,jenny is kicking the ball to mike
+1123,mike is throwing a baseball to jenny,jenny is throwing a baseball to mike
+1123,mike threw the ball to jenny,jenny threw the ball to mike
+1208,mike looks angry at jenny,jenny looks angry at mike
+1208,mike is looking angrily at jenny,jenny is looking angrily at mike
+1270,mike is standing by jenny,jenny is standing by mike
+1272,mike is very happy with jenny,jenny is very happy with mike
+1276,jenny is excited that she is going to play with mike today,mike is excited that she is going to play with jenny today
+1301,mike is sharing a pizza with jenny,jenny is sharing a pizza with mike
+1301,jenny is happy to see mike,mike is happy to see jenny
+1301,mike is bringing jenny pizza,jenny is bringing mike pizza
+1320,jenny is looking for mike,mike is looking for jenny
+1371,mike kicked jenny,jenny kicked mike
+1423,mike kicked the ball to jenny,jenny kicked the ball to mike
+1478,mike is waving to jenny,jenny is waving to mike
+1478,mike asks jenny if she has seen his dog,jenny asks mike if she has seen his dog
+1562,mike is happy but jenny is surprised,jenny is happy but mike is surprised
+1594,jenny thinks mike is in <unk>,mike thinks jenny is in <unk>
+164,jenny wants to help mike up,mike wants to help jenny up
+1648,jenny tries to stop mike,mike tries to stop jenny
+1731,jenny <unk> her four balloons to mike,mike <unk> her four balloons to jenny
+1731,mike is near jenny,jenny is near mike
+1739,jenny is talking to mike about her dog,mike is talking to jenny about her dog
+1752,jenny is kicking the soccer ball to mike,mike is kicking the soccer ball to jenny
+1753,mike was happy jenny kicked the ball so far,jenny was happy mike kicked the ball so far
+1780,mike looks angry because jenny is hitting him,jenny looks angry because mike is hitting him
+1785,mike is sitting by jenny,jenny is sitting by mike
+1834,mike is laughing at jenny,jenny is laughing at mike
+1844,mike is beside jenny,jenny is beside mike
+1881,jenny is in front of mike,mike is in front of jenny
+1937,jenny is waiving at mike,mike is waiving at jenny
+1955,mike found jenny in the woods,jenny found mike in the woods
+1955,jenny is happy to see mike,mike is happy to see jenny
+1955,jenny sits in front of mike,mike sits in front of jenny
+1957,mike offers jenny a pirate hat,jenny offers mike a pirate hat
+1961,mike is angry at jenny,jenny is angry at mike
+2012,jenny is running away from mike,mike is running away from jenny
+2070,jenny brought mike a hamburger,mike brought jenny a hamburger
+2070,jenny saw mike by the slide,mike saw jenny by the slide
+2070,mike is mad at jenny,jenny is mad at mike
+2076,mike is mad at jenny,jenny is mad at mike
+2077,mike is angry with jenny,jenny is angry with mike
+2226,jenny calls mike to come eat lunch,mike calls jenny to come eat lunch
+224,mike is excited to see jenny,jenny is excited to see mike
+224,mike is running towards jenny,jenny is running towards mike
+226,jenny wants to play soccer with mike,mike wants to play soccer with jenny
+2282,mike is angry because the bear scared jenny,jenny is angry because the bear scared mike
+2330,jenny kicks the soccer ball to mike,mike kicks the soccer ball to jenny
+2330,mike calls jenny to kick the soccer ball to him,jenny calls mike to kick the soccer ball to him
+2336,mike threw a frisbee to jenny,jenny threw a frisbee to mike
+2359,jenny is mad at mike,mike is mad at jenny
+238,jenny is throwing a <unk> to mike,mike is throwing a <unk> to jenny
+2483,jenny is sitting beside mike,mike is sitting beside jenny
+2490,jenny looks mad at mike,mike looks mad at jenny
+2518,jenny is talking to mike,mike is talking to jenny
+2518,jenny is laughing at mike,mike is laughing at jenny
+2535,jenny is behind mike,mike is behind jenny
+2602,jenny waves hello to mike,mike waves hello to jenny
+2602,jenny is waving at mike,mike is waving at jenny
+2604,jenny is about to throw the ball to mike,mike is about to throw the ball to jenny
+2617,jenny is crying because mike is hurt,mike is crying because jenny is hurt
+2617,jenny is sad that mike hurt himself,mike is sad that jenny hurt himself
+263,mike is standing by jenny,jenny is standing by mike
+2646,mike threw the frisbee to jenny,jenny threw the frisbee to mike
+2718,mike is kicking the soccer ball away from jenny,jenny is kicking the soccer ball away from mike
+2718,mike doesnt want to play soccer with jenny,jenny doesnt want to play soccer with mike
+2777,mike is very happy with jenny,jenny is very happy with mike
+278,jenny is throwing the ball to mike,mike is throwing the ball to jenny
+2844,jenny waves hello to mike,mike waves hello to jenny
+2845,mike is also mad that jenny lost the kite,jenny is also mad that mike lost the kite
+2911,mike kicked the football to jenny,jenny kicked the football to mike
+2934,mike warns jenny about the fire,jenny warns mike about the fire
+2935,mike is very mad at jenny,jenny is very mad at mike
+2937,jenny kicked the ball to mike,mike kicked the ball to jenny
+2937,mike is angry because jenny did not throw the ball,jenny is angry because mike did not throw the ball
+2988,jenny is warning mike,mike is warning jenny
+3017,jenny is watching mike play pirates,mike is watching jenny play pirates
+312,mike is happy for jenny,jenny is happy for mike
+3161,mike is throwing the frisbee to jenny,jenny is throwing the frisbee to mike
+3161,jenny is waving at mike,mike is waving at jenny
+3179,jenny is running away from mike,mike is running away from jenny
+3179,mike is laughing at jenny,jenny is laughing at mike
+328,jenny brought mike a pie,mike brought jenny a pie
+3287,mike is scared of a snake that sneaks behind jenny,jenny is scared of a snake that sneaks behind mike
+3287,mike yells for jenny to be <unk> of the snake behind her,jenny yells for mike to be <unk> of the snake behind her
+3369,jenny is waving at mike,mike is waving at jenny
+3373,jenny throws the football to mike,mike throws the football to jenny
+3411,mike is helping jenny stand back up,jenny is helping mike stand back up
+3411,mike is helping jenny,jenny is helping mike
+3412,mike is standing next to jenny,jenny is standing next to mike
+3464,mike is running to help jenny,jenny is running to help mike
+3473,jenny is sitting by mike,mike is sitting by jenny
+3473,jenny goes to the park with mike <unk> day,mike goes to the park with jenny <unk> day
+3495,mike is sharing his burger with jenny,jenny is sharing his burger with mike
+3495,jenny wants mike to run away,mike wants jenny to run away
+3513,jenny is waving at mike,mike is waving at jenny
+3535,mike laughs at jenny,jenny laughs at mike
+3547,jenny is running toward mike,mike is running toward jenny
+3547,mike is near jenny,jenny is near mike
+3563,mike threw the frisbee to jenny,jenny threw the frisbee to mike
+3563,mike is throwing a frisbee to jenny,jenny is throwing a frisbee to mike
+3667,jenny is mad at mike for blocking the <unk>,mike is mad at jenny for blocking the <unk>
+3669,mike is telling jenny that it will rain,jenny is telling mike that it will rain
+3670,jenny is standing across from mike,mike is standing across from jenny
+3681,jenny is throwing the football to mike,mike is throwing the football to jenny
+3729,jenny is throwing the ball to mike,mike is throwing the ball to jenny
+3731,mike is very angry with jenny,jenny is very angry with mike
+3733,mike is hold jenny hand,jenny is hold mike hand
+3828,jenny is running toward mike,mike is running toward jenny
+3872,mike is trying to stop jenny,jenny is trying to stop mike
+3880,mike is running to jenny,jenny is running to mike
+3880,mike comes to talk to jenny,jenny comes to talk to mike
+3884,mike is standing next to jenny,jenny is standing next to mike
+3885,mike is running to see if jenny is hurt,jenny is running to see if mike is hurt
+3894,mike threw a football to jenny,jenny threw a football to mike
+3895,jenny throws the football to mike,mike throws the football to jenny
+3950,jenny is sitting next to mike,mike is sitting next to jenny
+397,jenny wants mike to play with her,mike wants jenny to play with her
+4007,mike waves to jenny,jenny waves to mike
+4078,jenny wants mike to share the bat,mike wants jenny to share the bat
+4078,jenny is mad at mike,mike is mad at jenny
+4083,jenny is kicking the football to mike,mike is kicking the football to jenny
+4097,mike is in front of jenny,jenny is in front of mike
+4097,jenny is sad as mike kicks the snake,mike is sad as jenny kicks the snake
+4106,jenny is touching mike,mike is touching jenny
+4106,mike is looking at jenny,jenny is looking at mike
+4282,mike is telling jenny to get off the swing,jenny is telling mike to get off the swing
+4311,jenny is camping with mike,mike is camping with jenny
+4367,a laughing jenny runs towards mike,a laughing mike runs towards jenny
+4369,mike is in front of jenny,jenny is in front of mike
+4399,jenny is cheering mike,mike is cheering jenny
+4428,mike is showing jenny the campfire,jenny is showing mike the campfire
+4473,mike is waving to jenny,jenny is waving to mike
+4475,jenny is mad at mike,mike is mad at jenny
+4475,mike is waving at jenny,jenny is waving at mike
+4492,jenny is throwing mike the ball,mike is throwing jenny the ball
+4543,mike is waving to jenny,jenny is waving to mike
+4543,mike is waving to jenny,jenny is waving to mike
+4551,jenny offers the pail of sand to mike,mike offers the pail of sand to jenny
+4551,mike is <unk> that jenny is giving him the pail of sand,jenny is <unk> that mike is giving him the pail of sand
+4564,mike is mad at jenny,jenny is mad at mike
+4564,jenny is running to mike,mike is running to jenny
+4570,jenny is waving to mike,mike is waving to jenny
+4570,jenny is waving her hand to mike,mike is waving her hand to jenny
+4617,mike is sad because jenny is trying to take his snake,jenny is sad because mike is trying to take his snake
+4675,jenny does not want mike to be a pirate,mike does not want jenny to be a pirate
+4712,jenny is offering mike pizza,mike is offering jenny pizza
+4755,jenny is throwing a ball to mike,mike is throwing a ball to jenny
+4810,mike got upset with jenny,jenny got upset with mike
+4810,jenny is throwing the ball to mike,mike is throwing the ball to jenny
+4817,jenny tossed the ball to mike,mike tossed the ball to jenny
+4817,jenny is worried that mike might not catch the ball,mike is worried that jenny might not catch the ball
+4830,jenny runs to see if mike is <unk>,mike runs to see if jenny is <unk>
+4845,mike is running away from jenny,jenny is running away from mike
+4845,jenny wants mike to play soccer with her,mike wants jenny to play soccer with her
+4845,mike is angry that jenny will not play with him,jenny is angry that mike will not play with him
+4886,mike is near jenny,jenny is near mike
+4888,mike wont let jenny have the pizza,jenny wont let mike have the pizza
+4908,mike is offering jenny some pie,jenny is offering mike some pie
+4924,mike is waving to jenny,jenny is waving to mike
+5016,mike wants to play with jenny,jenny wants to play with mike
+5034,mike is angry that jenny saw his pie,jenny is angry that mike saw his pie
+5053,mike kicked the ball to jenny,jenny kicked the ball to mike
+5053,mike is kicking the ball to jenny,jenny is kicking the ball to mike
+5060,mike is angry with jenny,jenny is angry with mike
+5060,jenny is worried about mike,mike is worried about jenny
+5060,mike is angry with jenny,jenny is angry with mike
+5067,mike wants to dance with jenny,jenny wants to dance with mike
+5070,mike feels sad for jenny,jenny feels sad for mike
+5077,mike kicked the soccer ball to jenny,jenny kicked the soccer ball to mike
+5096,jenny is running towards mike,mike is running towards jenny
+5102,jenny made a pizza for mike,mike made a pizza for jenny
+5107,jenny wants mike to play ball with her,mike wants jenny to play ball with her
+5107,jenny is throwing a ball at mike,mike is throwing a ball at jenny
+5128,mike is looking at jenny,jenny is looking at mike
+5128,jenny is smiling at mike,mike is smiling at jenny
+5143,mike wanted jenny to throw him the hamburger,jenny wanted mike to throw him the hamburger
+5149,jenny is bringing a hamburger to mike,mike is bringing a hamburger to jenny
+5155,mike is <unk> with jenny being scared,jenny is <unk> with mike being scared
+5205,mike is throwing a frisbee to jenny,jenny is throwing a frisbee to mike
+5208,mike throws a frisbee to jenny,jenny throws a frisbee to mike
+5232,jenny is running away from mike,mike is running away from jenny
+5233,jenny is running away from mike,mike is running away from jenny
+5233,jenny is running away from mike,mike is running away from jenny
+5328,mike is helping jenny up,jenny is helping mike up
+5330,mike is scared to hold hands with jenny,jenny is scared to hold hands with mike
+5330,jenny just wants to bring mike to the swings,mike just wants to bring jenny to the swings
+5378,mike puts his hands up to show jenny where he is,jenny puts his hands up to show mike where he is
+5384,mike is running toward jenny,jenny is running toward mike
+5393,jenny wants mike to play baseball,mike wants jenny to play baseball
+5393,jenny wants to cheer mike up,mike wants to cheer jenny up
+5393,jenny is throwing a baseball to mike,mike is throwing a baseball to jenny
+5394,jenny wants mike to play soccer with her,mike wants jenny to play soccer with her
+5413,jenny seems angry with mike,mike seems angry with jenny
+5413,mike is happy to see jenny,jenny is happy to see mike
+5423,jenny is smiling at mike,mike is smiling at jenny
+5427,mike kicked that ball over jenny,jenny kicked that ball over mike
+5427,jenny is waving at mike,mike is waving at jenny
+5440,mike throws the ball at jenny,jenny throws the ball at mike
+5448,mike is happy but jenny is sad,jenny is happy but mike is sad
+5500,mike threw the football to jenny,jenny threw the football to mike
+5500,jenny is happy to see mike,mike is happy to see jenny
+5500,mike threw the football to jenny,jenny threw the football to mike
+5529,mike hits a baseball to jenny,jenny hits a baseball to mike
+5537,jenny is offering mike some pizza,mike is offering jenny some pizza
+5634,mike offered jenny a pie to make her happy,jenny offered mike a pie to make her happy
+5690,mike is waving to jenny,jenny is waving to mike
+5690,jenny is running towards mike,mike is running towards jenny
+5690,mike is waiting for jenny to come swing,jenny is waiting for mike to come swing
+5690,jenny is running to mike,mike is running to jenny
+5690,mike is waving to jenny,jenny is waving to mike
+5741,jenny wants to give mike a hot dog,mike wants to give jenny a hot dog
+5781,jenny is worried that mike dropped the pizza,mike is worried that jenny dropped the pizza
+5793,jenny is mad at mike,mike is mad at jenny
+580,mike is kicking the soccer ball to jenny,jenny is kicking the soccer ball to mike
+580,mike is kicking the soccer ball to jenny,jenny is kicking the soccer ball to mike
+5805,jenny is mad at mike,mike is mad at jenny
+5823,jenny waves to mike,mike waves to jenny
+5831,mike is waving at jenny,jenny is waving at mike
+5831,jenny started crying when she saw mike,mike started crying when she saw jenny
+5831,jenny is standing by mike,mike is standing by jenny
+5832,mike kicks close to jenny,jenny kicks close to mike
+5876,jenny is running to mike,mike is running to jenny
+5892,jenny is angry with mike for not playing with her,mike is angry with jenny for not playing with her
+5892,jenny is making a mad face at mike,mike is making a mad face at jenny
+5984,jenny is sad mike wont play with her,mike is sad jenny wont play with her
+6,mike kicked the soccer ball to jenny,jenny kicked the soccer ball to mike
+6,jenny mike are playing soccer together,mike jenny are playing soccer together
+6,mike is happy to be playing with his friend jenny again,jenny is happy to be playing with his friend mike again
+603,jenny is ready to pitch to mike,mike is ready to pitch to jenny
+6067,mike <unk> jenny to play in the sandbox,jenny <unk> mike to play in the sandbox
+6078,jenny is worried mike is going to run into the campfire,mike is worried jenny is going to run into the campfire
+6080,jenny is cheering mike on while he kicks the ball,mike is cheering jenny on while he kicks the ball
+6084,jenny is waving at mike,mike is waving at jenny
+6084,mike is kicking the ball to jenny,jenny is kicking the ball to mike
+6122,mike is sad but jenny is happy,jenny is sad but mike is happy
+6135,mike is walking to jenny,jenny is walking to mike
+6141,jenny is laughing at mike,mike is laughing at jenny
+6160,mike offers jenny the <unk>,jenny offers mike the <unk>
+6160,jenny is mad at mike,mike is mad at jenny
+6162,jenny wants mike to throw the ball to her,mike wants jenny to throw the ball to her
+6162,jenny is running to mike,mike is running to jenny
+6169,jenny looks upset at mike,mike looks upset at jenny
+6170,jenny is kicking a football to mike,mike is kicking a football to jenny
+6175,jenny is kicking the football to mike,mike is kicking the football to jenny
+6223,mike is standing by jenny,jenny is standing by mike
+6226,mike is helping jenny get up,jenny is helping mike get up
+625,mike is mad at jenny,jenny is mad at mike
+6343,jenny is waving to mike,mike is waving to jenny
+6344,jenny thinks mike is having fun,mike thinks jenny is having fun
+6344,jenny waves at mike,mike waves at jenny
+6348,jenny shows mike a hot air balloon,mike shows jenny a hot air balloon
+6361,mike is happy to see jenny,jenny is happy to see mike
+6381,jenny is running towards mike,mike is running towards jenny
+6392,jenny is waving at mike,mike is waving at jenny
+6415,jenny is shouting at mike,mike is shouting at jenny
+6444,jenny wants mike to play with her,mike wants jenny to play with her
+6445,jenny is standing across from mike,mike is standing across from jenny
+6445,jenny is near mike,mike is near jenny
+6533,jenny is angry at mike,mike is angry at jenny
+6551,jenny is sitting in the sandbox with mike,mike is sitting in the sandbox with jenny
+6561,jenny is happy to see mike,mike is happy to see jenny
+6565,mike is running to jenny,jenny is running to mike
+6598,mike throws the basketball to jenny,jenny throws the basketball to mike
+6605,jenny is kicking the ball to mike,mike is kicking the ball to jenny
+6615,mike is angry at jenny,jenny is angry at mike
+6633,mike is upset at jenny for yelling about the <unk> pie,jenny is upset at mike for yelling about the <unk> pie
+6636,mike looks angry at jenny,jenny looks angry at mike
+6667,jenny is running towards mike to help him,mike is running towards jenny to help him
+6667,jenny is running to mike,mike is running to jenny
+6667,jenny wants to play basketball with mike,mike wants to play basketball with jenny
+6679,mike is waving to jenny,jenny is waving to mike
+6679,mike waves at jenny,jenny waves at mike
+67,jenny is telling mike a story,mike is telling jenny a story
+6737,jenny is waving at mike,mike is waving at jenny
+6761,mike doesnt want jenny to kick the snake,jenny doesnt want mike to kick the snake
+6775,jenny is mad but mike is happy,mike is mad but jenny is happy
+6843,mike is waving at jenny,jenny is waving at mike
+6843,jenny is waving at mike,mike is waving at jenny
+6872,jenny is giving mike a pizza,mike is giving jenny a pizza
+6872,jenny is carrying the pizza to mike,mike is carrying the pizza to jenny
+6902,mike is happy to see jenny,jenny is happy to see mike
+6958,mike is mad at jenny,jenny is mad at mike
+6972,mike is kicking the football to jenny,jenny is kicking the football to mike
+6972,jenny looks afraid of the bear behind mike,mike looks afraid of the bear behind jenny
+6993,mike kicks a soccer ball at jenny,jenny kicks a soccer ball at mike
+7056,mike throws jenny the frisbee,jenny throws mike the frisbee
+7056,jenny is happy to play with mike,mike is happy to play with jenny
+7060,mike is watching jenny while jumping,jenny is watching mike while jumping
+7060,mike is afraid that jenny will fall,jenny is afraid that mike will fall
+7177,jenny kicked the football to mike,mike kicked the football to jenny
+7177,jenny is near mike,mike is near jenny
+7177,mike is near jenny,jenny is near mike
+718,mike is angry that jenny has the ball,jenny is angry that mike has the ball
+7251,mike is sitting by jenny,jenny is sitting by mike
+7266,mike tried to be happy for jenny but was really sad because he wanted the frisbee,jenny tried to be happy for mike but was really sad because he wanted the frisbee
+735,mike is surprised at jenny,jenny is surprised at mike
+7375,mike is sad jenny kicks the dog,jenny is sad mike kicks the dog
+7386,jenny is throwing the ball to mike,mike is throwing the ball to jenny
+7392,mike is cheering on jenny,jenny is cheering on mike
+7392,jenny is giving mike balloons,mike is giving jenny balloons
+7394,jenny is throwing a ball to mike,mike is throwing a ball to jenny
+7415,mike is in front of jenny,jenny is in front of mike
+7415,jenny is angry at mike,mike is angry at jenny
+7415,mike is happy that jenny is sharing a pie with him,jenny is happy that mike is sharing a pie with him
+7423,jenny is running up to mike,mike is running up to jenny
+7423,jenny is running towards mike,mike is running towards jenny
+7480,jenny is waving at mike,mike is waving at jenny
+7480,mike is playing ball with jenny,jenny is playing ball with mike
+7481,mike kicked the ball to jenny,jenny kicked the ball to mike
+7481,mike kicks jenny the soccer ball,jenny kicks mike the soccer ball
+7481,jenny is on front of mike,mike is on front of jenny
+7518,mike is throwing a toy to jenny,jenny is throwing a toy to mike
+7518,jenny is running toward mike,mike is running toward jenny
+7542,jenny will not share her drink with mike,mike will not share her drink with jenny
+7542,mike is mad at jenny,jenny is mad at mike
+7575,jenny kicks the soccer ball at mike,mike kicks the soccer ball at jenny
+7575,mike was happy jenny was playing soccer,jenny was happy mike was playing soccer
+7595,mike gets scared at something behind jenny,jenny gets scared at something behind mike
+7617,mike wants jenny to get up now,jenny wants mike to get up now
+7617,mike is near jenny,jenny is near mike
+7637,mike is mad at jenny,jenny is mad at mike
+7637,jenny is laughing at mike,mike is laughing at jenny
+7673,mike is upset because jenny gave his lunch to the dog,jenny is upset because mike gave his lunch to the dog
+7695,jenny is crying because mike is mad,mike is crying because jenny is mad
+770,mike is cheering jenny on,jenny is cheering mike on
+7764,mike kicks the ball to jenny,jenny kicks the ball to mike
+7855,jenny offers mike her viking hat,mike offers jenny her viking hat
+7855,jenny is giving mike a helmet,mike is giving jenny a helmet
+7869,jenny is mad at mike,mike is mad at jenny
+7960,jenny is sitting on the grass watching mike,mike is sitting on the grass watching jenny
+8013,jenny is waving at mike,mike is waving at jenny
+8020,jenny is worried that mike is hurt,mike is worried that jenny is hurt
+8022,jenny is near mike,mike is near jenny
+8081,jenny is waving at mike,mike is waving at jenny
+8093,mike is standing beside jenny,jenny is standing beside mike
+811,mike is near jenny,jenny is near mike
+8130,mike tossed the beach ball to jenny,jenny tossed the beach ball to mike
+8173,jenny is scared of mike,mike is scared of jenny
+8173,mike is angrily running towards jenny,jenny is angrily running towards mike
+8180,jenny is mad at mike,mike is mad at jenny
+8196,mike waves hi to jenny as she runs by,jenny waves hi to mike as she runs by
+8214,mike is running from jenny,jenny is running from mike
+8268,mike waved to jenny by the grill,jenny waved to mike by the grill
+8268,jenny wanted to eat a hamburger mike was making,mike wanted to eat a hamburger jenny was making
+8286,mike is throwing the ball to jenny,jenny is throwing the ball to mike
+8358,mike is afraid the ball will hit jenny,jenny is afraid the ball will hit mike
+8360,mike is sharing pizza with jenny,jenny is sharing pizza with mike
+8360,jenny is surprised that mike is sharing,mike is surprised that jenny is sharing
+8383,jenny is telling mike to <unk> down,mike is telling jenny to <unk> down
+8404,mike is upset that jenny will not give the cap back,jenny is upset that mike will not give the cap back
+8409,jenny is kicking out at mike,mike is kicking out at jenny
+8409,mike is waving to jenny,jenny is waving to mike
+8429,jenny is smaller than mike,mike is smaller than jenny
+8438,mike kicked the soccer ball to jenny,jenny kicked the soccer ball to mike
+8519,<unk> mike or jenny notice the rocket flying behind them,<unk> jenny or mike notice the rocket flying behind them
+8563,mike is waving at jenny,jenny is waving at mike
+8583,mike is near jenny,jenny is near mike
+8600,jenny is running to mike,mike is running to jenny
+8627,jenny baked mike a pie,mike baked jenny a pie
+8627,jenny is bringing mike a pie,mike is bringing jenny a pie
+8635,jenny kicked mike in the <unk>,mike kicked jenny in the <unk>
+8648,jenny throws a frisbee at mike,mike throws a frisbee at jenny
+8713,jenny is giving mike the pie,mike is giving jenny the pie
+8789,jenny <unk> mike had a head like a hamburger,mike <unk> jenny had a head like a hamburger
+8801,mike is sad that jenny will not play ball with him,jenny is sad that mike will not play ball with him
+888,jenny is mad at mike,mike is mad at jenny
+8947,mike is giving jenny a pie,jenny is giving mike a pie
+8947,jenny is very happy to see mike,mike is very happy to see jenny
+8947,mike is sharing a pie with jenny,jenny is sharing a pie with mike
+8995,jenny tossed the basketball to mike,mike tossed the basketball to jenny
+8995,mike is upset with jenny,jenny is upset with mike
+9014,jenny is going to throw the pie at mike,mike is going to throw the pie at jenny
+9071,jenny is happy that mike made pizza,mike is happy that jenny made pizza
+9075,jenny is running toward mike,mike is running toward jenny
+9117,jenny is running to mike,mike is running to jenny
+9117,jenny is <unk> at mike,mike is <unk> at jenny
+9172,mike cheers jenny on,jenny cheers mike on
+9172,jenny is kicking the ball to mike,mike is kicking the ball to jenny
+9179,jenny is kicking a ball to mike,mike is kicking a ball to jenny
+9180,mike is hitting the ball to jenny,jenny is hitting the ball to mike
+9180,mike wishes he could play as good as jenny,jenny wishes he could play as good as mike
+920,mike wants jenny to share the soda,jenny wants mike to share the soda
+9223,mike tells jenny the owl has <unk>,jenny tells mike the owl has <unk>
+9228,jenny is waving to mike,mike is waving to jenny
+9243,jenny threw the ball to mike,mike threw the ball to jenny
+9250,jenny is waving at mike,mike is waving at jenny
+9260,mike is throwing the ball to jenny,jenny is throwing the ball to mike
+9266,mike just threw the ball to jenny,jenny just threw the ball to mike
+9269,mike is throwing the ball to jenny,jenny is throwing the ball to mike
+9269,mike threw the ball to jenny,jenny threw the ball to mike
+9396,jenny is talking to mike,mike is talking to jenny
+9523,mike is standing by jenny,jenny is standing by mike
+9533,mike is talking to jenny in the yard,jenny is talking to mike in the yard
+9602,mike is kicking the ball to jenny,jenny is kicking the ball to mike
+9602,mike is kicking the ball to jenny,jenny is kicking the ball to mike
+9606,mike kicks the beachball to jenny,jenny kicks the beachball to mike
+9637,mike is kicking a beach ball to jenny,jenny is kicking a beach ball to mike
+9646,mike is upset at jenny,jenny is upset at mike
+9646,mike is mad at jenny,jenny is mad at mike
+9650,jenny throws the soccer ball to mike,mike throws the soccer ball to jenny
+9650,jenny is throwing the soccer ball to mike,mike is throwing the soccer ball to jenny
+970,mike is running fast near jenny,jenny is running fast near mike
+9704,jenny threw a basketball to mike,mike threw a basketball to jenny
+9705,mike threw the basketball to jenny,jenny threw the basketball to mike
+9774,jenny runs towards mike,mike runs towards jenny
+98,jenny wants to play tennis with mike,mike wants to play tennis with jenny
+98,mike is happy to see jenny,jenny is happy to see mike
+9814,jenny is mad at mike,mike is mad at jenny
+9830,mike s mad at jenny because he <unk> to play baseball,jenny s mad at mike because he <unk> to play baseball
+9830,mike showed jenny his baseball,jenny showed mike his baseball
+984,mike thinks its funny jenny is scared,jenny thinks its funny mike is scared
+9847,jenny kicks mike the soccer ball,mike kicks jenny the soccer ball
+9913,jenny looks happy playing with mike,mike looks happy playing with jenny
+9944,jenny is waving her arms angrily at mike,mike is waving her arms angrily at jenny
+9955,mike is kicking the ball to jenny,jenny is kicking the ball to mike
+9957,jenny is waving to mike,mike is waving to jenny
+9998,mike threw the foot ball too jenny,jenny threw the foot ball too mike
