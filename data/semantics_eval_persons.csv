@@ -6,7 +6,8 @@ img_id,target_sentence,distractor_sentence
 1069,mike is wearing a blue cap,jenny is wearing a blue cap
 1082,jenny is waving at the owl,mike is waving at the owl
 1082,jenny took her cat in the woods,mike took his cat in the woods
-1082,jenny is looking for mike,mike is looking for jenny
+1082,jenny is looking for mike,mike is looking for mike
+1082,jenny is looking for mike,jenny is looking for jenny
 1113,mike is wearing a hat,jenny is wearing a hat
 1113,mike kicked the soccer ball,jenny kicked the soccer ball
 1113,mike is holding a football,jenny is holding a football
@@ -22,7 +23,8 @@ img_id,target_sentence,distractor_sentence
 1283,mike is nowhere to be found,jenny is nowhere to be found
 1320,jenny offers her crown to the owl,mike offers his crown to the owl
 1320,jenny is standing next to a tree,mike is standing next to a tree
-1320,jenny is looking for mike,mike is looking for jenny
+1320,jenny is looking for mike,mike is looking for mike
+1320,jenny is looking for mike,jenny is looking for jenny
 1324,jenny is pretending to be a queen,mike is pretending to be a queen
 1324,jenny is wearing a crown,mike is wearing a crown
 1324,jenny is smiling at the owl,mike is smiling at the owl
@@ -61,7 +63,6 @@ img_id,target_sentence,distractor_sentence
 1905,jenny is chasing the soccer ball,mike is chasing the soccer ball
 1905,jenny is playing soccer,mike is playing soccer
 1905,jenny is afraid the ball is getting away,mike is afraid the ball is getting away
-2043,the dog wants to eat jennys pie,the dog wants to eat mikes pie
 2043,jenny has a pink bucket,mike has a pink bucket
 2043,jenny is running away with a bucket,mike is running away with a bucket
 2050,jenny is trying to play tennis in the rain,mike is trying to play tennis in the rain
@@ -87,8 +88,6 @@ img_id,target_sentence,distractor_sentence
 213,jenny is standing next to a tree,mike is standing next to a tree
 213,jenny is standing next to an owl,mike is standing next to an owl
 2174,mike is grilling outside,jenny is grilling outside
-2174,the duck wants mikes food,the duck wants jennys food
-2174,the balloon man wants mikes food too,the balloon man wants jennys food too
 2174,mike is wearing a baseball cap,jenny is wearing a baseball cap
 2174,mike is holding a hamburger and ketchup,jenny is holding a hamburger and ketchup
 219,jenny is wearing a blue hat,mike is wearing a blue hat
@@ -128,8 +127,6 @@ img_id,target_sentence,distractor_sentence
 2670,mike waved to the duck,jenny waved to the duck
 2670,mike wanted to kick the beach ball,jenny wanted to kick the beach ball
 2672,mike says hello to the duck,jenny says hello to the duck
-2672,the hot sun feels good on mikes back,the hot sun feels good on jennys back
-2672,mikes <unk> is dark because of the sun,jennys <unk> is dark because of the sun
 2672,mike is happy to see the duck,jenny is happy to see the duck
 2672,the duck is between mike and the sandbox,the duck is between jenny and the sandbox
 2677,mike is wearing a police hat,jenny is wearing a police hat
@@ -148,12 +145,11 @@ img_id,target_sentence,distractor_sentence
 2804,mike is surprised to see the bear,jenny is surprised to see the bear
 2804,mike is standing beside the picnic table,jenny is standing beside the picnic table
 2834,jenny is holding balloons,mike is holding balloons
-2834,jenny wants the dog to play with her,mike wants the dog to play with her
+2834,jenny wants the dog to play with her,mike wants the dog to play with his
 2834,jenny is cooking lunch,mike is cooking lunch
 2834,jenny has colorful balloons,mike has colorful balloons
 2839,jenny is floating with the balloons,mike is floating with the balloons
 2839,jenny is wearing sunglasses,mike is wearing sunglasses
-2839,jennys dog is lost,mikes dog is lost
 2839,jenny is wearing sunglasses,mike is wearing sunglasses
 2839,jenny is holding some balloons,mike is holding some balloons
 2839,jenny is running towards the dog,mike is running towards the dog
@@ -202,14 +198,12 @@ img_id,target_sentence,distractor_sentence
 3656,mike is angry at the duck trying to take his hot dog,jenny is angry at the duck trying to take her hot dog
 3656,mike is wearing a hat,jenny is wearing a hat
 3656,mike is eating a hot dog,jenny is eating a hot dog
-3656,a duck is at mikes feet,a duck is at jennys feet
 3656,mike is wearing a colorful cap,jenny is wearing a colorful cap
 3713,mike is running away from the fire,jenny is running away from the fire
 3713,<unk> bear growls at mike,<unk> bear growls at jenny
 3713,the bear wants mike to catch the frisbee,the bear wants jenny to catch the frisbee
 3713,mike is scared of the bear,jenny is scared of the bear
 3713,mike is running,jenny is running
-3713,the bear has mikes frisbee,the bear has jennys frisbee
 3716,mike runs away in fear,jenny runs away in fear
 3716,mike is running away from the bear,jenny is running away from the bear
 3716,an airplane is flying above mike and the bear,an airplane is flying above jenny and the bear
@@ -221,7 +215,6 @@ img_id,target_sentence,distractor_sentence
 3817,mike is throwing the football,jenny is throwing the football
 3817,mike is at the playground alone,jenny is at the playground alone
 3817,mike is catching the football,jenny is catching the football
-3817,there is a smile on mikes face,there is a smile on jennys face
 3839,mike is sad because his ball rolled away,jenny is sad because her ball rolled away
 3839,mike is in the sandbox,jenny is in the sandbox
 3839,the bear wants to play with mike,the bear wants to play with jenny
@@ -230,7 +223,6 @@ img_id,target_sentence,distractor_sentence
 3972,the dog smiles at jenny,the dog smiles at mike
 3972,jenny is wearing a witch hat,mike is wearing a witch hat
 3972,it is raining on jenny,it is raining on mike
-3972,the dog is looking at jennys ball,the dog is looking at mikes ball
 4224,mike is kicking a beach ball,jenny is kicking a beach ball
 4224,mike is beside the tree,jenny is beside the tree
 4224,mike is running toward the sandbox,jenny is running toward the sandbox
@@ -330,13 +322,11 @@ img_id,target_sentence,distractor_sentence
 6182,jenny is sad that its raining,mike is sad that its raining
 6182,jenny is sitting next to the fire,mike is sitting next to the fire
 6182,jenny is sitting next to the rain,mike is sitting next to the rain
-6183,jennys fire is getting rained on,mikes fire is getting rained on
 6183,jenny is cooking hotdogs on the grill,mike is cooking hotdogs on the grill
 6183,jenny sees a helicopter in the sky,mike sees a helicopter in the sky
 6183,jenny is kneeling next to the fire,mike is kneeling next to the fire
 6323,mike is playing in the sandbox,jenny is playing in the sandbox
 6323,mike has a pink shovel and an orange frisbee,jenny has a pink shovel and an orange frisbee
-6323,mikes baseball is rolling away,jennys baseball is rolling away
 6323,mike is playing in the sandbox,jenny is playing in the sandbox
 6323,mike brought a frisbee to play with,jenny brought a frisbee to play with
 6323,mike left his baseball on the ground,jenny left her baseball on the ground
@@ -362,7 +352,6 @@ img_id,target_sentence,distractor_sentence
 6738,jenny plays in the sand,mike plays in the sand
 6738,mike is in the tent,jenny is in the tent
 6738,miss cat watches jenny,miss cat watches mike
-6882,the toy is wearing mikes cap,the toy is wearing jennys cap
 6882,mike threw the basketball in the sandbox,jenny threw the basketball in the sandbox
 6886,mike is wondering what is going on,jenny is wondering what is going on
 6930,mike is next to a <unk> fire,jenny is next to a <unk> fire
@@ -466,7 +455,6 @@ img_id,target_sentence,distractor_sentence
 9049,mike built a fire,jenny built a fire
 9233,there is an owl watching mike,there is an owl watching jenny
 9233,mike sees a football basketball and baseball glove,jenny sees a football basketball and baseball glove
-9233,mikes is ready to play,jennys is ready to play
 9233,mike is smiling at the owl,jenny is smiling at the owl
 9233,mike wants to play with the balls,jenny wants to play with the balls
 937,jenny is sad because of the rain,mike is sad because of the rain

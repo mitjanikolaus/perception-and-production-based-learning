@@ -1,4 +1,3 @@
-
 from __future__ import print_function
 
 import argparse
@@ -17,15 +16,23 @@ from torch.utils.data import DataLoader
 
 import egg.core as core
 from dataset import CaptionDataset, SemanticsEvalDataset
-from eval_semantics import eval_semantics_score
+from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
-from preprocess import IMAGES_FILENAME, CAPTIONS_FILENAME, VOCAB_FILENAME, MAX_CAPTION_LEN, \
-    DATA_PATH
-from utils import print_caption, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST, CHECKPOINT_PATH_IMAGE_CAPTIONING
+from preprocess import (
+    IMAGES_FILENAME,
+    CAPTIONS_FILENAME,
+    VOCAB_FILENAME,
+    MAX_CAPTION_LEN,
+    DATA_PATH,
+)
+from utils import (
+    print_caption,
+    CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
+    CHECKPOINT_PATH_IMAGE_CAPTIONING,
+    SEMANTICS_EVAL_FILES, SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING,
+)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
 
 PRINT_SAMPLE_CAPTIONS = 1
 
@@ -52,6 +59,35 @@ def print_sample_model_output(model, dataloader, vocab, num_captions=1):
     print_captions(captions, target_captions, image_ids, vocab, num_captions)
 
 
+def validate_model(
+    model, dataloader, print_images_loader, semantic_images_loaders, vocab
+):
+    print(f"Evaluating on {len(dataloader.dataset)} examples")
+
+    semantic_accuracies = {}
+
+    model.eval()
+    with torch.no_grad():
+        print_sample_model_output(
+            model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS
+        )
+        for name, semantic_images_loader in semantic_images_loaders.items():
+            acc = eval_semantics_score(model, semantic_images_loader, vocab)
+            print(f"Accuracy for {name}: {acc}")
+            semantic_accuracies[name] = acc
+
+        val_losses = []
+        for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
+            scores, decode_lengths, alphas = model(images, captions, caption_lengths)
+
+            loss = model.loss(scores, captions, decode_lengths, alphas)
+
+            val_losses.append(loss.mean().item())
+
+    model.train()
+    return np.mean(val_losses), semantic_accuracies
+
+
 def main(args):
     # create model checkpoint directory
     if not os.path.exists(os.path.dirname(CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)):
@@ -64,9 +100,7 @@ def main(args):
 
     train_loader = DataLoader(
         CaptionDataset(
-            DATA_PATH,
-            IMAGES_FILENAME["train"],
-            CAPTIONS_FILENAME["train"],
+            DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"],
         ),
         batch_size=args.batch_size,
         shuffle=True,
@@ -75,11 +109,7 @@ def main(args):
         collate_fn=CaptionDataset.pad_collate,
     )
     val_images_loader = torch.utils.data.DataLoader(
-        CaptionDataset(
-            DATA_PATH,
-            IMAGES_FILENAME["val"],
-            CAPTIONS_FILENAME["val"],
-        ),
+        CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"],),
         batch_size=args.batch_size,
         shuffle=True,
         num_workers=0,
@@ -87,13 +117,9 @@ def main(args):
         collate_fn=CaptionDataset.pad_collate,
     )
 
-    #TODO
+    # TODO
     print_captions_loader = torch.utils.data.DataLoader(
-        CaptionDataset(
-            DATA_PATH,
-            IMAGES_FILENAME["val"],
-            CAPTIONS_FILENAME["val"],
-        ),
+        CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"],),
         batch_size=1,
         shuffle=True,
         num_workers=0,
@@ -101,19 +127,22 @@ def main(args):
         collate_fn=CaptionDataset.pad_collate,
     )
 
-    semantic_test_images_loader = torch.utils.data.DataLoader(
-        SemanticsEvalDataset(DATA_PATH, IMAGES_FILENAME["test"], CAPTIONS_FILENAME["test"], "data/semantics_eval_persons.csv", vocab),
-        batch_size=1,
-        shuffle=True,
-        num_workers=0,
-        pin_memory=False,
-    )
+    semantics_eval_loaders = {
+        file: get_semantics_eval_dataloader(file, vocab) for file in SEMANTICS_EVAL_FILES
+    }
 
     word_embedding_size = 512
     visual_embedding_size = 512
     lstm_hidden_size = 512
     dropout = 0.2
-    model_image_captioning = ShowAttendAndTell(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN, dropout, fine_tune_resnet=args.fine_tune_resnet)
+    model_image_captioning = ShowAttendAndTell(
+        word_embedding_size,
+        lstm_hidden_size,
+        vocab,
+        MAX_CAPTION_LEN,
+        dropout,
+        fine_tune_resnet=args.fine_tune_resnet,
+    )
 
     # uses command-line parameters we passed to core.init
     optimizer = core.build_optimizer(model_image_captioning.parameters())
@@ -121,49 +150,60 @@ def main(args):
     model_image_captioning = model_image_captioning.to(device)
 
     def save_model(model, optimizer, best_val_loss, epoch, path):
-        torch.save({
-            'epoch': epoch,
-            'model_state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'loss': best_val_loss,
-        }, path)
-
-    def validate_model(model, dataloader, print_images_loader, semantic_images_loader):
-        print(f"Evaluating on {len(dataloader.dataset)} examples")
-        model.eval()
-        with torch.no_grad():
-            print_sample_model_output(model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS)
-            eval_semantics_score(model, semantic_images_loader, vocab)
-
-            val_losses = []
-            for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
-                scores, decode_lengths, alphas = model(images, captions, caption_lengths)
-
-                loss = model.loss(scores, captions, decode_lengths, alphas)
-
-                val_losses.append(loss.mean().item())
-
-        model.train()
-        return np.mean(val_losses)
+        torch.save(
+            {
+                "epoch": epoch,
+                "model_state_dict": model.state_dict(),
+                "optimizer_state_dict": optimizer.state_dict(),
+                "loss": best_val_loss,
+            },
+            path,
+        )
 
     best_val_loss = math.inf
     for epoch in range(args.n_epochs):
         losses = []
-        for batch_idx, (images, captions, caption_lengths, _) in enumerate(train_loader):
+        semantic_accuracies_over_time = []
+        for batch_idx, (images, captions, caption_lengths, _) in enumerate(
+            train_loader
+        ):
             if batch_idx % args.log_frequency == 0:
-                val_loss = validate_model(model_image_captioning, val_images_loader, print_captions_loader,
-                                          semantic_test_images_loader)
-                print(f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss}")
+                val_loss, semantic_accuracies = validate_model(
+                    model_image_captioning,
+                    val_images_loader,
+                    print_captions_loader,
+                    semantics_eval_loaders,
+                    vocab,
+                )
+                semantic_accuracies_over_time.append(semantic_accuracies)
+                pickle.dump(semantic_accuracies_over_time, open(SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING, "wb"))
+                print(
+                    f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss}"
+                )
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
-                    save_model(model_image_captioning, optimizer, best_val_loss, epoch,
-                               CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)
+                    save_model(
+                        model_image_captioning,
+                        optimizer,
+                        best_val_loss,
+                        epoch,
+                        CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
+                    )
                 else:
-                    save_model(model_image_captioning, optimizer, best_val_loss, epoch,
-                               CHECKPOINT_PATH_IMAGE_CAPTIONING)
+                    save_model(
+                        model_image_captioning,
+                        optimizer,
+                        best_val_loss,
+                        epoch,
+                        CHECKPOINT_PATH_IMAGE_CAPTIONING,
+                    )
+
+            model_image_captioning.train()
 
             # Forward pass
-            scores, decode_lengths, alphas = model_image_captioning(images, captions, caption_lengths)
+            scores, decode_lengths, alphas = model_image_captioning(
+                images, captions, caption_lengths
+            )
 
             loss = model_image_captioning.loss(scores, captions, decode_lengths, alphas)
             losses.append(loss.mean().item())
@@ -172,15 +212,34 @@ def main(args):
             loss.backward()
             optimizer.step()
 
-
-        val_loss = validate_model(model_image_captioning, val_images_loader, print_captions_loader, semantic_test_images_loader)
+        val_loss, semantic_accuracies = validate_model(
+            model_image_captioning,
+            val_images_loader,
+            print_captions_loader,
+            semantics_eval_loaders,
+            vocab,
+        )
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            save_model(model_image_captioning, optimizer, best_val_loss, epoch, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)
+            save_model(
+                model_image_captioning,
+                optimizer,
+                best_val_loss,
+                epoch,
+                CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
+            )
         else:
-            save_model(model_image_captioning, optimizer, best_val_loss, epoch, CHECKPOINT_PATH_IMAGE_CAPTIONING)
+            save_model(
+                model_image_captioning,
+                optimizer,
+                best_val_loss,
+                epoch,
+                CHECKPOINT_PATH_IMAGE_CAPTIONING,
+            )
 
-        print(f'End of epoch: {epoch} | train loss: {np.mean(losses)} | best val loss: {best_val_loss}\n\n')
+        print(
+            f"End of epoch: {epoch} | train loss: {np.mean(losses)} | best val loss: {best_val_loss}\n\n"
+        )
 
     core.close()
 
@@ -212,4 +271,3 @@ if __name__ == "__main__":
     print("Start training on device: ", device)
     args = get_args()
     main(args)
-

@@ -12,22 +12,44 @@ import matplotlib.pyplot as plt
 
 SPECIAL_CHARACTERS = [TOKEN_START, TOKEN_END, TOKEN_PADDING]
 
-CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST = os.path.join(Path.home(), "data/egg/visual_ref/checkpoints/image_captioning_best.pt")
-CHECKPOINT_PATH_IMAGE_CAPTIONING = os.path.join(Path.home(), "data/egg/visual_ref/checkpoints/image_captioning.pt")
+CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST = os.path.join(
+    Path.home(), "data/egg/visual_ref/checkpoints/image_captioning_best.pt"
+)
+CHECKPOINT_PATH_IMAGE_CAPTIONING = os.path.join(
+    Path.home(), "data/egg/visual_ref/checkpoints/image_captioning.pt"
+)
+SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING = os.path.join(
+    Path.home(), "data/egg/visual_ref/checkpoints/semantic_accuracies.p"
+)
+
+SEMANTICS_EVAL_FILES = [
+    "data/semantics_eval_persons.csv",
+    "data/semantics_eval_animals.csv",
+    "data/semantics_eval_inanimates.csv",
+    "data/semantics_eval_verbs_intransitive.csv",
+    "data/semantics_eval_agent_patient_filtered.csv",
+]
 
 
-def decode_caption(caption, vocab):
-    words = [vocab.itos[word] for word in caption if vocab.itos[word] not in SPECIAL_CHARACTERS]
-    return " ".join(words)
+def decode_caption(caption, vocab, join=True):
+    words = [
+        vocab.itos[word]
+        for word in caption
+        if vocab.itos[word] not in SPECIAL_CHARACTERS
+    ]
+    if join:
+        return " ".join(words)
+    else:
+        return words
 
 
 def print_caption(caption, vocab):
     caption = decode_caption(caption, vocab)
     print(caption)
 
+
 @dataclass
 class VisualRefLoggingStrategy(LoggingStrategy):
-
     def filtered_interaction(
         self,
         sender_input: Optional[torch.Tensor],
@@ -39,7 +61,12 @@ class VisualRefLoggingStrategy(LoggingStrategy):
         aux: Dict[str, torch.Tensor],
     ):
         # Store only image IDs but not data
-        target_image, distractor_image, target_image_id, distractor_image_id = sender_input
+        (
+            target_image,
+            distractor_image,
+            target_image_id,
+            distractor_image_id,
+        ) = sender_input
         filtered_sender_input = torch.stack((target_image_id, distractor_image_id))
 
         return Interaction(

@@ -25,7 +25,19 @@ from utils import decode_caption, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def eval_semantics_score(model, dataloader, vocab, debug=False):
+
+def get_semantics_eval_dataloader(eval_file, vocab):
+    return torch.utils.data.DataLoader(
+        SemanticsEvalDataset(DATA_PATH, IMAGES_FILENAME["test"], CAPTIONS_FILENAME["test"],
+                             eval_file, vocab),
+        batch_size=1,
+        shuffle=False,
+        num_workers=0,
+        pin_memory=False,
+    )
+
+
+def eval_semantics_score(model, dataloader, vocab, verbose=False):
     model.eval()
 
     accuracies = []
@@ -37,14 +49,14 @@ def eval_semantics_score(model, dataloader, vocab, debug=False):
             captions = torch.cat((target_caption, distractor_caption))
             caption_lengths = torch.tensor([target_caption.shape[1], distractor_caption.shape[1]])
 
-            if debug:
+            if verbose:
                 print(f"Target    : {decode_caption(target_caption[0], vocab)}")
                 print(f"Distractor: {decode_caption(distractor_caption[0], vocab)}")
 
             if isinstance(model, ShowAttendAndTell):
                 perplexities = model.perplexity(images, captions, caption_lengths)
 
-                if debug:
+                if verbose:
                     print(f"Perplexity target    : {perplexities[0]}")
                     print(f"Perplexity distractor: {perplexities[1]}")
 
@@ -60,7 +72,7 @@ def eval_semantics_score(model, dataloader, vocab, debug=False):
 
                 similarities = cosine_sim(images_embedded, captions_embedded)[0]
 
-                if debug:
+                if verbose:
                     print(f"Similarity target    : {similarities[0]}")
                     print(f"Similarity distractor: {similarities[1]}")
 
@@ -69,7 +81,7 @@ def eval_semantics_score(model, dataloader, vocab, debug=False):
                 else:
                     accuracies.append(0)
 
-    print(f"Semantics accuracy: {np.mean(accuracies)}")
+    return np.mean(accuracies)
 
 
 def main(args):
@@ -107,18 +119,11 @@ def main(args):
 
     model.load_state_dict(checkpoint["model_state_dict"])
 
-    # TODO fix for batching
-    test_images_loader = torch.utils.data.DataLoader(
-        SemanticsEvalDataset(DATA_PATH, IMAGES_FILENAME["test"], CAPTIONS_FILENAME["test"], args.eval_csv, vocab),
-        batch_size=1,
-        shuffle=True,
-        num_workers=0,
-        pin_memory=False,
-    )
+    test_images_loader = get_semantics_eval_dataloader(args.eval_csv, vocab)
 
     model = model.to(device)
 
-    eval_semantics_score(model, test_images_loader, vocab, debug=True)
+    eval_semantics_score(model, test_images_loader, vocab, verbose=True)
 
 
 

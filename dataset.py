@@ -101,7 +101,6 @@ class SemanticsEvalDataset(Dataset):
     PyTorch Dataset that provides sets of target and distractor images for syntax learning evaluation
     """
 
-
     def __init__(
         self,
         data_folder,
