@@ -25,13 +25,14 @@ from utils import decode_caption, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+EVAL_MAX_SAMPLES = 100
 
 def get_semantics_eval_dataloader(eval_file, vocab):
     return torch.utils.data.DataLoader(
         SemanticsEvalDataset(DATA_PATH, IMAGES_FILENAME["test"], CAPTIONS_FILENAME["test"],
                              eval_file, vocab),
         batch_size=1,
-        shuffle=False,
+        shuffle=True,
         num_workers=0,
         pin_memory=False,
     )
@@ -80,6 +81,9 @@ def eval_semantics_score(model, dataloader, vocab, verbose=False):
                     accuracies.append(1)
                 else:
                     accuracies.append(0)
+
+            if batch_idx > EVAL_MAX_SAMPLES:
+                break
 
     return np.mean(accuracies)
 

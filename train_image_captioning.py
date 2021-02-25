@@ -36,6 +36,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 PRINT_SAMPLE_CAPTIONS = 1
 
+NUM_BATCHES_VALIDATION = 10
 
 def print_model_output(output, target_captions, image_ids, vocab, num_captions=1):
     captions_model = torch.argmax(output, dim=1)
@@ -62,8 +63,6 @@ def print_sample_model_output(model, dataloader, vocab, num_captions=1):
 def validate_model(
     model, dataloader, print_images_loader, semantic_images_loaders, vocab
 ):
-    print(f"Evaluating on {len(dataloader.dataset)} examples")
-
     semantic_accuracies = {}
 
     model.eval()
@@ -83,6 +82,9 @@ def validate_model(
             loss = model.loss(scores, captions, decode_lengths, alphas)
 
             val_losses.append(loss.mean().item())
+
+            if batch_idx > NUM_BATCHES_VALIDATION:
+                break
 
     model.train()
     return np.mean(val_losses), semantic_accuracies
