@@ -64,13 +64,13 @@ class CaptioningModel(nn.Module):
         :param decode_lengths: caption lengths, shape: (batch_size, 1)
         :return: scores for vocabulary, decode lengths, weights
         """
-        use_teacher_forcing = True
-        if decode_lengths == None:
-            use_teacher_forcing = False
-
-        # Do not decode at last timestep (after EOS token)
+        use_teacher_forcing = False
         if decode_lengths is not None:
+            use_teacher_forcing = True
+
+            # Do not decode at last timestep (after EOS token)
             decode_lengths = decode_lengths - 1
+
         encoder_output = self.encoder(images)
 
         batch_size = encoder_output.size(0)
