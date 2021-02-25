@@ -138,7 +138,7 @@ class SemanticsEvalDataset(Dataset):
 
         # show_image(image_data)
 
-        image = torch.FloatTensor(image_data)
+        image = torch.tensor(image_data, device=device, dtype=torch.float)
 
         if channels_first:
             image = image.permute(2, 0, 1)
@@ -156,10 +156,10 @@ class SemanticsEvalDataset(Dataset):
         img = self.get_image_features(img_id)
 
         target_sentence = nltk.word_tokenize(target_sentence)
-        target_sentence = torch.tensor(encode_caption(target_sentence, self.vocab))
+        target_sentence = torch.tensor(encode_caption(target_sentence, self.vocab), device=device)
 
         distractor_sentence = nltk.word_tokenize(distractor_sentence)
-        distractor_sentence = torch.tensor(encode_caption(distractor_sentence, self.vocab))
+        distractor_sentence = torch.tensor(encode_caption(distractor_sentence, self.vocab), device=device)
 
         return img, target_sentence, distractor_sentence
 

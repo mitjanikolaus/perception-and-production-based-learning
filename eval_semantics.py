@@ -47,7 +47,7 @@ def eval_semantics_score(model, dataloader, vocab, verbose=False):
         ):
             images = torch.cat((img, img))
             captions = torch.cat((target_caption, distractor_caption))
-            caption_lengths = torch.tensor([target_caption.shape[1], distractor_caption.shape[1]])
+            caption_lengths = torch.tensor([target_caption.shape[1], distractor_caption.shape[1]], device=device)
 
             if verbose:
                 print(f"Target    : {decode_caption(target_caption[0], vocab)}")
