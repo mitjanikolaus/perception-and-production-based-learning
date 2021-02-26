@@ -148,11 +148,13 @@ def main(params):
             loss.backward()
             optimizer.step()
 
-        print(f"Train Epoch: {epoch}, train loss: {np.mean(losses)}")
         val_loss, _, _ = validate_model(model, val_images_loader, semantics_eval_loaders, vocab)
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             save_model(model, optimizer, best_val_loss, epoch)
+
+        print(f"Train Epoch: {epoch}, train loss: {np.mean(losses)} best val loss: {best_val_loss}")
+
 
     core.close()
 
