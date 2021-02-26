@@ -8,9 +8,6 @@ import seaborn as sns
 
 import matplotlib.pyplot as plt
 
-from utils import SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING
-
-
 def main(args):
     scores = pickle.load(open(args.scores_file, "rb"))
     scores = pd.DataFrame(scores)
@@ -23,7 +20,7 @@ def main(args):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--scores-file", default=SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING, type=str,
+        "--scores-file", type=str,
     )
     parser.add_argument(
         "--rolling-window", default=10, type=int,

@@ -10,16 +10,9 @@ from preprocess import TOKEN_START, TOKEN_END, TOKEN_PADDING
 
 SPECIAL_CHARACTERS = [TOKEN_START, TOKEN_END, TOKEN_PADDING]
 
-CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST = os.path.join(
-    Path.home(), "data/visual_ref/checkpoints/captioning/image_captioning_best.pt"
+CHECKPOINT_DIR_IMAGE_CAPTIONING = os.path.join(
+    Path.home(), "data/visual_ref/checkpoints/captioning/"
 )
-CHECKPOINT_PATH_IMAGE_CAPTIONING = os.path.join(
-    Path.home(), "data/visual_ref/checkpoints/captioning/image_captioning.pt"
-)
-SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING = os.path.join(
-    Path.home(), "data/visual_ref/checkpoints/captioning/semantic_accuracies_ic.p"
-)
-
 
 CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING = os.path.join(
     Path.home(), "data/visual_ref/checkpoints/ranking/image_sentence_ranking.pt"

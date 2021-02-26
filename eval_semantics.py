@@ -23,7 +23,7 @@ from preprocess import (
     MAX_CAPTION_LEN,
     DATA_PATH,
 )
-from utils import decode_caption, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST
+from utils import decode_caption, CHECKPOINT_DIR_IMAGE_CAPTIONING
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -114,7 +114,7 @@ def main(args):
     print("Loading model checkpoint from {}".format(args.checkpoint))
     checkpoint = torch.load(args.checkpoint, map_location=device)
 
-    if "image_captioning" in args.checkpoint:
+    if "captioning" in args.checkpoint:
         print("Loading image captioning model.")
         word_embedding_size = 512
         visual_embedding_size = 512
@@ -157,7 +157,7 @@ def main(args):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--checkpoint", default=CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST, type=str,
+        "--checkpoint", type=str,
     )
     parser.add_argument(
         "--eval-csv", default="data/semantics_eval_persons.csv", type=str,

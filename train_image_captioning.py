@@ -28,10 +28,8 @@ from preprocess import (
 )
 from utils import (
     print_caption,
-    CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
-    CHECKPOINT_PATH_IMAGE_CAPTIONING,
+    CHECKPOINT_DIR_IMAGE_CAPTIONING,
     SEMANTICS_EVAL_FILES,
-    SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -95,8 +93,8 @@ def validate_model(
 
 def main(args):
     # create model checkpoint directory
-    if not os.path.exists(os.path.dirname(CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST)):
-        os.makedirs(os.path.dirname(CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST))
+    if not os.path.exists(os.path.dirname(CHECKPOINT_DIR_IMAGE_CAPTIONING)):
+        os.makedirs(os.path.dirname(CHECKPOINT_DIR_IMAGE_CAPTIONING))
 
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
     print("Loading vocab from {}".format(vocab_path))
@@ -198,7 +196,7 @@ def main(args):
                 semantic_accuracies_over_time.append(semantic_accuracies)
                 pickle.dump(
                     semantic_accuracies_over_time,
-                    open(SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING, "wb"),
+                    open(CHECKPOINT_DIR_IMAGE_CAPTIONING+args.model+"_semantic_accuracies.p", "wb"),
                 )
                 print(
                     f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss}"
@@ -210,15 +208,7 @@ def main(args):
                         optimizer,
                         best_val_loss,
                         epoch,
-                        CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
-                    )
-                else:
-                    save_model(
-                        model,
-                        optimizer,
-                        best_val_loss,
-                        epoch,
-                        CHECKPOINT_PATH_IMAGE_CAPTIONING,
+                        CHECKPOINT_DIR_IMAGE_CAPTIONING+args.model+".pt",
                     )
 
             model.train()
@@ -247,15 +237,7 @@ def main(args):
                 optimizer,
                 best_val_loss,
                 epoch,
-                CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
-            )
-        else:
-            save_model(
-                model,
-                optimizer,
-                best_val_loss,
-                epoch,
-                CHECKPOINT_PATH_IMAGE_CAPTIONING,
+                CHECKPOINT_DIR_IMAGE_CAPTIONING+args.model+".pt",
             )
 
         print(

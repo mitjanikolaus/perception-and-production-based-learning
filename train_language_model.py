@@ -29,10 +29,7 @@ from preprocess import (
 from train_image_captioning import print_sample_model_output
 from utils import (
     print_caption,
-    CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
-    CHECKPOINT_PATH_IMAGE_CAPTIONING,
     SEMANTICS_EVAL_FILES,
-    SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING,
     CHECKPOINT_PATH_LANGUAGE_MODEL_BEST,
     SEMANTIC_ACCURACIES_PATH_LANGUAGE_MODEL,
 )
