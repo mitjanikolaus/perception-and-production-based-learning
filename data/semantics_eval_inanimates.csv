@@ -1,231 +1,101 @@
 img_id,target_sentence,distractor_sentence
-1243,mike thinks a frisbee will hit the pie,mike thinks a frisbee will hit the pizza
-1243,jenny made the pie for a picnic,jenny made the pizza for a picnic
-1243,mike is near a pie,mike is near a pizza
-1300,jenny looks at the pizza,jenny looks at the pie
 1301,mike is sharing a pizza with jenny,mike is sharing a pie with jenny
-1301,mike is bringing jenny pizza,mike is bringing jenny pie
-1309,mike throws a pizza in the air,mike throws a pie in the air
-1309,mike threw the pizza in the air,mike threw the pie in the air
-1312,jenny kicks a ball into the pizza,jenny kicks a ball into the pie
-1312,mike looks sadly at the pizza,mike looks sadly at the pie
-1312,jenny kicked the football onto the pizza,jenny kicked the football onto the pie
-1312,mike is sad about the pizza,mike is sad about the pie
+8947,mike is sharing a pie with jenny,mike is sharing a pizza with jenny
 1344,jenny has a pizza,jenny has a pie
-1490,there is a pizza and a soda on the table,there is a pie and a soda on the table
-1490,a soda is next to the pizza,a soda is next to the pie
-1653,the berry pie and hotdog are getting wet,the berry pizza and hotdog are getting wet
-1744,mike has a pie on the ground,mike has a pizza on the ground
-1744,a pie is on the ground,a pizza is on the ground
-2043,the dog wants to eat jennys pie,the dog wants to eat jennys pizza
-2043,the cat is watching the dog get the pie,the cat is watching the dog get the pizza
+6358,jenny has a pie,jenny has a pizza
+8713,jenny has a pie,jenny has a pizza
 2045,there is a pie on the table,there is a pizza on the table
+4459,there is a pizza on the table,there is a pie on the table
+7656,there is a pizza on the table,there is a pie on the table
+858,there is a pizza on the table,there is a pie on the table
 2045,there is a pie on the picnic table,there is a pizza on the picnic table
+9071,there is a pizza on the picnic table,there is a pie on the picnic table
 2242,there is a pie on the picnic table,there is a pizza on the picnic table
-2411,jenny holds a pie,jenny holds a pizza
-2411,jenn has a pie,jenn has a pizza
-2682,the bear wants jennys pie,the bear wants jennys pizza
-2682,jenny is sitting next to the pie,jenny is sitting next to the pizza
 28,jenny is holding a pie,jenny is holding a pizza
+5537,jenny is holding a pizza,jenny is holding a pie
+6870,jenny is holding a pizza,jenny is holding a pie
+9769,jenny is holding a pizza,jenny is holding a pie
 282,a pie is on the table,a pizza is on the table
-282,mike sees an apple pie on the table,mike sees an apple pizza on the table
-311,jenny cries as it rains on the pie in her hands,jenny cries as it rains on the pizza in her hands
+6636,a pizza is on the table,a pie is on the table
 311,jenny is holding a pie,jenny is holding a pizza
-312,jenny isnt happy with her pie,jenny isnt happy with her pizza
-312,jenny looks sadly at the pie,jenny looks sadly at the pizza
 3127,there is a pie on the table,there is a pizza on the table
 3127,the pie is on the table,the pizza is on the table
+5205,the pizza is on the table,the pie is on the table
+6636,the pizza is on the table,the pie is on the table
+8141,the pizza is on the table,the pie is on the table
+9083,the pizza is on the table,the pie is on the table
 328,jenny is holding a pie,jenny is holding a pizza
-328,mike is reaching for jennys pie,mike is reaching for jennys pizza
-328,jenny brought mike a pie,jenny brought mike a pizza
 3563,there is a pie on the table,there is a pizza on the table
 3563,the pie is on the table,the pizza is on the table
-3669,the dog wants to eat the pie,the dog wants to eat the pizza
-3669,the dog is standing by the pie,the dog is standing by the pizza
-3797,jenny threw the pie into the air,jenny threw the pizza into the air
-4053,mike made a pizza,mike made a pie
-4053,mike is holding a pizza and frowning,mike is holding a pie and frowning
 4058,mike is holding a pizza,mike is holding a pie
-4058,mike is holding a pizza,mike is holding a pie
-4377,a cat is sitting by a pizza,a cat is sitting by a pie
-4377,a snake is slithering toward the pizza,a snake is slithering toward the pie
-4377,the cat and snake eat a pizza,the cat and snake eat a pie
-4459,there is a pizza on the table,there is a pie on the table
-4459,the large pizza is on the table,the large pie is on the table
-4459,jenny is running to get some pizza,jenny is running to get some pie
-4710,jenny is holding the pizza,jenny is holding the pie
-4710,mike is holding the pizza,mike is holding the pie
-4710,jenny and mike are sharing a pizza at the park,jenny and mike are sharing a pie at the park
-4744,mike has baked a pie,mike has baked a pizza
-4744,jenny is happy to try some pie,jenny is happy to try some pizza
-4744,the duck wants some pie too,the duck wants some pizza too
-4744,jenny runs to get the pie,jenny runs to get the pizza
-4817,the pie is on the grill,the pizza is on the grill
-4886,the dog is about to eat the pizza,the dog is about to eat the pie
-4886,theres a pizza in the grass,theres a pie in the grass
-4888,mike is carrying a pizza,mike is carrying a pie
-4888,the dog likes pizza,the dog likes pie
-4888,mike has pizza,mike has pie
-4888,mike wont let jenny have the pizza,mike wont let jenny have the pie
-4888,the dog wants the pizza that mike has,the dog wants the pie that mike has
-4908,mike is offering jenny some pie,mike is offering jenny some pizza
 4908,mike is holding a pie,mike is holding a pizza
-5034,mike is angry that jenny saw his pie,mike is angry that jenny saw his pizza
-5034,the pie is sitting in the grass,the pizza is sitting in the grass
-5102,jenny made a pizza for mike,jenny made a pie for mike
-5102,jenny made a pizza,jenny made a pie
-5102,the dog is looking at the pizza,the dog is looking at the pie
-5107,mike is eating pizza,mike is eating pie
-5107,mike is eating a big pizza,mike is eating a big pie
-515,jenny sat a pie on the table,jenny sat a pizza on the table
-515,the four balloons sat on the table next to the pie,the four balloons sat on the table next to the pizza
-515,jenny is holding a pie on the table,jenny is holding a pizza on the table
-5205,there is pizza on the table,there is pie on the table
-5205,the pizza is on the table,the pie is on the table
-5208,the pizza was on the table behind mike,the pie was on the table behind mike
-5208,jenny was hungry for pizza,jenny was hungry for pie
-5365,theres a pizza on a grill,theres a pie on a grill
-5537,jenny is offering mike some pizza,jenny is offering mike some pie
-5537,the dog is looking at the pizza,the dog is looking at the pie
-5537,jenny is holding a pizza,jenny is holding a pie
-5634,jenny wants the pie,jenny wants the pizza
-5634,mike offered jenny a pie to make her happy,mike offered jenny a pizza to make her happy
-5654,mike is camping with pizza,mike is camping with pie
-5654,the snake slithers up to the pizza,the snake slithers up to the pie
-5781,mike is sad that he dropped the pizza,mike is sad that he dropped the pie
-5781,mike dropped the pizza,mike dropped the pie
-5781,jenny is worried that mike dropped the pizza,jenny is worried that mike dropped the pie
-5845,mike is holding a pizza,mike is holding a pie
-5994,mike is surprised to see the pie in the sandbox,mike is surprised to see the pizza in the sandbox
-5994,there is a pie in the sandbox,there is a pizza in the sandbox
-6033,theres a pie on the table,theres a pizza on the table
-6033,there is a cherry pie on the table,there is a cherry pizza on the table
-6036,the cherry pie is <unk> off,the cherry pizza is <unk> off
-6038,there is a pie on the table,there is a pizza on the table
-6038,mike and jenny have a pie to share,mike and jenny have a pizza to share
-6127,the cat has the pizza,the cat has the pie
-6309,the pie is getting rained on,the pizza is getting rained on
-6309,jenny is worried the pie will get wet,jenny is worried the pizza will get wet
-6358,jenny holds a pie,jenny holds a pizza
-6358,jenny has a pie,jenny has a pizza
-6361,the dog sees the pie on the table,the dog sees the pizza on the table
-6361,the dog wants to eat the pie,the dog wants to eat the pizza
-6371,there is a pie on mikes head,there is a pizza on mikes head
-6373,mike has a pie on his head,mike has a pizza on his head
-6492,jenny grabs the pie from the dog,jenny grabs the pizza from the dog
-6492,jenny is holding a pie,jenny is holding a pizza
-6492,the dog wants to eat the pie,the dog wants to eat the pizza
-6497,jenny is holding a pie,jenny is holding a pizza
-6497,jenny is <unk> to throw the pie,jenny is <unk> to throw the pizza
-6533,the cat wants the pizza,the cat wants the pie
-6533,mike is sitting by the pizza,mike is sitting by the pie
-6622,the pizza was on the ground,the pie was on the ground
-6622,the pizza is on the ground,the pie is on the ground
-6633,jenny doesnt like pizza,jenny doesnt like pie
-6633,jenny sees that the pie is all gone,jenny sees that the pizza is all gone
-6633,jenny is upset because there is no more pie,jenny is upset because there is no more pizza
-6633,mike is upset at jenny for yelling about the <unk> pie,mike is upset at jenny for yelling about the <unk> pizza
-6636,the pizza is on the table,the pie is on the table
-6636,a pizza is on the table,a pie is on the table
-6679,jenny made a pizza,jenny made a pie
-6679,jenny made a pizza,jenny made a pie
-6737,mike and jenny are happy about the pie,mike and jenny are happy about the pizza
-6737,there is a pie in the sandbox,there is a pizza in the sandbox
-6830,mike has a cherry pie to share,mike has a cherry pizza to share
-6830,mike is eating a pie,mike is eating a pizza
-6870,jenny is holding a pizza,jenny is holding a pie
-6870,jenny is holding a pizza,jenny is holding a pie
-6872,jenny is giving mike a pizza,jenny is giving mike a pie
-6872,mike is waiting to try the pizza,mike is waiting to try the pie
-6872,jenny is carrying the pizza to mike,jenny is carrying the pie to mike
-6872,jenny baked the pizza,jenny baked the pie
-6876,jenny has a pizza,jenny has a pie
-6876,jenny is holding out the pizza,jenny is holding out the pie
-6876,mike is sitting and waiting for the pizza,mike is sitting and waiting for the pie
-6902,the dog is looking at the pizza,the dog is looking at the pie
-6902,there is pizza on the table,there is pie on the table
-7177,a pizza s on a table,a pie s on a table
-7309,the pie is sitting on the table,the pizza is sitting on the table
-7415,jenny wants the pie,jenny wants the pizza
-7415,mike is happy that jenny is sharing a pie with him,mike is happy that jenny is sharing a pizza with him
-7601,mike has a pizza,mike has a pie
-7601,the duck wants some pizza too,the duck wants some pie too
-7601,mike <unk> mr duck pizza,mike <unk> mr duck pie
-7601,mr duck hates pizza,mr duck hates pie
-7656,there is a pizza on the table,there is a pie on the table
-7815,there is a pie on the table,there is a pizza on the table
-8076,the bear is holding a pie,the bear is holding a pizza
-8076,the bear stole the hamburger and pie,the bear stole the hamburger and pizza
-8079,the bear has a hamburger and a pie,the bear has a hamburger and a pizza
-8089,mike has a pizza and baseball,mike has a pie and baseball
-8089,mike has a pizza,mike has a pie
-8141,the soccer might hit the pizza,the soccer might hit the pie
-8141,the pizza is on the table,the pie is on the table
-8141,a pizza is sitting on the picnic table,a pie is sitting on the picnic table
-8165,mike loves to eat pie,mike loves to eat pizza
 8165,mike is holding a pie,mike is holding a pizza
-8165,jenny is angry because she wants pie,jenny is angry because she wants pizza
-8254,there is a pizza beside the fire,there is a pie beside the fire
-8307,mike and jenny are going to grill a pie,mike and jenny are going to grill a pizza
-8307,the pie is cooking,the pizza is cooking
-8360,mike is holding the pizza,mike is holding the pie
-8360,mike is sharing pizza with jenny,mike is sharing pie with jenny
-8368,jenny is afraid its going too hit her pizza,jenny is afraid its going too hit her pie
-8381,mike is happy because he has pie,mike is happy because he has pizza
-8381,kelly wishes she had pie too,kelly wishes she had pizza too
 8381,mike is holding a pie,mike is holding a pizza
-8383,mike is running with pie,mike is running with pizza
 8383,mike is holding a pie,mike is holding a pizza
-8482,the table has pizza and a cheeseburger,the table has pie and a cheeseburger
-8482,jenny is near a pizza,jenny is near a pie
-858,the pizza is on the picnic table,the pie is on the picnic table
-858,there is a pizza on the table,there is a pie on the table
-8613,the bear wants some pizza too,the bear wants some pie too
-8613,the pizza and soda were on the table,the pie and soda were on the table
-8627,jenny baked mike a pie,jenny baked mike a pizza
-8627,jenny is bringing mike a pie,jenny is bringing mike a pizza
-866,there is a pie on a picnic table,there is a pizza on a picnic table
-866,a pie is on the table,a pizza is on the table
-8708,jenny is about to <unk> the pie at the bottom of the slide while mike and the owl are watching,jenny is about to <unk> the pizza at the bottom of the slide while mike and the owl are watching
-8708,jenny is about to slide into a pie,jenny is about to slide into a pizza
-8713,jenny has a pie,jenny has a pizza
-8713,jenny is giving mike the pie,jenny is giving mike the pizza
-8718,jenny is giving the bear pie,jenny is giving the bear pizza
-8718,jenny is holding a pie,jenny is holding a pizza
-8773,a pie sat on the picnic table,a pizza sat on the picnic table
-8773,there is a pie on the picnic table,there is a pizza on the picnic table
-8947,mike is giving jenny a pie,mike is giving jenny a pizza
-8947,mike is sharing a pie with jenny,mike is sharing a pizza with jenny
-9014,jenny is going to throw the pie at mike,jenny is going to throw the pizza at mike
-9014,jenny is holding a pie,jenny is holding a pizza
-9071,there is a pizza on the picnic table,there is a pie on the picnic table
-9071,jenny is happy that mike made pizza,jenny is happy that mike made pie
-9075,mike has a big pizza,mike has a big pie
-9075,mike is holding a pizza,mike is holding a pie
-9075,jenny is excited to eat pizza,jenny is excited to eat pie
-9077,mike has a pizza and a kite,mike has a pie and a kite
-9082,mike wanted the pizza on the picnic table,mike wanted the pie on the picnic table
-9082,mike is reaching for the pizza on the table,mike is reaching for the pie on the table
-9083,mike and jenny have a pizza and a burger to share,mike and jenny have a pie and a burger to share
-9083,the pizza is on the table,the pie is on the table
-9310,mike made a pizza,mike made a pie
-9310,jenny is mad because pizza is not for owls,jenny is mad because pie is not for owls
-9310,an owl is near a pizza,an owl is near a pie
-9385,mike is hungry for the pizza,mike is hungry for the pie
-9385,the pizza is on the ground,the pie is on the ground
-9507,a pie is on the table,a pizza is on the table
-9567,theres a pie in front of mike,theres a pizza in front of mike
+6038,there is a pie on the table,there is a pizza on the table
+7815,there is a pie on the table,there is a pizza on the table
 9567,there is a pie on the table,there is a pizza on the table
-9567,mike and jenny are excited to eat the pie,mike and jenny are excited to eat the pizza
-963,the table has a hot dog and a pizza on it,the table has a hot dog and a pie on it
-963,the pizza is near the hot dog on the table,the pie is near the hot dog on the table
-965,jenny is happy to see pizza,jenny is happy to see pie
-965,jenny sees the pizza on the table,jenny sees the pie on the table
-9760,jenny wanted pizza,jenny wanted pie
-9760,the hamburger and pizza sat on the table,the hamburger and pie sat on the table
-9760,mike is going to eat pizza or a hamburger,mike is going to eat pie or a hamburger
-9769,jenny is holding a pizza,jenny is holding a pie
-9769,jenny brought a pizza to share,jenny brought a pie to share
-9774,mike and jenny see the pie,mike and jenny see the pizza
-9774,the pie looks <unk>,the pizza looks <unk>
-9774,mike has pie at the picnic table,mike has pizza at the picnic table
+4744,the duck wants some pie too,the duck wants some pizza too
+7601,the duck wants some pizza too,the duck wants some pie too
+5845,mike is holding a pizza,mike is holding a pie
+9075,mike is holding a pizza,mike is holding a pie
+6492,jenny is holding a pie,jenny is holding a pizza
+6497,jenny is holding a pie,jenny is holding a pizza
+8718,jenny is holding a pie,jenny is holding a pizza
+9014,jenny is holding a pie,jenny is holding a pizza
+6876,jenny has a pizza,jenny has a pie
+866,a pie is on the table,a pizza is on the table
+9507,a pie is on the table,a pizza is on the table
+8773,there is a pie on the picnic table,there is a pizza on the picnic table
+1123,mike threw the ball to jenny,mike threw the frisbee to jenny
+2646,mike threw the frisbee to jenny,mike threw the ball to jenny
+3563,mike threw the frisbee to jenny,mike threw the ball to jenny
+1619,jenny is catching the ball,jenny is catching the frisbee
+5205,jenny is catching the frisbee,jenny is catching the ball
+1756,mike is throwing the ball,mike is throwing the frisbee
+3963,mike is throwing the frisbee,mike is throwing the ball
+5205,mike is throwing the frisbee,mike is throwing the ball
+6398,mike is throwing the frisbee,mike is throwing the ball
+1756,jenny is catching the ball,jenny is catching the frisbee
+2373,mike is holding the frisbee,mike is holding the ball
+3305,mike is holding the ball,mike is holding the frisbee
+2373,jenny and mike are playing frisbee,jenny and mike are playing ball
+3607,jenny and mike are playing ball,jenny and mike are playing frisbee
+7394,jenny and mike are playing ball,jenny and mike are playing frisbee
+9210,jenny and mike are playing ball,jenny and mike are playing frisbee
+9376,jenny and mike are playing ball,jenny and mike are playing frisbee
+2604,jenny is throwing the ball,jenny is throwing the frisbee
+8648,jenny is throwing the frisbee,jenny is throwing the ball
+2605,mike and jenny are playing ball,mike and jenny are playing frisbee
+6398,mike and jenny are playing frisbee,mike and jenny are playing ball
+9269,mike threw the ball to jenny,mike threw the frisbee to jenny
+3305,mike is holding a ball,mike is holding a frisbee
+3963,mike is holding a frisbee,mike is holding a ball
+5365,mike is holding a frisbee,mike is holding a ball
+6125,mike is holding a frisbee,mike is holding a ball
+6397,mike is holding the frisbee,mike is holding the ball
+7054,mike is holding the frisbee,mike is holding the ball
+3382,jenny is throwing the ball,jenny is throwing the frisbee
+5688,jenny and mike are playing frisbee,jenny and mike are playing ball
+6287,mike is throwing the ball,mike is throwing the frisbee
+832,mike is throwing the ball,mike is throwing the frisbee
+8341,mike is throwing the ball,mike is throwing the frisbee
+600,jenny is catching the ball,jenny is catching the frisbee
+6287,jenny is catching the ball,jenny is catching the frisbee
+7481,jenny is catching the ball,jenny is catching the frisbee
+8341,jenny is catching the ball,jenny is catching the frisbee
+9299,jenny is catching the ball,jenny is catching the frisbee
+5289,mike has a ball,mike has a frisbee
+9814,mike has a frisbee,mike has a ball
+5448,mike and jenny are playing ball,mike and jenny are playing frisbee
+5527,jenny is holding a ball,jenny is holding a frisbee
+6127,jenny is holding a frisbee,jenny is holding a ball
+7266,jenny is holding a frisbee,jenny is holding a ball
+832,mike and jenny are playing ball,mike and jenny are playing frisbee
+9913,mike and jenny are playing ball,mike and jenny are playing frisbee
+7054,jenny is waiting to catch the frisbee,jenny is waiting to catch the ball
+837,jenny is waiting to catch the ball,jenny is waiting to catch the frisbee
+7314,jenny is throwing the ball,jenny is throwing the frisbee
+7783,jenny is throwing the ball,jenny is throwing the frisbee
+790,jenny is throwing the ball,jenny is throwing the frisbee
+8722,mike has a ball,mike has a frisbee

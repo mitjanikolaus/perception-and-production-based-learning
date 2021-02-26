@@ -37,9 +37,9 @@ SEMANTIC_ACCURACIES_PATH_LANGUAGE_MODEL = os.path.join(
 
 SEMANTICS_EVAL_FILES = [
     "data/semantics_eval_persons.csv",
-    "data/semantics_eval_animals_filtered.csv",
-    "data/semantics_eval_inanimates_filtered.csv",
-    "data/semantics_eval_verbs_intransitive_filtered.csv",
+    "data/semantics_eval_animals.csv",
+    "data/semantics_eval_inanimates.csv",
+    "data/semantics_eval_verbs.csv",
     "data/semantics_eval_agent_patient_filtered.csv",
 ]
 

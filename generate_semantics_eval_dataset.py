@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import argparse
 import pickle
 import os
@@ -22,12 +20,14 @@ META_DATA_DICT_PATH = os.path.expanduser("~/data/abstract_scenes/AbstractScenes_
 META_DATA_DICT = pd.read_csv(META_DATA_DICT_PATH, sep="\t", index_col=0, names=["id"]).T
 
 # OBJECTS_ANIMALS = ["dog", "bear", "cat", "snake", "owl", "duck"]
-OBJECTS_ANIMALS = ["dog", "cat"]
+OBJECTS_ANIMALS = ["dog", "cat"] #, "bear", "snake", "owl", "duck"]
+OBJECTS_ANIMALS_2 = ["snake", "duck"]
 OBJECTS_INANIMATE = ["pie", "pizza"]
+OBJECTS_INANIMATE_2 = ["ball", "frisbee"] # ["basketball", "football"] # table tree
 
-
-VERBS_INTRANSITIVE = ["sitting", "standing", "running"]
-VERBS_TRANSITIVE = ["eating", "waving", "throwing", "kicking"]
+VERBS_1 = ["sitting", "standing"] #, "running"]
+VERBS_2 = ["sitting", "running"] #["eating", "kicking"] #, "throwing", "kicking"]
+VERBS_3 = ["eating", "playing"] #["eating", "kicking"] #, "throwing", "kicking"]
 
 VOCAB_TO_OBJECT_NAMES = {
     "mike": ["Boy"],
@@ -39,6 +39,9 @@ VOCAB_TO_OBJECT_NAMES = {
     "owl": ["Owl"],
     "duck": ["Duck"],
     "ball": ["Baseball", "BeachBall", "Basketball", "SoccerBall", "TennisBall", "Football"],
+    "basketball": ["Basketball"],
+    "football": ["Football"],
+    "frisbee": ["Frisbee"],
     "hat": ["ChefHat", "PirateHat", "WizardHat", "VikingHat", "BaseballCap", "WinterCap", "Bennie"],
     "tree": ["PineTree", "OakTree", "AppleTree"],
     "table": ["Table"],
@@ -96,47 +99,26 @@ def generate_eval_set_persons(image_ids, meta_data, images, captions, vocab):
     for img_id in image_ids:
         for target_caption in captions[img_id]:
             target_caption = decode_caption(target_caption, vocab, join=False)
-            for actor in ["jenny", "mike"]:
-                if actor in target_caption:
-                    if actor == "jenny":
-                        for img_id_distractor in image_ids:
-                            for distractor_caption in captions[img_id_distractor]:
-                                distractor_caption = decode_caption(distractor_caption, vocab, join=False)
-                                if "mike" in distractor_caption:
-                                    replaced = [word if word != "mike" else "jenny" for word in distractor_caption]
-                                    if replaced == target_caption:
-                                        print(target_caption)
-                                        print(distractor_caption)
-                                        target_sentence = " ".join(target_caption)
-                                        distractor_sentence = " ".join(distractor_caption)
-                                        samples.append({"img_id": img_id, "target_sentence": target_sentence,
-                                                        "distractor_sentence": distractor_sentence})
-                                        samples.append({"img_id": img_id_distractor, "target_sentence": distractor_sentence,
-                                                        "distractor_sentence": target_sentence})
-
-                            # else:
-                    #     for img_id_distractor in image_ids:
-                    #         for caption_distractor in captions[img_id_distractor]:
-                    #             distractor = decode_caption(caption_distractor, vocab, join=False)
-                    #             replaced = [word if word != "jenny" else "mike" for word in distractor]
-                    #             if replaced == target_caption:
-                    #                 print(target_caption)
-
-                    # for object_distractor in ["jenny", "mike"]:
-                    #     if actor != object_distractor:
-                    #         distractor = [word if word != actor else object_distractor for word in decoded_caption]
-                    #         if actor == "jenny":
-                    #             distractor = [word if word != "her" else "his" for word in distractor]
-                    #         else:
-                    #             distractor = [word if word != "his" else "her" for word in distractor]
-
-                            # target_sentence = " ".join(target_caption)
-                            # distractor_sentence = " ".join(distractor_caption)
-                            # samples.append({"img_id": img_id, "target_sentence": target_sentence, "distractor_sentence": distractor_sentence})
-                            # print(f"{img_id},{target_sentence},{distractor_sentence}")
-
-        # show_image(images[str(img_id)])
+            actor = "jenny"
+            distractor = "mike"
+            if actor in target_caption:
+                for img_id_distractor in image_ids:
+                    for distractor_caption in captions[img_id_distractor]:
+                        distractor_caption = decode_caption(distractor_caption, vocab, join=False)
+                        if distractor in distractor_caption:
+                            replaced = [word if word != distractor else actor for word in distractor_caption]
+                            if replaced == target_caption:
+                                # print(target_caption)
+                                # print(distractor_caption)
+                                target_sentence = " ".join(target_caption)
+                                distractor_sentence = " ".join(distractor_caption)
+                                samples.append({"img_id": img_id, "target_sentence": target_sentence,
+                                                "distractor_sentence": distractor_sentence})
+                                samples.append({"img_id": img_id_distractor, "target_sentence": distractor_sentence,
+                                                "distractor_sentence": target_sentence})
+                                # show_image(images[str(img_id)])
     data = pd.DataFrame(samples)
+    data = data.drop_duplicates()
     return data
 
 
@@ -144,20 +126,39 @@ def generate_eval_set_agent_patient(image_ids, meta_data, images, captions, voca
     samples = []
 
     for img_id in image_ids:
-        for caption in captions[img_id]:
-            decoded_caption = decode_caption(caption, vocab, join=False)
-            if "jenny" in decoded_caption and "mike" in decoded_caption:
-                if not "and" in decoded_caption:
-                    replacements = {"jenny": "mike", "mike": "jenny"}
-                    distractor = [replacements.get(word, word) for word in decoded_caption]
+        for target_caption in captions[img_id]:
+            target_caption = decode_caption(target_caption, vocab, join=False)
+            actor = "jenny"
+            distractor = "mike"
+            if actor in target_caption and distractor in target_caption:
+                # Cut off sentence after object
+                if target_caption.index(actor) < target_caption.index(distractor):
+                    target_caption = target_caption[:target_caption.index(distractor) + 1]
+                else:
+                    target_caption = target_caption[:target_caption.index(actor) + 1]
 
-                    target_sentence = " ".join(decoded_caption)
-                    distractor_sentence = " ".join(distractor)
-                    samples.append({"img_id": img_id, "target_sentence": target_sentence, "distractor_sentence": distractor_sentence})
-                    # print(f"{img_id},{target_sentence},{distractor_sentence}")
+                if "and" not in target_caption:
+                    for img_id_distractor in image_ids:
+                        for distractor_caption in captions[img_id_distractor]:
+                            distractor_caption = decode_caption(distractor_caption, vocab, join=False)
 
-                    # show_image(images[str(img_id)])
+                            replacements = {"jenny": "mike", "mike": "jenny"}
+                            replaced = [replacements.get(word, word) for word in distractor_caption]
+
+                            if replaced == target_caption:
+                                print(target_caption)
+                                # print(distractor_caption)
+                                target_sentence = " ".join(target_caption)
+                                distractor_sentence = " ".join(distractor_caption)
+                                samples.append({"img_id": img_id, "target_sentence": target_sentence,
+                                                "distractor_sentence": distractor_sentence})
+                                samples.append({"img_id": img_id_distractor, "target_sentence": distractor_sentence,
+                                                "distractor_sentence": target_sentence})
+                                print(img_id)
+                                show_image(images[str(img_id)])
+
     data = pd.DataFrame(samples)
+    data = data.drop_duplicates()
     return data
 
 
@@ -166,22 +167,33 @@ def generate_eval_set_objects(image_ids, meta_data, images, captions, vocab, obj
 
     image_ids = get_image_ids_one_object(image_ids, meta_data, objects)
     for img_id in image_ids:
-        for caption in captions[img_id]:
-            decoded_caption = decode_caption(caption, vocab, join=False)
-            for obj in objects:
-                if obj in decoded_caption:
-                    for object_distractor in objects:
-                        if obj != object_distractor:
-                            # Create one distractor for each other object
-                            distractor = [word if word != obj else object_distractor for word in decoded_caption]
-
-                            target_sentence = " ".join(decoded_caption)
-                            distractor_sentence = " ".join(distractor)
-                            samples.append({"img_id": img_id, "target_sentence": target_sentence, "distractor_sentence": distractor_sentence})
-                            # print(f"{img_id},{target_sentence},{distractor_sentence}")
+        for target_caption in captions[img_id]:
+            target_caption = decode_caption(target_caption, vocab, join=False)
+            for target in objects:
+                if target in target_caption:
+                    for img_id_distractor in image_ids:
+                        for distractor_caption in captions[img_id_distractor]:
+                            distractor_caption = decode_caption(distractor_caption, vocab, join=False)
+                            for distractor in objects:
+                                if distractor != target:
+                                    if distractor in distractor_caption:
+                                        replaced = [word if word != distractor else target for word in
+                                                    distractor_caption]
+                                        if replaced == target_caption:
+                                            # print(target_caption)
+                                            # print(distractor_caption)
+                                            target_sentence = " ".join(target_caption)
+                                            distractor_sentence = " ".join(distractor_caption)
+                                            samples.append({"img_id": img_id, "target_sentence": target_sentence,
+                                                            "distractor_sentence": distractor_sentence})
+                                            samples.append(
+                                                {"img_id": img_id_distractor, "target_sentence": distractor_sentence,
+                                                 "distractor_sentence": target_sentence})
 
         # show_image(images[str(img_id)])
     data = pd.DataFrame(samples)
+    data = data.drop_duplicates()
+
     return data
 
 
@@ -189,28 +201,38 @@ def generate_eval_set_verbs(image_ids, meta_data, images, captions, vocab, verbs
     samples = []
 
     image_ids = get_image_ids_single_actor(image_ids, meta_data)
+
     for img_id in image_ids:
-        for caption in captions[img_id]:
-            decoded_caption = decode_caption(caption, vocab, join=False)
-            for verb in verbs:
-                if verb in decoded_caption:
+        for target_caption in captions[img_id]:
+            target_caption = decode_caption(target_caption, vocab, join=False)
+            for target in verbs:
+                if target in target_caption:
                     # Cut off sentence after verb
-                    decoded_caption = decoded_caption[:decoded_caption.index(verb)+1]
+                    target_caption = target_caption[:target_caption.index(target) + 1]
+                    if ("jenny" in target_caption) or ("mike" in target_caption):
+                        for img_id_distractor in image_ids:
+                            for distractor_caption in captions[img_id_distractor]:
+                                distractor_caption = decode_caption(distractor_caption, vocab, join=False)
+                                for distractor in verbs:
+                                    if distractor != target:
+                                        if distractor in distractor_caption:
+                                            # Cut off sentence after verb
+                                            distractor_caption = distractor_caption[:distractor_caption.index(distractor) + 1]
+                                            replaced = [word if word != distractor else target for word in
+                                                        distractor_caption]
+                                            if replaced == target_caption:
+                                                print(target_caption)
+                                                print(distractor_caption)
+                                                target_sentence = " ".join(target_caption)
+                                                distractor_sentence = " ".join(distractor_caption)
+                                                samples.append({"img_id": img_id, "target_sentence": target_sentence,
+                                                                "distractor_sentence": distractor_sentence})
+                                                samples.append(
+                                                    {"img_id": img_id_distractor, "target_sentence": distractor_sentence,
+                                                     "distractor_sentence": target_sentence})
 
-                    if ("jenny" in decoded_caption) or ("mike" in decoded_caption):
-
-                        for verb_distractor in verbs:
-                            if verb != verb_distractor:
-                                # Create one distractor for each other object
-                                distractor = [word if word != verb else verb_distractor for word in decoded_caption]
-
-                                target_sentence = " ".join(decoded_caption)
-                                distractor_sentence = " ".join(distractor)
-                                samples.append({"img_id": img_id, "target_sentence": target_sentence, "distractor_sentence": distractor_sentence})
-                                # print(f"{img_id},{target_sentence},{distractor_sentence}")
-
-        # show_image(images[str(img_id)])
     data = pd.DataFrame(samples)
+    data = data.drop_duplicates()
     return data
 
 
@@ -235,20 +257,23 @@ def main(args):
         captions = pickle.load(file)
 
     image_ids = [int(key) for key in images.keys()]
+    #
+    # data_persons = generate_eval_set_persons(image_ids.copy(), meta_data, images, captions, vocab)
+    # data_persons.to_csv("data/semantics_eval_persons.csv", index=False)
 
-    data_persons = generate_eval_set_persons(image_ids.copy(), meta_data, images, captions, vocab)
-    data_persons.to_csv("data/semantics_eval_persons.csv", index=False)
+    # data_animals_1 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_ANIMALS)
+    # data_animals_2 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_ANIMALS_2)
+    # pd.concat((data_animals_1, data_animals_2)).to_csv("data/semantics_eval_animals.csv", index=False)
+    #
+    # data_inanimates_1 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_INANIMATE)
+    # data_inanimates_2 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_INANIMATE_2)
+    # pd.concat((data_inanimates_1, data_inanimates_2)).to_csv("data/semantics_eval_inanimates.csv", index=False)
+    #
+    data_verbs_1 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_1)
+    data_verbs_2 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_2)
+    data_verbs_3 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_3)
+    pd.concat((data_verbs_1, data_verbs_2, data_verbs_3)).to_csv("data/semantics_eval_verbs.csv", index=False)
 
-    # data_animals = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_ANIMALS)
-    # data_animals.to_csv("data/semantics_eval_animals.csv", index=False)
-    #
-    # data_inanimates = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_INANIMATE)
-    # data_inanimates.to_csv("data/semantics_eval_inanimates.csv", index=False)
-    #
-    # data_verbs_1 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_INTRANSITIVE)
-    # data_verbs_2 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_TRANSITIVE)
-    # pd.concat((data_verbs_1, data_verbs_2)).to_csv("data/semantics_eval_verbs_intransitive.csv", index=False)
-    #
     # data_agent_patient = generate_eval_set_agent_patient(image_ids.copy(), meta_data, images, captions, vocab)
     # data_agent_patient.to_csv("data/semantics_eval_agent_patient.csv", index=False)
 

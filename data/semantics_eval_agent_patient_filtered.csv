@@ -1,71 +1,81 @@
 img_id,target_sentence,distractor_sentence
+5413,mike is happy to see jenny,jenny is happy to see mike
+6361,mike is happy to see jenny,jenny is happy to see mike
+6902,mike is happy to see jenny,jenny is happy to see mike
 1003,jenny is waving to mike,mike is waving to jenny
-1047,jenny is mad that mike is not coming to eat with her,mike is mad that jenny is not coming to eat with her
-1079,mike is running toward jenny,jenny is running toward mike
-112,mike is kicking the ball to jenny,jenny is kicking the ball to mike
-1123,mike is throwing a baseball to jenny,jenny is throwing a baseball to mike
-1208,mike looks angry at jenny,jenny looks angry at mike
-1301,mike is bringing jenny pizza,jenny is bringing mike pizza
-1371,mike kicked jenny,jenny kicked mike
-1423,mike kicked the ball to jenny,jenny kicked the ball to mike
 1478,mike is waving to jenny,jenny is waving to mike
-164,jenny wants to help mike up,mike wants to help jenny up
-1648,jenny tries to stop mike,mike tries to stop jenny
-1752,jenny is kicking the soccer ball to mike,mike is kicking the soccer ball to jenny
+4473,mike is waving to jenny,jenny is waving to mike
+4924,mike is waving to jenny,jenny is waving to mike
+5690,mike is waving to jenny,jenny is waving to mike
+8409,mike is waving to jenny,jenny is waving to mike
+1079,mike is running toward jenny,jenny is running toward mike
+3547,jenny is running toward mike,mike is running toward jenny
+3828,jenny is running toward mike,mike is running toward jenny
+7518,jenny is running toward mike,mike is running toward jenny
+9075,jenny is running toward mike,mike is running toward jenny
+112,mike is kicking the ball to jenny,jenny is kicking the ball to mike
+6605,jenny is kicking the ball to mike,mike is kicking the ball to jenny
+9172,jenny is kicking the ball to mike,mike is kicking the ball to jenny
+1123,mike is throwing a baseball to jenny,jenny is throwing a baseball to mike
+5393,jenny is throwing a baseball to mike,mike is throwing a baseball to jenny
+1123,mike threw the ball to jenny,jenny threw the ball to mike
+1270,mike is standing by jenny,jenny is standing by mike
+1423,mike kicked the ball to jenny,jenny kicked the ball to mike
+2937,jenny kicked the ball to mike,mike kicked the ball to jenny
+6343,jenny is waving to mike,mike is waving to jenny
+9957,jenny is waving to mike,mike is waving to jenny
 1834,mike is laughing at jenny,jenny is laughing at mike
-1937,jenny is waiving at mike,mike is waiving at jenny
-1955,jenny sits in front of mike,mike sits in front of jenny
-1957,mike offers jenny a pirate hat,jenny offers mike a pirate hat
-2012,jenny is running away from mike,mike is running away from jenny
-2070,jenny brought mike a hamburger,mike brought jenny a hamburger
-2076,mike is mad at jenny,jenny is mad at mike
-2077,mike is angry with jenny,jenny is angry with mike
-2226,jenny calls mike to come eat lunch,mike calls jenny to come eat lunch
-224,mike is running towards jenny,jenny is running towards mike
 2518,jenny is laughing at mike,mike is laughing at jenny
-2535,jenny is behind mike,mike is behind jenny
-2604,jenny is about to throw the ball to mike,mike is about to throw the ball to jenny
-2617,jenny is sad that mike hurt himself,mike is sad that jenny hurt himself
-2718,mike is kicking the soccer ball away from jenny,jenny is kicking the soccer ball away from mike
+6141,jenny is laughing at mike,mike is laughing at jenny
+7637,jenny is laughing at mike,mike is laughing at jenny
+1955,jenny is happy to see mike,mike is happy to see jenny
+6533,jenny is angry at mike,mike is angry at jenny
+7415,jenny is angry at mike,mike is angry at jenny
+2012,jenny is running away from mike,mike is running away from jenny
+4845,mike is running away from jenny,jenny is running away from mike
+2070,mike is mad at jenny,jenny is mad at mike
+2359,jenny is mad at mike,mike is mad at jenny
+888,jenny is mad at mike,mike is mad at jenny
+9814,jenny is mad at mike,mike is mad at jenny
+224,mike is running towards jenny,jenny is running towards mike
+5096,jenny is running towards mike,mike is running towards jenny
+5690,jenny is running towards mike,mike is running towards jenny
+6381,jenny is running towards mike,mike is running towards jenny
+7423,jenny is running towards mike,mike is running towards jenny
+4564,mike is mad at jenny,jenny is mad at mike
+625,mike is mad at jenny,jenny is mad at mike
+6958,mike is mad at jenny,jenny is mad at mike
+7637,mike is mad at jenny,jenny is mad at mike
+9646,mike is mad at jenny,jenny is mad at mike
+3179,mike is laughing at jenny,jenny is laughing at mike
+4475,mike is waving at jenny,jenny is waving at mike
+5831,mike is waving at jenny,jenny is waving at mike
+8563,mike is waving at jenny,jenny is waving at mike
+278,jenny is throwing the ball to mike,mike is throwing the ball to jenny
+9260,mike is throwing the ball to jenny,jenny is throwing the ball to mike
+9269,mike is throwing the ball to jenny,jenny is throwing the ball to mike
+7177,jenny kicked the football to mike,mike kicked the football to jenny
+5053,mike kicked the ball to jenny,jenny kicked the ball to mike
+7481,mike kicked the ball to jenny,jenny kicked the ball to mike
 3161,jenny is waving at mike,mike is waving at jenny
 3179,jenny is running away from mike,mike is running away from jenny
-3179,mike is laughing at jenny,jenny is laughing at mike
-328,jenny brought mike a pie,mike brought jenny a pie
 3369,jenny is waving at mike,mike is waving at jenny
-3411,mike is helping jenny stand back up,jenny is helping mike stand back up
-3411,mike is helping jenny,jenny is helping mike
-3464,mike is running to help jenny,jenny is running to help mike
-3681,jenny is throwing the football to mike,mike is throwing the football to jenny
-3731,mike is very angry with jenny,jenny is very angry with mike
-3828,jenny is running toward mike,mike is running toward jenny
-3872,mike is trying to stop jenny,jenny is trying to stop mike
-3880,mike is running to jenny,jenny is running to mike
-4083,jenny is kicking the football to mike,mike is kicking the football to jenny
-4399,jenny is cheering mike,mike is cheering jenny
-4473,mike is waving to jenny,jenny is waving to mike
-4475,mike is waving at jenny,jenny is waving at mike
-4712,jenny is offering mike pizza,mike is offering jenny pizza
-4845,mike is running away from jenny,jenny is running away from mike
-4908,mike is offering jenny some pie,jenny is offering mike some pie
-4924,mike is waving to jenny,jenny is waving to mike
-5053,mike kicked the ball to jenny,jenny kicked the ball to mike
-5053,mike is kicking the ball to jenny,jenny is kicking the ball to mike
-5102,jenny made a pizza for mike,mike made a pizza for jenny
-5107,jenny is throwing a ball at mike,mike is throwing a ball at jenny
-5232,jenny is running away from mike,mike is running away from jenny
-5328,mike is helping jenny up,jenny is helping mike up
+7251,mike is sitting by jenny,jenny is sitting by mike
 5384,mike is running toward jenny,jenny is running toward mike
-5413,jenny seems angry with mike,mike seems angry with jenny
-5537,jenny is offering mike some pizza,mike is offering jenny some pizza
-5690,mike is waving to jenny,jenny is waving to mike
-5690,jenny is running towards mike,mike is running towards jenny
-5690,jenny is running to mike,mike is running to jenny
-5741,jenny wants to give mike a hot dog,mike wants to give jenny a hot dog
+3880,mike is running to jenny,jenny is running to mike
+4564,jenny is running to mike,mike is running to jenny
 5823,jenny waves to mike,mike waves to jenny
-5831,mike is waving at jenny,jenny is waving at mike
-5832,mike kicks close to jenny,jenny kicks close to mike
-5876,jenny is running to mike,mike is running to jenny
-6084,jenny is waving at mike,mike is waving at jenny
-6141,jenny is laughing at mike,mike is laughing at jenny
-6162,jenny is running to mike,mike is running to jenny
-6170,jenny is kicking a football to mike,mike is kicking a football to jenny
+5427,jenny is waving at mike,mike is waving at jenny
+6565,mike is running to jenny,jenny is running to mike
+5232,jenny is running away from mike,mike is running away from jenny
+5233,jenny is running away from mike,mike is running away from jenny
+5053,mike is kicking the ball to jenny,jenny is kicking the ball to mike
+6223,mike is standing by jenny,jenny is standing by mike
+6084,mike is kicking the ball to jenny,jenny is kicking the ball to mike
+6175,jenny is kicking the football to mike,mike is kicking the football to jenny
+9602,mike is kicking the ball to jenny,jenny is kicking the ball to mike
+770,mike is cheering jenny,jenny is cheering mike
+4399,jenny is cheering mike,mike is cheering jenny
+8635,jenny kicked mike,mike kicked jenny
+1371,mike kicked jenny,jenny kicked mike
+9269,mike threw the ball to jenny,jenny threw the ball to mike

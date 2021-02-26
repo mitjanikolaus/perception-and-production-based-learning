@@ -5,7 +5,6 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 
-import egg.core as core
 
 import matplotlib.pyplot as plt
 
