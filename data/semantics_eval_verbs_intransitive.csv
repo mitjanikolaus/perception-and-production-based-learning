@@ -1,412 +1,189 @@
 img_id,target_sentence,distractor_sentence
-1082,an owl is sitting,an owl is standing
-1082,an owl is sitting,an owl is running
-1082,an owl is sitting,an owl is jumping
-1283,the owl is sitting,the owl is standing
-1283,the owl is sitting,the owl is running
-1283,the owl is sitting,the owl is jumping
 1320,jenny is standing,jenny is sitting
 1320,jenny is standing,jenny is running
-1320,jenny is standing,jenny is jumping
-1324,the owl is sitting,the owl is standing
-1324,the owl is sitting,the owl is running
-1324,the owl is sitting,the owl is jumping
 1324,jenny is standing,jenny is sitting
 1324,jenny is standing,jenny is running
-1324,jenny is standing,jenny is jumping
-1327,the owl is sitting,the owl is standing
-1327,the owl is sitting,the owl is running
-1327,the owl is sitting,the owl is jumping
 1327,jenny is standing,jenny is sitting
 1327,jenny is standing,jenny is running
-1327,jenny is standing,jenny is jumping
-1327,the owl is sitting,the owl is standing
-1327,the owl is sitting,the owl is running
-1327,the owl is sitting,the owl is jumping
 1333,mike is sitting,mike is standing
 1333,mike is sitting,mike is running
-1333,mike is sitting,mike is jumping
 1417,mike is standing,mike is sitting
 1417,mike is standing,mike is running
-1417,mike is standing,mike is jumping
-1862,the cat is sitting,the cat is standing
-1862,the cat is sitting,the cat is running
-1862,the cat is sitting,the cat is jumping
 1905,jenny is running,jenny is sitting
 1905,jenny is running,jenny is standing
-1905,jenny is running,jenny is jumping
 2043,jenny is running,jenny is sitting
 2043,jenny is running,jenny is standing
-2043,jenny is running,jenny is jumping
-2084,the duck and the orange cat are sitting,the duck and the orange cat are standing
-2084,the duck and the orange cat are sitting,the duck and the orange cat are running
-2084,the duck and the orange cat are sitting,the duck and the orange cat are jumping
 2088,jenny is standing,jenny is sitting
 2088,jenny is standing,jenny is running
-2088,jenny is standing,jenny is jumping
 213,jenny is standing,jenny is sitting
 213,jenny is standing,jenny is running
-213,jenny is standing,jenny is jumping
 213,jenny is standing,jenny is sitting
 213,jenny is standing,jenny is running
-213,jenny is standing,jenny is jumping
 213,jenny is standing,jenny is sitting
 213,jenny is standing,jenny is running
-213,jenny is standing,jenny is jumping
-2174,a duck is standing,a duck is sitting
-2174,a duck is standing,a duck is running
-2174,a duck is standing,a duck is jumping
-219,a cat is sitting,a cat is standing
-219,a cat is sitting,a cat is running
-219,a cat is sitting,a cat is jumping
-219,an owl is sitting,an owl is standing
-219,an owl is sitting,an owl is running
-219,an owl is sitting,an owl is jumping
 2470,jenny is running,jenny is sitting
 2470,jenny is running,jenny is standing
-2470,jenny is running,jenny is jumping
-2590,the cat is sitting,the cat is standing
-2590,the cat is sitting,the cat is running
-2590,the cat is sitting,the cat is jumping
-2599,the cat is sitting,the cat is standing
-2599,the cat is sitting,the cat is running
-2599,the cat is sitting,the cat is jumping
 2629,jenny is sitting,jenny is standing
 2629,jenny is sitting,jenny is running
-2629,jenny is sitting,jenny is jumping
 2637,mike is sitting,mike is standing
 2637,mike is sitting,mike is running
-2637,mike is sitting,mike is jumping
 2804,mike is standing,mike is sitting
 2804,mike is standing,mike is running
-2804,mike is standing,mike is jumping
 2804,mike is standing,mike is sitting
 2804,mike is standing,mike is running
-2804,mike is standing,mike is jumping
 2839,jenny is running,jenny is sitting
 2839,jenny is running,jenny is standing
-2839,jenny is running,jenny is jumping
 3143,mike is sitting,mike is standing
 3143,mike is sitting,mike is running
-3143,mike is sitting,mike is jumping
-3143,an owl is sitting,an owl is standing
-3143,an owl is sitting,an owl is running
-3143,an owl is sitting,an owl is jumping
 3143,mike is sitting,mike is standing
 3143,mike is sitting,mike is running
-3143,mike is sitting,mike is jumping
 3146,jenny is sitting,jenny is standing
 3146,jenny is sitting,jenny is running
-3146,jenny is sitting,jenny is jumping
 3146,jenny is sitting,jenny is standing
 3146,jenny is sitting,jenny is running
-3146,jenny is sitting,jenny is jumping
 3146,mike is sitting,mike is standing
 3146,mike is sitting,mike is running
-3146,mike is sitting,mike is jumping
-3146,the owl is sitting,the owl is standing
-3146,the owl is sitting,the owl is running
-3146,the owl is sitting,the owl is jumping
 3241,mike is sitting,mike is standing
 3241,mike is sitting,mike is running
-3241,mike is sitting,mike is jumping
 3241,mike is sitting,mike is standing
 3241,mike is sitting,mike is running
-3241,mike is sitting,mike is jumping
 3458,mike is standing,mike is sitting
 3458,mike is standing,mike is running
-3458,mike is standing,mike is jumping
 3558,mike is sitting,mike is standing
 3558,mike is sitting,mike is running
-3558,mike is sitting,mike is jumping
 3558,mike is sitting,mike is standing
 3558,mike is sitting,mike is running
-3558,mike is sitting,mike is jumping
 3713,mike is running,mike is sitting
 3713,mike is running,mike is standing
-3713,mike is running,mike is jumping
 3713,mike is running,mike is sitting
 3713,mike is running,mike is standing
-3713,mike is running,mike is jumping
 3716,mike is running,mike is sitting
 3716,mike is running,mike is standing
-3716,mike is running,mike is jumping
 3839,mike is sitting,mike is standing
 3839,mike is sitting,mike is running
-3839,mike is sitting,mike is jumping
-3839,the bear is standing,the bear is sitting
-3839,the bear is standing,the bear is running
-3839,the bear is standing,the bear is jumping
 4224,mike is running,mike is sitting
 4224,mike is running,mike is standing
-4224,mike is running,mike is jumping
 4228,mike is running,mike is sitting
 4228,mike is running,mike is standing
-4228,mike is running,mike is jumping
-4594,the <unk> is standing,the <unk> is sitting
-4594,the <unk> is standing,the <unk> is running
-4594,the <unk> is standing,the <unk> is jumping
-4594,a dog is standing,a dog is sitting
-4594,a dog is standing,a dog is running
-4594,a dog is standing,a dog is jumping
 4734,mike is sitting,mike is standing
 4734,mike is sitting,mike is running
-4734,mike is sitting,mike is jumping
 4734,mike is sitting,mike is standing
 4734,mike is sitting,mike is running
-4734,mike is sitting,mike is jumping
 4878,mike is sitting,mike is standing
 4878,mike is sitting,mike is running
-4878,mike is sitting,mike is jumping
 5045,mike is sitting,mike is standing
 5045,mike is sitting,mike is running
-5045,mike is sitting,mike is jumping
-5045,the cat is sitting,the cat is standing
-5045,the cat is sitting,the cat is running
-5045,the cat is sitting,the cat is jumping
 5045,mike is sitting,mike is standing
 5045,mike is sitting,mike is running
-5045,mike is sitting,mike is jumping
-5045,the cat is sitting,the cat is standing
-5045,the cat is sitting,the cat is running
-5045,the cat is sitting,the cat is jumping
-5247,a dog is standing,a dog is sitting
-5247,a dog is standing,a dog is running
-5247,a dog is standing,a dog is jumping
-5247,a bear is standing,a bear is sitting
-5247,a bear is standing,a bear is running
-5247,a bear is standing,a bear is jumping
 5354,mike is sitting,mike is standing
 5354,mike is sitting,mike is running
-5354,mike is sitting,mike is jumping
 5354,mike is sitting,mike is standing
 5354,mike is sitting,mike is running
-5354,mike is sitting,mike is jumping
-558,a owl is sitting,a owl is standing
-558,a owl is sitting,a owl is running
-558,a owl is sitting,a owl is jumping
-5603,the duck is standing,the duck is sitting
-5603,the duck is standing,the duck is running
-5603,the duck is standing,the duck is jumping
 5603,jenny is standing,jenny is sitting
 5603,jenny is standing,jenny is running
-5603,jenny is standing,jenny is jumping
-5603,the dog is standing,the dog is sitting
-5603,the dog is standing,the dog is running
-5603,the dog is standing,the dog is jumping
-5607,the duck is sitting,the duck is standing
-5607,the duck is sitting,the duck is running
-5607,the duck is sitting,the duck is jumping
-5758,the owl is sitting,the owl is standing
-5758,the owl is sitting,the owl is running
-5758,the owl is sitting,the owl is jumping
-5775,jenny is jumping,jenny is sitting
-5775,jenny is jumping,jenny is standing
-5775,jenny is jumping,jenny is running
-5794,kelly is sitting,kelly is standing
-5794,kelly is sitting,kelly is running
-5794,kelly is sitting,kelly is jumping
-5994,the cat is sitting,the cat is standing
-5994,the cat is sitting,the cat is running
-5994,the cat is sitting,the cat is jumping
-5994,the cat is standing,the cat is sitting
-5994,the cat is standing,the cat is running
-5994,the cat is standing,the cat is jumping
-606,the duck is standing,the duck is sitting
-606,the duck is standing,the duck is running
-606,the duck is standing,the duck is jumping
 6182,jenny is sitting,jenny is standing
 6182,jenny is sitting,jenny is running
-6182,jenny is sitting,jenny is jumping
 6182,jenny is sitting,jenny is standing
 6182,jenny is sitting,jenny is running
-6182,jenny is sitting,jenny is jumping
-6325,the cat is sitting,the cat is standing
-6325,the cat is sitting,the cat is running
-6325,the cat is sitting,the cat is jumping
 6434,jenny is sitting,jenny is standing
 6434,jenny is sitting,jenny is running
-6434,jenny is sitting,jenny is jumping
-6434,a cat is sitting,a cat is standing
-6434,a cat is sitting,a cat is running
-6434,a cat is sitting,a cat is jumping
 6509,mike is running,mike is sitting
 6509,mike is running,mike is standing
-6509,mike is running,mike is jumping
 6509,mike is running,mike is sitting
 6509,mike is running,mike is standing
-6509,mike is running,mike is jumping
-6738,the cat is sitting,the cat is standing
-6738,the cat is sitting,the cat is running
-6738,the cat is sitting,the cat is jumping
 6930,mike is sitting,mike is standing
 6930,mike is sitting,mike is running
-6930,mike is sitting,mike is jumping
-6968,the bear is standing,the bear is sitting
-6968,the bear is standing,the bear is running
-6968,the bear is standing,the bear is jumping
-6968,the duck is standing,the duck is sitting
-6968,the duck is standing,the duck is running
-6968,the duck is standing,the duck is jumping
 6968,jenny is running,jenny is sitting
 6968,jenny is running,jenny is standing
-6968,jenny is running,jenny is jumping
-6968,a bear is standing,a bear is sitting
-6968,a bear is standing,a bear is running
-6968,a bear is standing,a bear is jumping
-7032,the cat is sitting,the cat is standing
-7032,the cat is sitting,the cat is running
-7032,the cat is sitting,the cat is jumping
 7215,mike is sitting,mike is standing
 7215,mike is sitting,mike is running
-7215,mike is sitting,mike is jumping
 7215,mike is sitting,mike is standing
 7215,mike is sitting,mike is running
-7215,mike is sitting,mike is jumping
-7215,the cat is sitting,the cat is standing
-7215,the cat is sitting,the cat is running
-7215,the cat is sitting,the cat is jumping
 7215,mike is sitting,mike is standing
 7215,mike is sitting,mike is running
-7215,mike is sitting,mike is jumping
 7521,jenny is standing,jenny is sitting
 7521,jenny is standing,jenny is running
-7521,jenny is standing,jenny is jumping
-7815,the bear is standing,the bear is sitting
-7815,the bear is standing,the bear is running
-7815,the bear is standing,the bear is jumping
 7815,jenny is standing,jenny is sitting
 7815,jenny is standing,jenny is running
-7815,jenny is standing,jenny is jumping
-8102,an owl is sitting,an owl is standing
-8102,an owl is sitting,an owl is running
-8102,an owl is sitting,an owl is jumping
-8247,a snake is sitting,a snake is standing
-8247,a snake is sitting,a snake is running
-8247,a snake is sitting,a snake is jumping
 8247,jenny is standing,jenny is sitting
 8247,jenny is standing,jenny is running
-8247,jenny is standing,jenny is jumping
 8254,jenny is standing,jenny is sitting
 8254,jenny is standing,jenny is running
-8254,jenny is standing,jenny is jumping
 8524,jenny is sitting,jenny is standing
 8524,jenny is sitting,jenny is running
-8524,jenny is sitting,jenny is jumping
 8524,jenny is sitting,jenny is standing
 8524,jenny is sitting,jenny is running
-8524,jenny is sitting,jenny is jumping
 8524,jenny is sitting,jenny is standing
 8524,jenny is sitting,jenny is running
-8524,jenny is sitting,jenny is jumping
 8742,jenny is sitting,jenny is standing
 8742,jenny is sitting,jenny is running
-8742,jenny is sitting,jenny is jumping
 8773,jenny is standing,jenny is sitting
 8773,jenny is standing,jenny is running
-8773,jenny is standing,jenny is jumping
 883,mike is sitting,mike is standing
 883,mike is sitting,mike is running
-883,mike is sitting,mike is jumping
 937,jenny is standing,jenny is sitting
 937,jenny is standing,jenny is running
-937,jenny is standing,jenny is jumping
 937,jenny is standing,jenny is sitting
 937,jenny is standing,jenny is running
-937,jenny is standing,jenny is jumping
-9385,the cat is sitting,the cat is standing
-9385,the cat is sitting,the cat is running
-9385,the cat is sitting,the cat is jumping
-9552,the cat is sitting,the cat is standing
-9552,the cat is sitting,the cat is running
-9552,the cat is sitting,the cat is jumping
-9552,the cat is sitting,the cat is standing
-9552,the cat is sitting,the cat is running
-9552,the cat is sitting,the cat is jumping
 963,jenny is standing,jenny is sitting
 963,jenny is standing,jenny is running
-963,jenny is standing,jenny is jumping
 1082,jenny is waving,jenny is eating
-1082,jenny is waving,jenny is playing
 1082,jenny is waving,jenny is throwing
-1417,the dog is eating,the dog is playing
-1417,the dog is eating,the dog is waving
-1417,the dog is eating,the dog is throwing
-1417,the dog is eating,the dog is playing
-1417,the dog is eating,the dog is waving
-1417,the dog is eating,the dog is throwing
-1526,mike is playing,mike is eating
-1526,mike is playing,mike is waving
-1526,mike is playing,mike is throwing
-1905,jenny is playing,jenny is eating
-1905,jenny is playing,jenny is waving
-1905,jenny is playing,jenny is throwing
-2637,mike is playing,mike is eating
-2637,mike is playing,mike is waving
-2637,mike is playing,mike is throwing
-2637,mike is playing,mike is eating
-2637,mike is playing,mike is waving
-2637,mike is playing,mike is throwing
-2737,mike is playing,mike is eating
-2737,mike is playing,mike is waving
-2737,mike is playing,mike is throwing
-2804,the bear is eating,the bear is playing
-2804,the bear is eating,the bear is waving
-2804,the bear is eating,the bear is throwing
+1082,jenny is waving,jenny is kicking
 2804,mike is waving,mike is eating
-2804,mike is waving,mike is playing
 2804,mike is waving,mike is throwing
-2804,a bear is eating,a bear is playing
-2804,a bear is eating,a bear is waving
-2804,a bear is eating,a bear is throwing
-3656,mike is eating,mike is playing
+2804,mike is waving,mike is kicking
+32,mike is kicking,mike is eating
+32,mike is kicking,mike is waving
+32,mike is kicking,mike is throwing
+32,mike is kicking,mike is eating
+32,mike is kicking,mike is waving
+32,mike is kicking,mike is throwing
 3656,mike is eating,mike is waving
 3656,mike is eating,mike is throwing
-3656,mike is eating,mike is playing
+3656,mike is eating,mike is kicking
 3656,mike is eating,mike is waving
 3656,mike is eating,mike is throwing
-3816,mike was playing,mike was eating
-3816,mike was playing,mike was waving
-3816,mike was playing,mike was throwing
+3656,mike is eating,mike is kicking
 3816,mike is throwing,mike is eating
-3816,mike is throwing,mike is playing
 3816,mike is throwing,mike is waving
+3816,mike is throwing,mike is kicking
 3817,mike is throwing,mike is eating
-3817,mike is throwing,mike is playing
 3817,mike is throwing,mike is waving
+3817,mike is throwing,mike is kicking
+4224,mike is kicking,mike is eating
+4224,mike is kicking,mike is waving
+4224,mike is kicking,mike is throwing
+4529,mike is kicking,mike is eating
+4529,mike is kicking,mike is waving
+4529,mike is kicking,mike is throwing
+4529,mike is kicking,mike is eating
+4529,mike is kicking,mike is waving
+4529,mike is kicking,mike is throwing
 4592,mike is throwing,mike is eating
-4592,mike is throwing,mike is playing
 4592,mike is throwing,mike is waving
-4878,mike is playing,mike is eating
-4878,mike is playing,mike is waving
-4878,mike is playing,mike is throwing
-5049,mike and his cat are playing,mike and his cat are eating
-5049,mike and his cat are playing,mike and his cat are waving
-5049,mike and his cat are playing,mike and his cat are throwing
-6323,mike is playing,mike is eating
-6323,mike is playing,mike is waving
-6323,mike is playing,mike is throwing
-6323,mike is playing,mike is eating
-6323,mike is playing,mike is waving
-6323,mike is playing,mike is throwing
-6434,jenny is playing,jenny is eating
-6434,jenny is playing,jenny is waving
-6434,jenny is playing,jenny is throwing
-6439,jenny is playing,jenny is eating
-6439,jenny is playing,jenny is waving
-6439,jenny is playing,jenny is throwing
-6738,jenny is playing,jenny is eating
-6738,jenny is playing,jenny is waving
-6738,jenny is playing,jenny is throwing
-7032,mike is eating,mike is playing
+4592,mike is throwing,mike is kicking
 7032,mike is eating,mike is waving
 7032,mike is eating,mike is throwing
-8256,the owl and dog are playing,the owl and dog are eating
-8256,the owl and dog are playing,the owl and dog are waving
-8256,the owl and dog are playing,the owl and dog are throwing
-898,jenny is playing,jenny is eating
-898,jenny is playing,jenny is waving
-898,jenny is playing,jenny is throwing
+7032,mike is eating,mike is kicking
+7341,mike is kicking,mike is eating
+7341,mike is kicking,mike is waving
+7341,mike is kicking,mike is throwing
+7341,mike is kicking,mike is eating
+7341,mike is kicking,mike is waving
+7341,mike is kicking,mike is throwing
+8076,jenny is kicking,jenny is eating
+8076,jenny is kicking,jenny is waving
+8076,jenny is kicking,jenny is throwing
+8076,jenny is kicking,jenny is eating
+8076,jenny is kicking,jenny is waving
+8076,jenny is kicking,jenny is throwing
+8079,jenny is kicking,jenny is eating
+8079,jenny is kicking,jenny is waving
+8079,jenny is kicking,jenny is throwing
+8335,mike is kicking,mike is eating
+8335,mike is kicking,mike is waving
+8335,mike is kicking,mike is throwing
 937,jenny is waving,jenny is eating
-937,jenny is waving,jenny is playing
 937,jenny is waving,jenny is throwing
+937,jenny is waving,jenny is kicking

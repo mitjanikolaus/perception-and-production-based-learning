@@ -26,7 +26,7 @@ from utils import decode_caption, CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-EVAL_MAX_SAMPLES = 300
+EVAL_MAX_SAMPLES = 100
 
 def get_semantics_eval_dataloader(eval_file, vocab):
     return torch.utils.data.DataLoader(

@@ -26,8 +26,8 @@ OBJECTS_ANIMALS = ["dog", "cat"]
 OBJECTS_INANIMATE = ["pie", "pizza"]
 
 
-VERBS_LOWER_BODY = ["sitting", "standing", "running"]
-VERBS_UPPER_BODY = ["eating", "playing", "waving", "throwing"]
+VERBS_INTRANSITIVE = ["sitting", "standing", "running"]
+VERBS_TRANSITIVE = ["eating", "waving", "throwing", "kicking"]
 
 VOCAB_TO_OBJECT_NAMES = {
     "mike": ["Boy"],
@@ -173,15 +173,17 @@ def generate_eval_set_verbs(image_ids, meta_data, images, captions, vocab, verbs
                     # Cut off sentence after verb
                     decoded_caption = decoded_caption[:decoded_caption.index(verb)+1]
 
-                    for verb_distractor in verbs:
-                        if verb != verb_distractor:
-                            # Create one distractor for each other object
-                            distractor = [word if word != verb else verb_distractor for word in decoded_caption]
+                    if ("jenny" in decoded_caption) or ("mike" in decoded_caption):
 
-                            target_sentence = " ".join(decoded_caption)
-                            distractor_sentence = " ".join(distractor)
-                            samples.append({"img_id": img_id, "target_sentence": target_sentence, "distractor_sentence": distractor_sentence})
-                            # print(f"{img_id},{target_sentence},{distractor_sentence}")
+                        for verb_distractor in verbs:
+                            if verb != verb_distractor:
+                                # Create one distractor for each other object
+                                distractor = [word if word != verb else verb_distractor for word in decoded_caption]
+
+                                target_sentence = " ".join(decoded_caption)
+                                distractor_sentence = " ".join(distractor)
+                                samples.append({"img_id": img_id, "target_sentence": target_sentence, "distractor_sentence": distractor_sentence})
+                                # print(f"{img_id},{target_sentence},{distractor_sentence}")
 
         # show_image(images[str(img_id)])
     data = pd.DataFrame(samples)
@@ -219,8 +221,8 @@ def main(args):
     data_inanimates = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_INANIMATE)
     data_inanimates.to_csv("data/semantics_eval_inanimates.csv", index=False)
 
-    data_verbs_1 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_LOWER_BODY)
-    data_verbs_2 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_UPPER_BODY)
+    data_verbs_1 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_INTRANSITIVE)
+    data_verbs_2 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_TRANSITIVE)
     pd.concat((data_verbs_1, data_verbs_2)).to_csv("data/semantics_eval_verbs_intransitive.csv", index=False)
 
     data_agent_patient = generate_eval_set_agent_patient(image_ids.copy(), meta_data, images, captions, vocab)
