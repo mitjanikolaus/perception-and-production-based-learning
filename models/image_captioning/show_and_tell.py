@@ -8,7 +8,6 @@ from models.image_captioning.captioning_model import CaptioningModel
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-
 class Encoder(nn.Module):
     def __init__(self, visual_embedding_size, fine_tune_resnet=False):
         super(Encoder, self).__init__()
@@ -34,17 +33,16 @@ class Encoder(nn.Module):
 
         return image_features
 
-def set_fine_tuning_enabled(self, enable_fine_tuning):
+    def set_fine_tuning_enabled(self, enable_fine_tuning):
         """
 
-        :param enable_fine_tuning: Set to True to enable fine tuning
-        """
+            :param enable_fine_tuning: Set to True to enable fine tuning
+            """
         for param in self.resnet.parameters():
             param.requires_grad = enable_fine_tuning
 
 
 class ShowAndTell(CaptioningModel):
-
     def __init__(
         self,
         word_embedding_size,
@@ -71,33 +69,35 @@ class ShowAndTell(CaptioningModel):
         self.vocab = vocab
         self.vocab_size = len(vocab)
 
-        # TODO no word embeddings used in lazaridou paper?
         self.word_embedding = nn.Embedding(self.vocab_size, word_embedding_size)
 
-        self.lstm = nn.LSTMCell(input_size=visual_embeddings_size, hidden_size=lstm_hidden_size) # batch_first=True
+        self.lstm = nn.LSTMCell(
+            input_size=visual_embeddings_size + word_embedding_size,
+            hidden_size=lstm_hidden_size,
+        )
         self.dropout = nn.Dropout(p=dropout)
         self.fc = nn.Linear(lstm_hidden_size, self.vocab_size)
-
 
     def init_hidden_states(self, encoder_output):
         """
         :return: hidden state, cell state
         """
-        # TODO verify
         batch_size = encoder_output.shape[0]
 
-        return (torch.zeros(1, batch_size, self.lstm_hidden_size).to(device),
-                torch.zeros(1, batch_size, self.lstm_hidden_size).to(device))
+        return (
+            torch.zeros(batch_size, self.lstm_hidden_size).to(device),
+            torch.zeros(batch_size, self.lstm_hidden_size).to(device),
+        )
 
     def forward_step(self, encoder_output, prev_word_embeddings, states):
         """Perform a single decoding step."""
         decoder_hidden_state, decoder_cell_state = states
 
-        # TODO:
-        decoder_input = torch.cat(
-            (prev_word_embeddings, encoder_output), dim=1
-        )
-        decoder_hidden_state, decoder_cell_state = self.decode_step(
+        encoder_output = encoder_output.squeeze(1)
+
+        # TODO: do not feed image every timestep?
+        decoder_input = torch.cat((prev_word_embeddings, encoder_output), dim=1)
+        decoder_hidden_state, decoder_cell_state = self.lstm(
             decoder_input, (decoder_hidden_state, decoder_cell_state)
         )
 
@@ -107,8 +107,8 @@ class ShowAndTell(CaptioningModel):
         return scores, states, None
 
     def loss(self, scores, target_captions, decode_lengths, alphas, reduction="mean"):
-        loss = self.loss_cross_entropy(scores, target_captions, decode_lengths, reduction)
+        loss = self.loss_cross_entropy(
+            scores, target_captions, decode_lengths, reduction
+        )
 
         return loss
-
-

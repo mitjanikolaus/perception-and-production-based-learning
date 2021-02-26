@@ -12,6 +12,7 @@ import torch.utils.data
 
 import egg.core as core
 from dataset import SemanticsEvalDataset
+from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.image_sentence_ranking.ranking_model import ImageSentenceRanker, cosine_sim
 from models.language_modeling.language_model import LanguageModel
@@ -55,7 +56,7 @@ def eval_semantics_score(model, dataloader, vocab, verbose=False):
                 print(f"Target    : {decode_caption(target_caption[0], vocab)}")
                 print(f"Distractor: {decode_caption(distractor_caption[0], vocab)}")
 
-            if isinstance(model, ShowAttendAndTell):
+            if isinstance(model, ShowAttendAndTell) or isinstance(model, ShowAndTell):
                 perplexities = model.perplexity(images, captions, caption_lengths)
 
                 if verbose:

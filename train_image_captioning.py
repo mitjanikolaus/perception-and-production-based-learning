@@ -17,6 +17,7 @@ from torch.utils.data import DataLoader
 import egg.core as core
 from dataset import CaptionDataset, SemanticsEvalDataset
 from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
+from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from preprocess import (
     IMAGES_FILENAME,
@@ -29,7 +30,8 @@ from utils import (
     print_caption,
     CHECKPOINT_PATH_IMAGE_CAPTIONING_BEST,
     CHECKPOINT_PATH_IMAGE_CAPTIONING,
-    SEMANTICS_EVAL_FILES, SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING,
+    SEMANTICS_EVAL_FILES,
+    SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -37,6 +39,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 PRINT_SAMPLE_CAPTIONS = 1
 
 NUM_BATCHES_VALIDATION = 10
+
 
 def print_model_output(output, target_captions, image_ids, vocab, num_captions=1):
     captions_model = torch.argmax(output, dim=1)
@@ -130,26 +133,41 @@ def main(args):
     )
 
     semantics_eval_loaders = {
-        file: get_semantics_eval_dataloader(file, vocab) for file in SEMANTICS_EVAL_FILES
+        file: get_semantics_eval_dataloader(file, vocab)
+        for file in SEMANTICS_EVAL_FILES
     }
 
     word_embedding_size = 512
     visual_embedding_size = 512
     lstm_hidden_size = 512
     dropout = 0.2
-    model_image_captioning = ShowAttendAndTell(
-        word_embedding_size,
-        lstm_hidden_size,
-        vocab,
-        MAX_CAPTION_LEN,
-        dropout,
-        fine_tune_resnet=args.fine_tune_resnet,
-    )
+
+    if args.model == "show_attend_and_tell":
+        model = ShowAttendAndTell(
+            word_embedding_size,
+            lstm_hidden_size,
+            vocab,
+            MAX_CAPTION_LEN,
+            dropout,
+            fine_tune_resnet=args.fine_tune_resnet,
+        )
+    elif args.model == "show_and_tell":
+        model = ShowAndTell(
+            word_embedding_size,
+            visual_embedding_size,
+            lstm_hidden_size,
+            vocab,
+            MAX_CAPTION_LEN,
+            dropout,
+            fine_tune_resnet=args.fine_tune_resnet,
+        )
+    else:
+        raise RuntimeError(f"Unknown model: ", args.model)
 
     # uses command-line parameters we passed to core.init
-    optimizer = core.build_optimizer(model_image_captioning.parameters())
+    optimizer = core.build_optimizer(model.parameters())
 
-    model_image_captioning = model_image_captioning.to(device)
+    model = model.to(device)
 
     def save_model(model, optimizer, best_val_loss, epoch, path):
         torch.save(
@@ -171,21 +189,24 @@ def main(args):
         ):
             if batch_idx % args.log_frequency == 0:
                 val_loss, semantic_accuracies = validate_model(
-                    model_image_captioning,
+                    model,
                     val_images_loader,
                     print_captions_loader,
                     semantics_eval_loaders,
                     vocab,
                 )
                 semantic_accuracies_over_time.append(semantic_accuracies)
-                pickle.dump(semantic_accuracies_over_time, open(SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING, "wb"))
+                pickle.dump(
+                    semantic_accuracies_over_time,
+                    open(SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING, "wb"),
+                )
                 print(
                     f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss}"
                 )
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
                     save_model(
-                        model_image_captioning,
+                        model,
                         optimizer,
                         best_val_loss,
                         epoch,
@@ -193,21 +214,19 @@ def main(args):
                     )
                 else:
                     save_model(
-                        model_image_captioning,
+                        model,
                         optimizer,
                         best_val_loss,
                         epoch,
                         CHECKPOINT_PATH_IMAGE_CAPTIONING,
                     )
 
-            model_image_captioning.train()
+            model.train()
 
             # Forward pass
-            scores, decode_lengths, alphas = model_image_captioning(
-                images, captions, caption_lengths
-            )
+            scores, decode_lengths, alphas = model(images, captions, caption_lengths)
 
-            loss = model_image_captioning.loss(scores, captions, decode_lengths, alphas)
+            loss = model.loss(scores, captions, decode_lengths, alphas)
             losses.append(loss.mean().item())
 
             optimizer.zero_grad()
@@ -215,7 +234,7 @@ def main(args):
             optimizer.step()
 
         val_loss, semantic_accuracies = validate_model(
-            model_image_captioning,
+            model,
             val_images_loader,
             print_captions_loader,
             semantics_eval_loaders,
@@ -224,7 +243,7 @@ def main(args):
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             save_model(
-                model_image_captioning,
+                model,
                 optimizer,
                 best_val_loss,
                 epoch,
@@ -232,7 +251,7 @@ def main(args):
             )
         else:
             save_model(
-                model_image_captioning,
+                model,
                 optimizer,
                 best_val_loss,
                 epoch,
@@ -248,6 +267,11 @@ def main(args):
 
 def get_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--model",
+        default="show_attend_and_tell",
+        choices=["show_and_tell", "show_attend_and_tell"],
+    )
     parser.add_argument(
         "--fine-tune-resnet",
         default=False,
