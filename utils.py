@@ -17,7 +17,7 @@ CHECKPOINT_PATH_IMAGE_CAPTIONING = os.path.join(
     Path.home(), "data/visual_ref/checkpoints/captioning/image_captioning.pt"
 )
 SEMANTIC_ACCURACIES_PATH_IMAGE_CAPTIONING = os.path.join(
-    Path.home(), "data/visual_ref/checkpoints/captioning/semantic_accuracies.p"
+    Path.home(), "data/visual_ref/checkpoints/captioning/semantic_accuracies_ic.p"
 )
 
 
@@ -25,14 +25,14 @@ CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING = os.path.join(
     Path.home(), "data/visual_ref/checkpoints/ranking/image_sentence_ranking.pt"
 )
 SEMANTIC_ACCURACIES_PATH_RANKING = os.path.join(
-    Path.home(), "data/visual_ref/checkpoints/ranking/semantic_accuracies.p"
+    Path.home(), "data/visual_ref/checkpoints/ranking/semantic_accuracies_ranking.p"
 )
 
 CHECKPOINT_PATH_LANGUAGE_MODEL_BEST = os.path.join(
     Path.home(), "data/visual_ref/checkpoints/lm/language_model.pt"
 )
 SEMANTIC_ACCURACIES_PATH_LANGUAGE_MODEL = os.path.join(
-    Path.home(), "data/visual_ref/checkpoints/lm/semantic_accuracies.p"
+    Path.home(), "data/visual_ref/checkpoints/lm/semantic_accuracies_lm.p"
 )
 
 SEMANTICS_EVAL_FILES = [

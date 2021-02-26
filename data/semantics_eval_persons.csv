@@ -1,482 +1,157 @@
 img_id,target_sentence,distractor_sentence
-1069,mike is wearing glasses,jenny is wearing glasses
-1069,mike is wearing shades,jenny is wearing shades
-1069,mike is very unhappy,jenny is very unhappy
-1069,mike is wearing glasses,jenny is wearing glasses
-1069,mike is wearing a blue cap,jenny is wearing a blue cap
-1082,jenny is waving at the owl,mike is waving at the owl
-1082,jenny took her cat in the woods,mike took his cat in the woods
-1082,jenny is looking for mike,mike is looking for mike
-1082,jenny is looking for mike,jenny is looking for jenny
-1113,mike is wearing a hat,jenny is wearing a hat
-1113,mike kicked the soccer ball,jenny kicked the soccer ball
-1113,mike is holding a football,jenny is holding a football
-1113,mike is holding a football,jenny is holding a football
-1113,mike is wearing a baseball cap,jenny is wearing a baseball cap
-1168,mike sits on the ground,jenny sits on the ground
-1168,mike calls the dog,jenny calls the dog
-1168,mike is beside the hot dog,jenny is beside the hot dog
-1168,mike is wearing a pirate hat,jenny is wearing a pirate hat
-1216,mike had a baseball and a hamburger,jenny had a baseball and a hamburger
-1216,mike is telling a story,jenny is telling a story
-1283,jenny is angry at the owl,mike is angry at the owl
-1283,mike is nowhere to be found,jenny is nowhere to be found
-1320,jenny offers her crown to the owl,mike offers his crown to the owl
-1320,jenny is standing next to a tree,mike is standing next to a tree
-1320,jenny is looking for mike,mike is looking for mike
-1320,jenny is looking for mike,jenny is looking for jenny
-1324,jenny is pretending to be a queen,mike is pretending to be a queen
 1324,jenny is wearing a crown,mike is wearing a crown
-1324,jenny is smiling at the owl,mike is smiling at the owl
-1324,jenny is standing near the tent,mike is standing near the tent
-1327,jenny is holding the crown,mike is holding the crown
-1327,jenny is standing by the tent,mike is standing by the tent
-1327,jenny has a pretty crown,mike has a pretty crown
-1333,mike is scared of the bear,jenny is scared of the bear
-1333,mike is wearing sun glasses,jenny is wearing sun glasses
-1333,mike is very upset,jenny is very upset
-1333,mike is sitting in the grass,jenny is sitting in the grass
-1333,mike is wearing black shades,jenny is wearing black shades
-1417,mike is standing by the fire,jenny is standing by the fire
-1526,mike has a ball and bat,jenny has a ball and bat
-1526,mike is happy to see an airplane,jenny is happy to see an airplane
-1526,mike is playing by the slide,jenny is playing by the slide
-1526,mike has a baseball and bat,jenny has a baseball and bat
-1529,mike wants to play baseball,jenny wants to play baseball
-1529,the dog and cat are near mike,the dog and cat are near jenny
-1529,mike wants to play baseball,jenny wants to play baseball
-1529,mike talks to the dog and cat,jenny talks to the dog and cat
-1529,mike wants to slide,jenny wants to slide
-1639,jenny is wearing sunglasses,mike is wearing sunglasses
-1639,jenny is wearing sunglasses,mike is wearing sunglasses
-1639,jenny sees the rocket,mike sees the rocket
-1862,jenny is scared of the snake,mike is scared of the snake
-1862,jenny is scared of the snake,mike is scared of the snake
-1862,jenny rolls the ball to the cat,mike rolls the ball to the cat
-1873,jenny is wearing her red and white hat,mike is wearing his red and white hat
-1873,there is a cat looking at jenny,there is a cat looking at mike
-1873,jenny warns the cat about the plane,mike warns the cat about the plane
-1873,jenny is worried the plane is too low,mike is worried the plane is too low
-1905,jenny is running to catch a ball,mike is running to catch a ball
-1905,jenny doesnt know which ball to catch,mike doesnt know which ball to catch
-1905,jenny wants to kick the soccer ball,mike wants to kick the soccer ball
-1905,jenny is chasing the soccer ball,mike is chasing the soccer ball
-1905,jenny is playing soccer,mike is playing soccer
-1905,jenny is afraid the ball is getting away,mike is afraid the ball is getting away
-2043,jenny has a pink bucket,mike has a pink bucket
-2043,jenny is running away with a bucket,mike is running away with a bucket
-2050,jenny is trying to play tennis in the rain,mike is trying to play tennis in the rain
-2050,jenny is unhappy,mike is unhappy
-2050,jenny does not like the rain,mike does not like the rain
-2050,jenny wants to play tennis,mike wants to play tennis
-2084,jenny is wearing a witches hat,mike is wearing a witches hat
-2084,jenny is talking to a cat and duck,mike is talking to a cat and duck
-2084,the cat and duck are watching jenny,the cat and duck are watching mike
-2084,jenny is wearing a witch hat,mike is wearing a witch hat
-2087,jenny <unk> her drink from the duck,mike <unk> his drink from the duck
-2087,jenny is startled by the duck,mike is startled by the duck
-2087,jenny is holding a soda,mike is holding a soda
-2087,jenny does not want to <unk> her soda,mike does not want to <unk> his soda
-2088,jenny is crying and scared,mike is crying and scared
-2088,jenny is standing next to the duck,mike is standing next to the duck
-2088,jenny is near a tree,mike is near a tree
-2088,there is a duck beside jenny,there is a duck beside mike
-213,jenny is standing on the grass,mike is standing on the grass
-213,there is a park bench away from from jenny,there is a park bench away from from mike
-213,jenny is looking at a tree,mike is looking at a tree
-213,jenny gave the owl her wizard hat,mike gave the owl his wizard hat
-213,jenny is standing next to a tree,mike is standing next to a tree
-213,jenny is standing next to an owl,mike is standing next to an owl
-2174,mike is grilling outside,jenny is grilling outside
-2174,mike is wearing a baseball cap,jenny is wearing a baseball cap
-2174,mike is holding a hamburger and ketchup,jenny is holding a hamburger and ketchup
-219,jenny is wearing a blue hat,mike is wearing a blue hat
-219,jenny is wearing purple hat,mike is wearing purple hat
-2470,jenny is happy to have four balloons,mike is happy to have four balloons
-2470,the brown dog is happy to see jenny,the brown dog is happy to see mike
-2470,jenny is holding balloons,mike is holding balloons
-2470,the dog is watching jenny run,the dog is watching mike run
-2470,jenny is running towards the trees,mike is running towards the trees
-2548,mike is wearing a blue cap,jenny is wearing a blue cap
-2548,mike kicked a football to a snake,jenny kicked a football to a snake
-2548,mike is angry at the football,jenny is angry at the football
-2590,jenny is flying a kite,mike is flying a kite
-2590,jenny is flying a kite,mike is flying a kite
-2590,jenny is wearing a pirate hat,mike is wearing a pirate hat
-2590,the cat is sitting beside jenny,the cat is sitting beside mike
-2593,jenny is flying a kite,mike is flying a kite
-2593,the cat is watching jenny,the cat is watching mike
-2593,jenny is flying a kite,mike is flying a kite
-2598,jenny is flying a kite,mike is flying a kite
-2598,jenny likes to fly kites,mike likes to fly kites
-2598,the cat is watching jenny,the cat is watching mike
-2599,jenny flies a colorful kite,mike flies a colorful kite
-2599,jenny is flying a kite,mike is flying a kite
-2629,jenny has a colorful hat on,mike has a colorful hat on
-2629,jenny sat next to two trees,mike sat next to two trees
-2629,jenny is angry at the trees,mike is angry at the trees
-2629,jenny is holding a baseball,mike is holding a baseball
-2629,jenny is wearing a colorful hat,mike is wearing a colorful hat
-2629,jenny is sitting beside two trees,mike is sitting beside two trees
-2637,mike is sitting in the grass,jenny is sitting in the grass
-2637,mike is playing with a freezebe,jenny is playing with a freezebe
-2637,there is a snake by mike,there is a snake by jenny
-2637,mike is playing frisbee with the dog,jenny is playing frisbee with the dog
-2670,mike threw a frisbee,jenny threw a frisbee
-2670,there is a beach ball next to mike,there is a beach ball next to jenny
-2670,mike waved to the duck,jenny waved to the duck
-2670,mike wanted to kick the beach ball,jenny wanted to kick the beach ball
-2672,mike says hello to the duck,jenny says hello to the duck
-2672,mike is happy to see the duck,jenny is happy to see the duck
-2672,the duck is between mike and the sandbox,the duck is between jenny and the sandbox
-2677,mike is wearing a police hat,jenny is wearing a police hat
-2677,mike waves to the duck,jenny waves to the duck
-2677,mike is wearing a blue hat,jenny is wearing a blue hat
-2733,mike throws a football at the rocket,jenny throws a football at the rocket
-2733,mike is wearing a baseball cap,jenny is wearing a baseball cap
-2733,mike is wearing a blue baseball hat,jenny is wearing a blue baseball hat
-2737,mike is wearing a blue cap,jenny is wearing a blue cap
-2737,mike threw a football,jenny threw a football
-2737,mike is near slide,jenny is near slide
-2737,mike is wearing a hot,jenny is wearing a hot
-2737,mike is playing football,jenny is playing football
-2804,mike is waving at the bear,jenny is waving at the bear
-2804,mike is standing next to a picnic table,jenny is standing next to a picnic table
-2804,mike is surprised to see the bear,jenny is surprised to see the bear
-2804,mike is standing beside the picnic table,jenny is standing beside the picnic table
-2834,jenny is holding balloons,mike is holding balloons
-2834,jenny wants the dog to play with her,mike wants the dog to play with his
-2834,jenny is cooking lunch,mike is cooking lunch
-2834,jenny has colorful balloons,mike has colorful balloons
-2839,jenny is floating with the balloons,mike is floating with the balloons
-2839,jenny is wearing sunglasses,mike is wearing sunglasses
-2839,jenny is wearing sunglasses,mike is wearing sunglasses
-2839,jenny is holding some balloons,mike is holding some balloons
-2839,jenny is running towards the dog,mike is running towards the dog
-3024,jenny is flying a kite at the park,mike is flying a kite at the park
-3024,the dog is looking at jenny,the dog is looking at mike
-3024,jenny is happy,mike is happy
-3024,jenny laughs as she flies the colorful kite,mike laughs as she flies the colorful kite
-3024,the sun is shining brightly above jenny,the sun is shining brightly above mike
-3143,mike is wearing sunglasses,jenny is wearing sunglasses
-3143,mike is sitting on the ground,jenny is sitting on the ground
-3143,mike is wearing sunglasses,jenny is wearing sunglasses
-3143,mike is sitting beside the picnic table,jenny is sitting beside the picnic table
-3146,jenny is sitting on the ground,mike is sitting on the ground
-3146,jenny is sitting by the table,mike is sitting by the table
-3146,jenny is calling the dog,mike is calling the dog
-3146,mike is wearing a grey and red snow hat,jenny is wearing a grey and red snow hat
-3146,mike is sitting near the picnic table,jenny is sitting near the picnic table
-3156,jenny is under the sun,mike is under the sun
-3156,jenny has her arms in the air,mike has his arms in the air
-32,mike is kicking a soccer ball,jenny is kicking a soccer ball
-32,mike is kicking the soccer ball,jenny is kicking the soccer ball
-3241,mike is sitting on the ground,jenny is sitting on the ground
-3241,mike is wearing sunglasses,jenny is wearing sunglasses
-3241,mike is sitting on the ground,jenny is sitting on the ground
-3241,mike is wearing sunglasses,jenny is wearing sunglasses
-341,jenny and her cat play in the sandbox,mike and his cat play in the sandbox
-341,jenny tries to play catch with her cat,mike tries to play catch with his cat
-341,jenny plays with the orange cat,mike plays with the orange cat
-341,jenny wants to play baseball,mike wants to play baseball
-341,the orange cat watches jenny,the orange cat watches mike
-3458,mike threw the ball for the dog,jenny threw the ball for the dog
-3458,the dog is looking at mike,the dog is looking at jenny
-3458,mike is standing by the tree,jenny is standing by the tree
-3458,mike wants to play with the dog,jenny wants to play with the dog
-3558,mike is sitting behind the fire,jenny is sitting behind the fire
-3558,mike is scared of the bear,jenny is scared of the bear
-3558,a bear is roaring at mike,a bear is roaring at jenny
-3558,mike is sitting by a campfire and a grill,jenny is sitting by a campfire and a grill
-3558,a duck watches the bear and mike,a duck watches the bear and jenny
-3574,someone in the helicopter is watching jenny,someone in the helicopter is watching mike
-3574,jenny is going to slide down the slide,mike is going to slide down the slide
-3574,jenny is near a slide,mike is near a slide
-3574,jenny is in the grass,mike is in the grass
-3574,jenny is near the grass,mike is near the grass
-3656,mike is eating a hot dog,jenny is eating a hot dog
-3656,mike is angry at the duck trying to take his hot dog,jenny is angry at the duck trying to take her hot dog
-3656,mike is wearing a hat,jenny is wearing a hat
-3656,mike is eating a hot dog,jenny is eating a hot dog
-3656,mike is wearing a colorful cap,jenny is wearing a colorful cap
-3713,mike is running away from the fire,jenny is running away from the fire
-3713,<unk> bear growls at mike,<unk> bear growls at jenny
-3713,the bear wants mike to catch the frisbee,the bear wants jenny to catch the frisbee
-3713,mike is scared of the bear,jenny is scared of the bear
-3713,mike is running,jenny is running
-3716,mike runs away in fear,jenny runs away in fear
-3716,mike is running away from the bear,jenny is running away from the bear
-3716,an airplane is flying above mike and the bear,an airplane is flying above jenny and the bear
-3816,mike was playing by the slide,jenny was playing by the slide
-3816,mike threw the football,jenny threw the football
-3816,mike is wearing a hat,jenny is wearing a hat
-3816,mike is throwing the ball in the air,jenny is throwing the ball in the air
-3816,the helicopter is flying above mike,the helicopter is flying above jenny
-3817,mike is throwing the football,jenny is throwing the football
-3817,mike is at the playground alone,jenny is at the playground alone
-3817,mike is catching the football,jenny is catching the football
-3839,mike is sad because his ball rolled away,jenny is sad because her ball rolled away
-3839,mike is in the sandbox,jenny is in the sandbox
-3839,the bear wants to play with mike,the bear wants to play with jenny
-3839,mike is sitting in the sandbox,jenny is sitting in the sandbox
-3972,jenny is crying and holds the ball,mike is crying and holds the ball
-3972,the dog smiles at jenny,the dog smiles at mike
-3972,jenny is wearing a witch hat,mike is wearing a witch hat
-3972,it is raining on jenny,it is raining on mike
-4224,mike is kicking a beach ball,jenny is kicking a beach ball
-4224,mike is beside the tree,jenny is beside the tree
-4224,mike is running toward the sandbox,jenny is running toward the sandbox
-4224,mike likes to go down the slide,jenny likes to go down the slide
-4228,mike is running in the park,jenny is running in the park
-4228,mike is next to the slide,jenny is next to the slide
-4228,mike is near a slide,jenny is near a slide
-4228,mike is very happy,jenny is very happy
-4242,there is a snake near mike,there is a snake near jenny
-4242,mike is sad because of the snake,jenny is sad because of the snake
-4242,mike is wearing glasses,jenny is wearing glasses
-4242,mike fell off the slide and got hurt,jenny fell off the slide and got hurt
-4242,mike was scared when he saw a snake coming his way,jenny was scared when he saw a snake coming her way
-4242,mike wore sunglasses to help shade his eyes from the sun,jenny wore sunglasses to help shade her eyes from the sun
-4529,mike is wearing a ball cap,jenny is wearing a ball cap
-4529,mike is kicking a basketball,jenny is kicking a basketball
-4529,mike is kicking a ball,jenny is kicking a ball
-4529,a helicopter is flying behind mike,a helicopter is flying behind jenny
-4529,mike is wearing a baseball cap,jenny is wearing a baseball cap
-4592,mike is throwing the ball to the dog,jenny is throwing the ball to the dog
-4592,mike throws the dog the tennis ball,jenny throws the dog the tennis ball
-4592,the sun is above mike,the sun is above jenny
-4592,mike is in front of the dog,jenny is in front of the dog
-4594,mike is holding a tennis ball,jenny is holding a tennis ball
-4708,jenny is on the table,mike is on the table
-4708,jenny is wearing a pink dress,mike is wearing a pink dress
-4708,jenny is crying at the picnic table,mike is crying at the picnic table
-4708,the bear is coming up behind jenny,the bear is coming up behind mike
-4734,the bear is <unk> to scare mike,the bear is <unk> to scare jenny
-4734,mike is sitting on the table,jenny is sitting on the table
-4734,mike is sitting on the table,jenny is sitting on the table
-4734,mike has a hotdog,jenny has a hotdog
-4806,the bear surprised mike,the bear surprised jenny
-4806,mike is dropping his soda,jenny is dropping her soda
-4806,mike has a sodacan,jenny has a sodacan
-4806,there is a bear <unk> mike,there is a bear <unk> jenny
-4878,mike is playing in the sand box,jenny is playing in the sand box
-4878,mike is wearing a snow cap,jenny is wearing a snow cap
-4878,mike is sitting in the sand box,jenny is sitting in the sand box
-4878,the dog is watching mike,the dog is watching jenny
-5045,mike is sitting in the sand box,jenny is sitting in the sand box
-5045,mike is sitting in the sand box,jenny is sitting in the sand box
-5049,mike and his cat are playing in the sandbox,jenny and her cat are playing in the sandbox
-5049,mike is wearing a wool cap,jenny is wearing a wool cap
-5049,mike is in the sandbox,jenny is in the sandbox
-5247,mike is behind the dog,jenny is behind the dog
-5247,the bear is trying to scare mike,the bear is trying to scare jenny
 5247,mike is wearing a crown,jenny is wearing a crown
-5247,a dog is standing in front of mike,a dog is standing in front of jenny
-5354,mike is sitting by the swing set,jenny is sitting by the swing set
-5354,mike is happy to see the ball,jenny is happy to see the ball
-5354,mike is wearing a blue shirt,jenny is wearing a blue shirt
-5354,mike is sitting in the grass,jenny is sitting in the grass
-5354,mike is in front of the swing set,jenny is in front of the swing set
-558,jenny is wearing a crown,mike is wearing a crown
-558,jenny has four balloons,mike has four balloons
-558,jenny is very sad,mike is very sad
-558,jenny is wearing a crown,mike is wearing a crown
-5603,jenny is standing by the table,mike is standing by the table
-5603,the dog is standing by jenny,the dog is standing by mike
-5603,jenny is trying to catch a duck,mike is trying to catch a duck
-5603,the dog is watching jenny,the dog is watching mike
-5607,jenny is wearing a blue witch hat,mike is wearing a blue witch hat
-5607,jenny wears a blue hat,mike wears a blue hat
-5607,jenny wants to hold the duck,mike wants to hold the duck
-5607,jenny has a pizza for lunch,mike has a pizza for lunch
-5654,mike is wearing a colorful hat,jenny is wearing a colorful hat
-5654,mike has a baseball glove,jenny has a baseball glove
-5654,mike is camping with pizza,jenny is camping with pizza
-5654,mike is wearing a silly hat,jenny is wearing a silly hat
-5758,jenny has a bottle of mustard,mike has a bottle of mustard
-5758,jenny is wearing a winter hat,mike is wearing a winter hat
-5758,jenny is wearing the hat,mike is wearing the hat
-5758,jenny is holding the mustard,mike is holding the mustard
-5775,jenny is frightened by the bear,mike is frightened by the bear
-5775,jenny and her cat are scared of the bear,mike and his cat are scared of the bear
-5775,jenny is jumping in the air,mike is jumping in the air
-5775,the cat is behind jenny,the cat is behind mike
-5794,jenny is wearing purple sunglasses,mike is wearing purple sunglasses
-5794,jenny is holding a cola,mike is holding a cola
-5794,theres a dog beside jenny,theres a dog beside mike
-5994,mike is surprised to see the pie in the sandbox,jenny is surprised to see the pie in the sandbox
-5994,mike is wearing a pirate hat,jenny is wearing a pirate hat
-5994,the cat is standing by mike,the cat is standing by jenny
-606,the duck wants to play with mike,the duck wants to play with jenny
-606,mike is holding the bat,jenny is holding the bat
-606,mike is wearing a baseball bat,jenny is wearing a baseball bat
-606,mike is wearing the hat,jenny is wearing the hat
-606,mike is holding the bat,jenny is holding the bat
-606,the duck is standing by mike,the duck is standing by jenny
-6180,it is starting to rain on jenny,it is starting to rain on mike
-6180,jenny has a camp fire,mike has a camp fire
-6180,its raining on jenny,its raining on mike
-6180,jenny sits by the fire,mike sits by the fire
-6180,theres a helicopter above jenny,theres a helicopter above mike
-6182,jenny is sad because it is raining,mike is sad because it is raining
-6182,jenny is sad that its raining,mike is sad that its raining
-6182,jenny is sitting next to the fire,mike is sitting next to the fire
-6182,jenny is sitting next to the rain,mike is sitting next to the rain
-6183,jenny is cooking hotdogs on the grill,mike is cooking hotdogs on the grill
-6183,jenny sees a helicopter in the sky,mike sees a helicopter in the sky
-6183,jenny is kneeling next to the fire,mike is kneeling next to the fire
-6323,mike is playing in the sandbox,jenny is playing in the sandbox
-6323,mike has a pink shovel and an orange frisbee,jenny has a pink shovel and an orange frisbee
-6323,mike is playing in the sandbox,jenny is playing in the sandbox
-6323,mike brought a frisbee to play with,jenny brought a frisbee to play with
-6323,mike left his baseball on the ground,jenny left her baseball on the ground
-6325,mike is wearing the hat,jenny is wearing the hat
-6325,mike is holding the shovel,jenny is holding the shovel
-6325,mike plans to <unk> the cat,jenny plans to <unk> the cat
-6325,the cat stares at mike,the cat stares at jenny
-6434,jenny is playing on the swing,mike is playing on the swing
-6434,jenny is wearing a helm,mike is wearing a helm
-6434,a dog is looking at jenny,a dog is looking at mike
-6434,jenny is sitting on a swing,mike is sitting on a swing
-6434,a cat is sitting in front of jenny,a cat is sitting in front of mike
-6439,jenny is swinging on a swing,mike is swinging on a swing
-6439,jenny is wearing a hat,mike is wearing a hat
-6439,jenny is playing on the swings,mike is playing on the swings
-6509,a snake is chasing mike,a snake is chasing jenny
-6509,mike is scared of the snake,jenny is scared of the snake
-6509,mike is running away from the snake,jenny is running away from the snake
-6509,mike is running away from the snake,jenny is running away from the snake
-6509,mike is next to a tree,jenny is next to a tree
-6509,the snake is looking at mike,the snake is looking at jenny
-6738,jenny is playing in the sandbox,mike is playing in the sandbox
-6738,jenny plays in the sand,mike plays in the sand
-6738,mike is in the tent,jenny is in the tent
-6738,miss cat watches jenny,miss cat watches mike
-6882,mike threw the basketball in the sandbox,jenny threw the basketball in the sandbox
-6886,mike is wondering what is going on,jenny is wondering what is going on
-6930,mike is next to a <unk> fire,jenny is next to a <unk> fire
-6930,mike is happy to be <unk>,jenny is happy to be <unk>
-6930,mike is having a barbeque,jenny is having a barbeque
-6930,mike is sitting by the fire,jenny is sitting by the fire
-6961,jenny is holding a duck,mike is holding a duck
-6961,jenny is sad because her duck is <unk>,mike is sad because his duck is <unk>
-6961,the bear has scared jenny away from her picnic,the bear has scared mike away from his picnic
-6968,jenny is scared of the bear,mike is scared of the bear
-6968,the duck is standing next to jenny,the duck is standing next to mike
-6968,jenny is running away from a bear,mike is running away from a bear
-6968,jenny is in front of an orange tent,mike is in front of an orange tent
-7023,mike has a baseball bat and a glove,jenny has a baseball bat and a glove
-7023,mike is surprised to see the duck,jenny is surprised to see the duck
-7023,mike wants to play baseball,jenny wants to play baseball
-7023,jenny is in the tent,mike is in the tent
-7032,mike holds a hot dog,jenny holds a hot dog
-7032,mike is beside a fire,jenny is beside a fire
-7032,mike is in front of the apple tree,jenny is in front of the apple tree
-7032,mike is eating a hotdog,jenny is eating a hotdog
-7032,the bonfire is closest to mike,the bonfire is closest to jenny
-7215,mike is sitting near a fire,jenny is sitting near a fire
-7215,the dog is looking at mike,the dog is looking at jenny
-7215,mike is sitting by the fire,jenny is sitting by the fire
-7215,mike is sitting by the ball,jenny is sitting by the ball
-7341,mike is kicking the ball to the bear,jenny is kicking the ball to the bear
-7341,mike is wearing a viking hat,jenny is wearing a viking hat
-7341,mike is kicking a soccer ball,jenny is kicking a soccer ball
-7493,jenny has made a hamburger,mike has made a hamburger
-7493,jenny has a hamburger,mike has a hamburger
-7521,the rocket took off <unk> jenny,the rocket took off <unk> mike
-7521,jenny is happy the duck and snake <unk>,mike is happy the duck and snake <unk>
-7521,jenny is standing next to the <unk> bee,mike is standing next to the <unk> bee
-7521,jenny is scared of the snake,mike is scared of the snake
-7815,jenny is standing by the table,mike is standing by the table
-7815,jenny is scared of the bear,mike is scared of the bear
-7815,jenny worries the bear will eat her food,mike worries the bear will eat his food
-7815,jenny worries the bear will drink her soda,mike worries the bear will drink his soda
-800,mike is watching the rocket ship,jenny is watching the rocket ship
-800,mike is enjoying the sun,jenny is enjoying the sun
-800,mike is quite happy,jenny is quite happy
-8076,jenny is kicking the bear,mike is kicking the bear
-8076,jenny is kicking the bear,mike is kicking the bear
-8079,jenny is wearing sunglasses,mike is wearing sunglasses
-8079,jenny is kicking the bear,mike is kicking the bear
-8102,mike has a campfire going,jenny has a campfire going
-8102,mike looks surprised by the owl,jenny looks surprised by the owl
-8102,mike is watching the owl,jenny is watching the owl
-8247,jenny is angry at the snake,mike is angry at the snake
-8247,jenny is mad at the snake,mike is mad at the snake
-8247,jenny is standing next to the swingset,mike is standing next to the swingset
-8254,jenny is wearing a viking hat,mike is wearing a viking hat
-8254,jenny is standing next to the dog,mike is standing next to the dog
-8254,jenny is excited to see the owl,mike is excited to see the owl
-8256,jenny is wearing a hat,mike is wearing a hat
-8256,the owl and dog are playing with jenny,the owl and dog are playing with mike
-8256,jenny takes her dog to the park,mike takes his dog to the park
-8256,the owl watches jenny,the owl watches mike
-8335,mike kicked his soccer ball,jenny kicked her soccer ball
-8335,mike is waiting for his lunch,jenny is waiting for her lunch
-8335,mike thinks lunch smells great,jenny thinks lunch smells great
-8335,mike is kicking the soccer ball,jenny is kicking the soccer ball
-8335,mike is near the apple tree,jenny is near the apple tree
-8524,jenny is wearing a hat,mike is wearing a hat
-8524,jenny is sitting down,mike is sitting down
-8524,jenny is wearing a wizard hat,mike is wearing a wizard hat
-8524,jenny is sitting next to the dog,mike is sitting next to the dog
-8524,jenny is sitting under the cloud,mike is sitting under the cloud
-8722,mike is wearing a <unk> bird had,jenny is wearing a <unk> bird had
-8722,mike is holding a tennis ball,jenny is holding a tennis ball
-8722,mike and the cat are near the apple tree,jenny and the cat are near the apple tree
-8722,mike wants to play with the cat,jenny wants to play with the cat
-8722,mike has a ball,jenny has a ball
-8742,jenny is afraid of a snake near the sandbox,mike is afraid of a snake near the sandbox
-8742,jenny is sitting in a sandbox,mike is sitting in a sandbox
-8742,jenny sits in a sandbox,mike sits in a sandbox
-8742,theres a plane above jenny,theres a plane above mike
-8773,the bear and jenny raised their arms in the air,the bear and mike raised their arms in the air
-8773,jenny and the bear stood outside the tent,mike and the bear stood outside the tent
-8773,jenny is wearing a <unk> crown,mike is wearing a <unk> crown
-8773,jenny is standing beside the camp fire,mike is standing beside the camp fire
-8797,jenny is scared of the bear,mike is scared of the bear
-8797,the bear is scared of jenny,the bear is scared of mike
-8797,jenny is wearing a blue hat,mike is wearing a blue hat
-8797,jenny is wearing a baseball hat with a star on it,mike is wearing a baseball hat with a star on it
-8797,the bear is behind jenny,the bear is behind mike
-883,mike has a viking hat on,jenny has a viking hat on
-883,mike is wearing the hat,jenny is wearing the hat
-883,mike is sitting by the fire,jenny is sitting by the fire
-898,jenny is sad because she fell off the swing,mike is sad because she fell off the swing
-898,jenny is playing alone,mike is playing alone
-898,a hot air balloon is flying over jenny,a hot air balloon is flying over mike
-898,jenny fell off of the swing,mike fell off of the swing
-902,mike has ketchup and mustard,jenny has ketchup and mustard
-902,the bear is sneaking up on mike,the bear is sneaking up on jenny
-902,mike is not happy,jenny is not happy
-902,mike is near a bear,jenny is near a bear
-902,mike is wearing a hat,jenny is wearing a hat
-9049,mike is happy to see the owl,jenny is happy to see the owl
-9049,mike built a fire,jenny built a fire
-9233,there is an owl watching mike,there is an owl watching jenny
-9233,mike sees a football basketball and baseball glove,jenny sees a football basketball and baseball glove
+1324,jenny is smiling at the owl,mike is smiling at the owl
 9233,mike is smiling at the owl,jenny is smiling at the owl
-9233,mike wants to play with the balls,jenny wants to play with the balls
-937,jenny is sad because of the rain,mike is sad because of the rain
-937,jenny has a pink bucket full of sand,mike has a pink bucket full of sand
-937,jenny is standing by a apple tree,mike is standing by a apple tree
-937,jenny is scared of the storm,mike is scared of the storm
-937,jenny is standing by the tree,mike is standing by the tree
-937,jenny is waving her arms,mike is waving his arms
-9385,mike is hungry for the pizza,jenny is hungry for the pizza
-9385,mike sees the cat,jenny sees the cat
-9431,mike is on the sliding board,jenny is on the sliding board
-9431,the snake is waiting for mike at the bottom,the snake is waiting for jenny at the bottom
-9431,the bear tries to <unk> mike,the bear tries to <unk> jenny
+1639,jenny is wearing sunglasses,mike is wearing sunglasses
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+1639,jenny is wearing sunglasses,mike is wearing sunglasses
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+1639,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
+1639,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
+1639,jenny is wearing sunglasses,mike is wearing sunglasses
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+1639,jenny is wearing sunglasses,mike is wearing sunglasses
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+1639,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
+1639,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
+1862,jenny is scared of the snake,mike is scared of the snake
+6509,mike is scared of the snake,jenny is scared of the snake
+1862,jenny is scared of the snake,mike is scared of the snake
 9431,mike is scared of the snake,jenny is scared of the snake
-9438,the bear scared mike,the bear scared jenny
-9438,mike is afraid of the bear,jenny is afraid of the bear
-9552,jenny is sad,mike is sad
-9552,jenny is sad because it is raining,mike is sad because it is raining
-9552,the cat is sitting by jenny,the cat is sitting by mike
-963,jenny is standing next to the table,mike is standing next to the table
-963,jenny is wearing a chef hat,mike is wearing a chef hat
+1862,jenny is scared of the snake,mike is scared of the snake
+6509,mike is scared of the snake,jenny is scared of the snake
+1862,jenny is scared of the snake,mike is scared of the snake
+9431,mike is scared of the snake,jenny is scared of the snake
+219,jenny is wearing a blue hat,mike is wearing a blue hat
+2677,mike is wearing a blue hat,jenny is wearing a blue hat
+2590,jenny is wearing a pirate hat,mike is wearing a pirate hat
+1168,mike is wearing a pirate hat,jenny is wearing a pirate hat
+2590,jenny is wearing a pirate hat,mike is wearing a pirate hat
+5994,mike is wearing a pirate hat,jenny is wearing a pirate hat
+2629,jenny is wearing a colorful hat,mike is wearing a colorful hat
+5654,mike is wearing a colorful hat,jenny is wearing a colorful hat
+2839,jenny is wearing sunglasses,mike is wearing sunglasses
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+2839,jenny is wearing sunglasses,mike is wearing sunglasses
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+2839,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
+2839,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
+2839,jenny is wearing sunglasses,mike is wearing sunglasses
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+2839,jenny is wearing sunglasses,mike is wearing sunglasses
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+2839,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
+2839,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
+3024,the dog is looking at jenny,the dog is looking at mike
+3458,the dog is looking at mike,the dog is looking at jenny
+3024,the dog is looking at jenny,the dog is looking at mike
+7215,the dog is looking at mike,the dog is looking at jenny
+3146,jenny is sitting on the ground,mike is sitting on the ground
+3143,mike is sitting on the ground,jenny is sitting on the ground
+3146,jenny is sitting on the ground,mike is sitting on the ground
+3241,mike is sitting on the ground,jenny is sitting on the ground
+3146,jenny is sitting on the ground,mike is sitting on the ground
+3241,mike is sitting on the ground,jenny is sitting on the ground
+341,jenny wants to play baseball,mike wants to play baseball
+1529,mike wants to play baseball,jenny wants to play baseball
+341,jenny wants to play baseball,mike wants to play baseball
+1529,mike wants to play baseball,jenny wants to play baseball
+341,jenny wants to play baseball,mike wants to play baseball
+7023,mike wants to play baseball,jenny wants to play baseball
+3574,jenny is near a slide,mike is near a slide
+4228,mike is near a slide,jenny is near a slide
+558,jenny is wearing a crown,mike is wearing a crown
+5247,mike is wearing a crown,jenny is wearing a crown
+558,jenny is wearing a crown,mike is wearing a crown
+5247,mike is wearing a crown,jenny is wearing a crown
+5603,the dog is watching jenny,the dog is watching mike
+4878,the dog is watching mike,the dog is watching jenny
+5758,jenny is wearing the hat,mike is wearing the hat
+606,mike is wearing the hat,jenny is wearing the hat
+5758,jenny is wearing the hat,mike is wearing the hat
+6325,mike is wearing the hat,jenny is wearing the hat
+5758,jenny is wearing the hat,mike is wearing the hat
+883,mike is wearing the hat,jenny is wearing the hat
+6439,jenny is wearing a hat,mike is wearing a hat
+1113,mike is wearing a hat,jenny is wearing a hat
+6439,jenny is wearing a hat,mike is wearing a hat
+3656,mike is wearing a hat,jenny is wearing a hat
+6439,jenny is wearing a hat,mike is wearing a hat
+3816,mike is wearing a hat,jenny is wearing a hat
+6439,jenny is wearing a hat,mike is wearing a hat
+902,mike is wearing a hat,jenny is wearing a hat
+6738,jenny is playing in the sandbox,mike is playing in the sandbox
+6323,mike is playing in the sandbox,jenny is playing in the sandbox
+6738,jenny is playing in the sandbox,mike is playing in the sandbox
+6323,mike is playing in the sandbox,jenny is playing in the sandbox
+6968,jenny is scared of the bear,mike is scared of the bear
+1333,mike is scared of the bear,jenny is scared of the bear
+6968,jenny is scared of the bear,mike is scared of the bear
+3558,mike is scared of the bear,jenny is scared of the bear
+6968,jenny is scared of the bear,mike is scared of the bear
+3713,mike is scared of the bear,jenny is scared of the bear
+7023,jenny is in the tent,mike is in the tent
+6738,mike is in the tent,jenny is in the tent
+7521,jenny is scared of the snake,mike is scared of the snake
+6509,mike is scared of the snake,jenny is scared of the snake
+7521,jenny is scared of the snake,mike is scared of the snake
+9431,mike is scared of the snake,jenny is scared of the snake
+7815,jenny is scared of the bear,mike is scared of the bear
+1333,mike is scared of the bear,jenny is scared of the bear
+7815,jenny is scared of the bear,mike is scared of the bear
+3558,mike is scared of the bear,jenny is scared of the bear
+7815,jenny is scared of the bear,mike is scared of the bear
+3713,mike is scared of the bear,jenny is scared of the bear
+8079,jenny is wearing sunglasses,mike is wearing sunglasses
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+8079,jenny is wearing sunglasses,mike is wearing sunglasses
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+8079,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
+8079,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
+8254,jenny is wearing a viking hat,mike is wearing a viking hat
+7341,mike is wearing a viking hat,jenny is wearing a viking hat
+8256,jenny is wearing a hat,mike is wearing a hat
+1113,mike is wearing a hat,jenny is wearing a hat
+8256,jenny is wearing a hat,mike is wearing a hat
+3656,mike is wearing a hat,jenny is wearing a hat
+8256,jenny is wearing a hat,mike is wearing a hat
+3816,mike is wearing a hat,jenny is wearing a hat
+8256,jenny is wearing a hat,mike is wearing a hat
+902,mike is wearing a hat,jenny is wearing a hat
+8524,jenny is wearing a hat,mike is wearing a hat
+1113,mike is wearing a hat,jenny is wearing a hat
+8524,jenny is wearing a hat,mike is wearing a hat
+3656,mike is wearing a hat,jenny is wearing a hat
+8524,jenny is wearing a hat,mike is wearing a hat
+3816,mike is wearing a hat,jenny is wearing a hat
+8524,jenny is wearing a hat,mike is wearing a hat
+902,mike is wearing a hat,jenny is wearing a hat
+8797,jenny is scared of the bear,mike is scared of the bear
+1333,mike is scared of the bear,jenny is scared of the bear
+8797,jenny is scared of the bear,mike is scared of the bear
+3558,mike is scared of the bear,jenny is scared of the bear
+8797,jenny is scared of the bear,mike is scared of the bear
+3713,mike is scared of the bear,jenny is scared of the bear
+8797,jenny is wearing a blue hat,mike is wearing a blue hat
+2677,mike is wearing a blue hat,jenny is wearing a blue hat
+937,jenny is standing by the tree,mike is standing by the tree
+3458,mike is standing by the tree,jenny is standing by the tree
 963,jenny is wearing sunglasses,mike is wearing sunglasses
-963,the helicopter is flying over jenny,the helicopter is flying over mike
-965,jenny is happy to see pizza,mike is happy to see pizza
-965,jenny sees the pizza on the table,mike sees the pizza on the table
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+963,jenny is wearing sunglasses,mike is wearing sunglasses
+3143,mike is wearing sunglasses,jenny is wearing sunglasses
+963,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
+963,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses

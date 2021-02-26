@@ -94,21 +94,45 @@ def generate_eval_set_persons(image_ids, meta_data, images, captions, vocab):
 
     image_ids = get_image_ids_single_actor(image_ids, meta_data)
     for img_id in image_ids:
-        for caption in captions[img_id]:
-            decoded_caption = decode_caption(caption, vocab, join=False)
+        for target_caption in captions[img_id]:
+            target_caption = decode_caption(target_caption, vocab, join=False)
             for actor in ["jenny", "mike"]:
-                if actor in decoded_caption:
-                    for object_distractor in ["jenny", "mike"]:
-                        if actor != object_distractor:
-                            distractor = [word if word != actor else object_distractor for word in decoded_caption]
-                            if actor == "jenny":
-                                distractor = [word if word != "her" else "his" for word in distractor]
-                            else:
-                                distractor = [word if word != "his" else "her" for word in distractor]
+                if actor in target_caption:
+                    if actor == "jenny":
+                        for img_id_distractor in image_ids:
+                            for distractor_caption in captions[img_id_distractor]:
+                                distractor_caption = decode_caption(distractor_caption, vocab, join=False)
+                                if "mike" in distractor_caption:
+                                    replaced = [word if word != "mike" else "jenny" for word in distractor_caption]
+                                    if replaced == target_caption:
+                                        print(target_caption)
+                                        print(distractor_caption)
+                                        target_sentence = " ".join(target_caption)
+                                        distractor_sentence = " ".join(distractor_caption)
+                                        samples.append({"img_id": img_id, "target_sentence": target_sentence,
+                                                        "distractor_sentence": distractor_sentence})
+                                        samples.append({"img_id": img_id_distractor, "target_sentence": distractor_sentence,
+                                                        "distractor_sentence": target_sentence})
 
-                            target_sentence = " ".join(decoded_caption)
-                            distractor_sentence = " ".join(distractor)
-                            samples.append({"img_id": img_id, "target_sentence": target_sentence, "distractor_sentence": distractor_sentence})
+                            # else:
+                    #     for img_id_distractor in image_ids:
+                    #         for caption_distractor in captions[img_id_distractor]:
+                    #             distractor = decode_caption(caption_distractor, vocab, join=False)
+                    #             replaced = [word if word != "jenny" else "mike" for word in distractor]
+                    #             if replaced == target_caption:
+                    #                 print(target_caption)
+
+                    # for object_distractor in ["jenny", "mike"]:
+                    #     if actor != object_distractor:
+                    #         distractor = [word if word != actor else object_distractor for word in decoded_caption]
+                    #         if actor == "jenny":
+                    #             distractor = [word if word != "her" else "his" for word in distractor]
+                    #         else:
+                    #             distractor = [word if word != "his" else "her" for word in distractor]
+
+                            # target_sentence = " ".join(target_caption)
+                            # distractor_sentence = " ".join(distractor_caption)
+                            # samples.append({"img_id": img_id, "target_sentence": target_sentence, "distractor_sentence": distractor_sentence})
                             # print(f"{img_id},{target_sentence},{distractor_sentence}")
 
         # show_image(images[str(img_id)])
@@ -215,18 +239,18 @@ def main(args):
     data_persons = generate_eval_set_persons(image_ids.copy(), meta_data, images, captions, vocab)
     data_persons.to_csv("data/semantics_eval_persons.csv", index=False)
 
-    data_animals = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_ANIMALS)
-    data_animals.to_csv("data/semantics_eval_animals.csv", index=False)
-
-    data_inanimates = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_INANIMATE)
-    data_inanimates.to_csv("data/semantics_eval_inanimates.csv", index=False)
-
-    data_verbs_1 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_INTRANSITIVE)
-    data_verbs_2 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_TRANSITIVE)
-    pd.concat((data_verbs_1, data_verbs_2)).to_csv("data/semantics_eval_verbs_intransitive.csv", index=False)
-
-    data_agent_patient = generate_eval_set_agent_patient(image_ids.copy(), meta_data, images, captions, vocab)
-    data_agent_patient.to_csv("data/semantics_eval_agent_patient.csv", index=False)
+    # data_animals = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_ANIMALS)
+    # data_animals.to_csv("data/semantics_eval_animals.csv", index=False)
+    #
+    # data_inanimates = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_INANIMATE)
+    # data_inanimates.to_csv("data/semantics_eval_inanimates.csv", index=False)
+    #
+    # data_verbs_1 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_INTRANSITIVE)
+    # data_verbs_2 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_TRANSITIVE)
+    # pd.concat((data_verbs_1, data_verbs_2)).to_csv("data/semantics_eval_verbs_intransitive.csv", index=False)
+    #
+    # data_agent_patient = generate_eval_set_agent_patient(image_ids.copy(), meta_data, images, captions, vocab)
+    # data_agent_patient.to_csv("data/semantics_eval_agent_patient.csv", index=False)
 
 
 def get_args():
