@@ -3,7 +3,6 @@ import random
 import torch
 from torch import nn
 import torch.nn.functional as F
-from torch.nn.utils.rnn import pack_padded_sequence
 
 from preprocess import TOKEN_PADDING
 from utils import TOKEN_START, decode_caption, TOKEN_END
@@ -414,9 +413,10 @@ class CaptioningModel(nn.Module):
 
         loss = self.loss(scores, captions, caption_lengths, alphas, reduction="none")
 
-        # sum up cross entropies of all words
-        loss = loss.sum(dim=1)
         perplexities = torch.exp(loss)
+
+        # sum up cross entropies of all words
+        perplexities = perplexities.sum(dim=1)
 
         return perplexities
 

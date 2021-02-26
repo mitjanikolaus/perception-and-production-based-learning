@@ -188,7 +188,6 @@ img_id,target_sentence,distractor_sentence
 9385,the pizza is on the ground,the hamburger is on the ground
 9543,mike holds a hamburger,mike holds a pizza
 9545,mike is eating a hamburger,mike is eating a pizza
-9545,mike is eating a hamburger,mike is eating a pizza
 963,the table has a hot dog and a pizza on it,the table has a hot dog and a hamburger on it
 963,the pizza is near the hot dog on the table,the hamburger is near the hot dog on the table
 965,jenny sees the pizza on the table,jenny sees the hamburger on the table

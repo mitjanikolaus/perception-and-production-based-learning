@@ -28,6 +28,13 @@ SEMANTIC_ACCURACIES_PATH_RANKING = os.path.join(
     Path.home(), "data/visual_ref/checkpoints/ranking/semantic_accuracies.p"
 )
 
+CHECKPOINT_PATH_LANGUAGE_MODEL_BEST = os.path.join(
+    Path.home(), "data/visual_ref/checkpoints/lm/language_model.pt"
+)
+SEMANTIC_ACCURACIES_PATH_LANGUAGE_MODEL = os.path.join(
+    Path.home(), "data/visual_ref/checkpoints/lm/semantic_accuracies.p"
+)
+
 SEMANTICS_EVAL_FILES = [
     "data/semantics_eval_persons.csv",
     "data/semantics_eval_animals_filtered.csv",

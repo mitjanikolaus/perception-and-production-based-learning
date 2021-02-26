@@ -14,6 +14,7 @@ import egg.core as core
 from dataset import SemanticsEvalDataset
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.image_sentence_ranking.ranking_model import ImageSentenceRanker, cosine_sim
+from models.language_modeling.language_model import LanguageModel
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -65,8 +66,8 @@ def eval_semantics_score(model, dataloader, vocab, verbose=False):
                     accuracies.append(1)
                 elif perplexities[0] > perplexities[1]:
                     accuracies.append(0)
-            else:
-                # Assuming ranking model
+
+            elif isinstance(model, ImageSentenceRanker):
                 images_embedded, captions_embedded = model(
                     images, captions, caption_lengths
                 )
@@ -81,6 +82,21 @@ def eval_semantics_score(model, dataloader, vocab, verbose=False):
                     accuracies.append(1)
                 elif similarities[0] < similarities[1]:
                     accuracies.append(0)
+
+            elif isinstance(model, LanguageModel):
+                perplexities = model.perplexity(captions, caption_lengths)
+
+                if verbose:
+                    print(f"Perplexity target    : {perplexities[0]}")
+                    print(f"Perplexity distractor: {perplexities[1]}")
+
+                if perplexities[0] < perplexities[1]:
+                    accuracies.append(1)
+                elif perplexities[0] > perplexities[1]:
+                    accuracies.append(0)
+
+            else:
+                raise RuntimeError(f"Unknown model: {model}")
 
             if len(accuracies) > EVAL_MAX_SAMPLES:
                 break
@@ -102,8 +118,7 @@ def main(args):
         word_embedding_size = 512
         visual_embedding_size = 512
         lstm_hidden_size = 512
-        dropout = 0.2
-        model = ShowAttendAndTell(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN, dropout,
+        model = ShowAttendAndTell(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN,
                                   fine_tune_resnet=False)
 
     elif "ranking" in args.checkpoint:
@@ -118,6 +133,13 @@ def main(args):
             len(vocab),
             fine_tune_resnet=False,
         )
+
+    elif "language_model" in args.checkpoint:
+        print('Loading language model.')
+        word_embedding_size = 512
+        lstm_hidden_size = 512
+        model = LanguageModel(word_embedding_size, lstm_hidden_size, vocab)
+
     else:
         raise RuntimeError(f"Unknown model: {args.checkpoint}")
 
@@ -127,8 +149,8 @@ def main(args):
 
     model = model.to(device)
 
-    eval_semantics_score(model, test_images_loader, vocab, verbose=True)
-
+    score = eval_semantics_score(model, test_images_loader, vocab, verbose=True)
+    print(f"\nScore: {score}")
 
 
 def get_args():

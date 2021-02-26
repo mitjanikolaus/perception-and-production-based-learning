@@ -72,7 +72,6 @@ class ImageSentenceRanker(nn.Module):
         self.image_embedding = ImageEmbedding(joint_embeddings_size, fine_tune_resnet)
         self.caption_embedding = nn.Linear(lstm_hidden_size, joint_embeddings_size,)
 
-        # TODO no word embeddings used in paper?
         self.word_embedding = nn.Embedding(vocab_size, word_embedding_size)
 
         self.language_encoding_lstm = LanguageEncodingLSTM(
