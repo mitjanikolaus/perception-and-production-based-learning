@@ -67,9 +67,14 @@ def main(params):
     if not os.path.exists(os.path.dirname(CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING)):
         os.makedirs(os.path.dirname(CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING))
 
+    vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
+    print("Loading vocab from {}".format(vocab_path))
+    with open(vocab_path, "rb") as file:
+        vocab = pickle.load(file)
+
     train_loader = DataLoader(
         CaptionDataset(
-            DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"],
+            DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab,
         ),
         batch_size=opts.batch_size,
         shuffle=True,
@@ -78,18 +83,13 @@ def main(params):
         collate_fn=CaptionDataset.pad_collate,
     )
     val_images_loader = torch.utils.data.DataLoader(
-        CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"],),
+        CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab),
         batch_size=opts.batch_size,
         shuffle=True,
         num_workers=0,
         pin_memory=False,
         collate_fn=CaptionDataset.pad_collate,
     )
-
-    vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
-    print("Loading vocab from {}".format(vocab_path))
-    with open(vocab_path, "rb") as file:
-        vocab = pickle.load(file)
 
     semantics_eval_loaders = {
         file: get_semantics_eval_dataloader(file, vocab) for file in SEMANTICS_EVAL_FILES

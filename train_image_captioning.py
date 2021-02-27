@@ -103,7 +103,7 @@ def main(args):
 
     train_loader = DataLoader(
         CaptionDataset(
-            DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"],
+            DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab,
         ),
         batch_size=args.batch_size,
         shuffle=True,
@@ -112,7 +112,7 @@ def main(args):
         collate_fn=CaptionDataset.pad_collate,
     )
     val_images_loader = torch.utils.data.DataLoader(
-        CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"],),
+        CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab),
         batch_size=args.batch_size,
         shuffle=True,
         num_workers=0,
@@ -122,7 +122,7 @@ def main(args):
 
     # TODO
     print_captions_loader = torch.utils.data.DataLoader(
-        CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"],),
+        CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab),
         batch_size=1,
         shuffle=True,
         num_workers=0,

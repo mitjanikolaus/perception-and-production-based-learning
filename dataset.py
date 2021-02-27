@@ -18,6 +18,20 @@ from preprocess import MEAN_ABSTRACT_SCENES, STD_ABSTRACT_SCENES, encode_caption
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
+def replace_names(caption, vocab):
+    replaced = []
+    for word in caption:
+        if word == vocab["mike"]:
+            replaced.append(vocab["the"])
+            replaced.append(vocab["boy"])
+        elif word == vocab["jenny"]:
+            replaced.append(vocab["the"])
+            replaced.append(vocab["girl"])
+        else:
+            replaced.append(word)
+    return replaced
+
+
 class CaptionDataset(Dataset):
     """
     PyTorch Dataset that provides batches of images of a given split
@@ -30,6 +44,7 @@ class CaptionDataset(Dataset):
         data_folder,
         features_filename,
         captions_filename,
+        vocab,
         features_scale_factor=1 / 255.0,
     ):
         """
@@ -52,6 +67,8 @@ class CaptionDataset(Dataset):
         self.normalize = transforms.Normalize(mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES)
 
         self.image_ids = [int(i) for i in list(self.images.keys())]
+
+        self.vocab = vocab
 
     def get_image_features(self, id, channels_first=True, normalize=True):
         image_data = self.images[str(id)][()]
@@ -76,6 +93,8 @@ class CaptionDataset(Dataset):
         image = self.get_image_features(image_id)
 
         caption = self.captions[image_id][caption_id]
+        caption = replace_names(caption, self.vocab)
+
         caption = torch.LongTensor(
             caption
         )
@@ -156,10 +175,14 @@ class SemanticsEvalDataset(Dataset):
         img = self.get_image_features(img_id)
 
         target_sentence = nltk.word_tokenize(target_sentence)
-        target_sentence = torch.tensor(encode_caption(target_sentence, self.vocab), device=device)
+        target_sentence = encode_caption(target_sentence, self.vocab)
+        target_sentence = replace_names(target_sentence, self.vocab)
+        target_sentence = torch.tensor(target_sentence, device=device)
 
         distractor_sentence = nltk.word_tokenize(distractor_sentence)
-        distractor_sentence = torch.tensor(encode_caption(distractor_sentence, self.vocab), device=device)
+        distractor_sentence = encode_caption(distractor_sentence, self.vocab)
+        distractor_sentence = replace_names(distractor_sentence, self.vocab)
+        distractor_sentence = torch.tensor(distractor_sentence, device=device)
 
         return img, target_sentence, distractor_sentence
 

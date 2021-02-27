@@ -99,7 +99,7 @@ class ShowAttendAndTell(CaptioningModel):
         self.sigmoid = nn.Sigmoid()
 
         # LSTM
-        self.decode_step = nn.LSTMCell(
+        self.lstm = nn.LSTMCell(
             word_embedding_size + self.ENCODER_DIM, lstm_hidden_size,
         )
 
@@ -138,7 +138,7 @@ class ShowAttendAndTell(CaptioningModel):
         decoder_input = torch.cat(
             (prev_word_embeddings, attention_weighted_encoding), dim=1
         )
-        decoder_hidden_state, decoder_cell_state = self.decode_step(
+        decoder_hidden_state, decoder_cell_state = self.lstm(
             decoder_input, (decoder_hidden_state, decoder_cell_state)
         )
 
