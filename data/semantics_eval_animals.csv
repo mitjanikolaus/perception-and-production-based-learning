@@ -15,76 +15,56 @@ img_id,target_sentence,distractor_sentence
 4028,the dog is wearing a hat,the cat is wearing a hat
 2593,the cat is watching jenny,the dog is watching jenny
 3729,the dog is watching jenny,the cat is watching jenny
-3894,the dog is watching jenny,the cat is watching jenny
-5102,the dog is watching jenny,the cat is watching jenny
-5603,the dog is watching jenny,the cat is watching jenny
 2598,the cat is watching jenny,the dog is watching jenny
+3894,the dog is watching jenny,the cat is watching jenny
 2646,the cat is watching jenny,the dog is watching jenny
+5102,the dog is watching jenny,the cat is watching jenny
 278,the cat is watching jenny,the dog is watching jenny
+5603,the dog is watching jenny,the cat is watching jenny
 3295,the dog is next to mike,the cat is next to mike
 9705,the cat is next to mike,the dog is next to mike
-9828,the cat is next to mike,the dog is next to mike
 3305,the dog is standing by mike,the cat is standing by mike
 5994,the cat is standing by mike,the dog is standing by mike
 3369,the dog is looking at mike,the cat is looking at mike
 3646,the cat is looking at mike,the dog is looking at mike
-3369,the dog is watching mike,the cat is watching mike
-4878,the dog is watching mike,the cat is watching mike
 3422,the cat is wearing sunglasses,the dog is wearing sunglasses
 6497,the dog is wearing sunglasses,the cat is wearing sunglasses
-3458,the dog is looking at mike,the cat is looking at mike
 3458,mike wants to play with the dog,mike wants to play with the cat
 8722,mike wants to play with the cat,mike wants to play with the dog
 3531,mike is near a cat,mike is near a dog
 5411,mike is near a dog,mike is near a cat
-6175,mike is near a dog,mike is near a cat
-8022,mike is near a dog,mike is near a cat
-3721,the dog is looking at mike,the cat is looking at mike
-8062,the dog is looking at mike,the cat is looking at mike
-9197,the cat is watching jenny,the dog is watching jenny
 434,the cat is standing next to mike,the dog is standing next to mike
 6163,the dog is standing next to mike,the cat is standing next to mike
-770,the dog is standing next to mike,the cat is standing next to mike
-4367,the dog is watching jenny and mike,the cat is watching jenny and mike
 4623,jenny is scared of the cat,jenny is scared of the dog
 4888,jenny is scared of the dog,jenny is scared of the cat
 4755,the dog wants to eat the hot dog,the cat wants to eat the hot dog
 43,the cat wants to eat the hot dog,the dog wants to eat the hot dog
-45,the cat wants to eat the hot dog,the dog wants to eat the hot dog
 479,a cat is near mike,a dog is near mike
 4886,a dog is near mike,a cat is near mike
-5096,the dog is standing by mike,the cat is standing by mike
 5330,the cat is watching mike and jenny,the dog is watching mike and jenny
 6170,the dog is watching mike and jenny,the cat is watching mike and jenny
-6781,the dog is watching mike and jenny,the cat is watching mike and jenny
-7392,the dog is watching mike and jenny,the cat is watching mike and jenny
-9847,the dog is watching mike and jenny,the cat is watching mike and jenny
-5950,the dog is watching jenny and mike,the cat is watching jenny and mike
-8011,the dog is standing by mike,the cat is standing by mike
 6122,the cat is watching mike and jenny,the dog is watching mike and jenny
-6175,the dog is watching jenny and mike,the cat is watching jenny and mike
+6781,the dog is watching mike and jenny,the cat is watching mike and jenny
 1003,the duck is under the tree,the snake is under the tree
 1862,the snake is under the tree,the duck is under the tree
-7447,the snake is under the tree,the duck is under the tree
 1020,the dog is looking at the snake,the dog is looking at the duck
 2272,the dog is looking at the duck,the dog is looking at the snake
 1446,the snake is looking at jenny,the duck is looking at jenny
 5142,the duck is looking at jenny,the snake is looking at jenny
 148,jenny is afraid of the snake,jenny is afraid of the duck
 4008,jenny is afraid of the duck,jenny is afraid of the snake
-5142,jenny is afraid of the duck,jenny is afraid of the snake
 1834,mike is chasing the snake,mike is chasing the duck
 4150,mike is chasing the duck,mike is chasing the snake
 1834,jenny is afraid of the snake,jenny is afraid of the duck
-4337,the duck is under the tree,the snake is under the tree
-4097,jenny is afraid of the snake,jenny is afraid of the duck
-8959,jenny is afraid of the snake,jenny is afraid of the duck
+5142,jenny is afraid of the duck,jenny is afraid of the snake
 4008,a duck is between mike and jenny,a snake is between mike and jenny
 4346,a snake is between mike and jenny,a duck is between mike and jenny
 4241,there is a snake on the slide,there is a duck on the slide
 4638,there is a duck on the slide,there is a snake on the slide
 4333,jenny is sitting by the duck,jenny is sitting by the snake
 8081,jenny is sitting by the snake,jenny is sitting by the duck
+4337,the duck is under the tree,the snake is under the tree
+7447,the snake is under the tree,the duck is under the tree
 4531,mike and jenny are scared of the duck,mike and jenny are scared of the snake
 5970,mike and jenny are scared of the snake,mike and jenny are scared of the duck
 4563,jenny is holding a snake,jenny is holding a duck

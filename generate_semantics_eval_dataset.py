@@ -112,10 +112,13 @@ def generate_eval_set_persons(image_ids, meta_data, images, captions, vocab):
                                 # print(distractor_caption)
                                 target_sentence = " ".join(target_caption)
                                 distractor_sentence = " ".join(distractor_caption)
-                                samples.append({"img_id": img_id, "target_sentence": target_sentence,
-                                                "distractor_sentence": distractor_sentence})
-                                samples.append({"img_id": img_id_distractor, "target_sentence": distractor_sentence,
-                                                "distractor_sentence": target_sentence})
+                                sample_1 = {"img_id": img_id, "target_sentence": target_sentence,
+                                                "distractor_sentence": distractor_sentence}
+                                sample_2 = {"img_id": img_id_distractor, "target_sentence": distractor_sentence,
+                                                "distractor_sentence": target_sentence}
+                                if sample_1 not in samples and sample_2 not in samples:
+                                    samples.append(sample_1)
+                                    samples.append(sample_2)
                                 # show_image(images[str(img_id)])
     data = pd.DataFrame(samples)
     data = data.drop_duplicates()
@@ -150,12 +153,15 @@ def generate_eval_set_agent_patient(image_ids, meta_data, images, captions, voca
                                 # print(distractor_caption)
                                 target_sentence = " ".join(target_caption)
                                 distractor_sentence = " ".join(distractor_caption)
-                                samples.append({"img_id": img_id, "target_sentence": target_sentence,
-                                                "distractor_sentence": distractor_sentence})
-                                samples.append({"img_id": img_id_distractor, "target_sentence": distractor_sentence,
-                                                "distractor_sentence": target_sentence})
-                                print(img_id)
-                                show_image(images[str(img_id)])
+                                sample_1 = {"img_id": img_id, "target_sentence": target_sentence,
+                                            "distractor_sentence": distractor_sentence}
+                                sample_2 = {"img_id": img_id_distractor, "target_sentence": distractor_sentence,
+                                            "distractor_sentence": target_sentence}
+                                if sample_1 not in samples and sample_2 not in samples:
+                                    samples.append(sample_1)
+                                    samples.append(sample_2)
+                                    print(img_id)
+                                    show_image(images[str(img_id)])
 
     data = pd.DataFrame(samples)
     data = data.drop_duplicates()
@@ -184,11 +190,14 @@ def generate_eval_set_objects(image_ids, meta_data, images, captions, vocab, obj
                                             # print(distractor_caption)
                                             target_sentence = " ".join(target_caption)
                                             distractor_sentence = " ".join(distractor_caption)
-                                            samples.append({"img_id": img_id, "target_sentence": target_sentence,
-                                                            "distractor_sentence": distractor_sentence})
-                                            samples.append(
-                                                {"img_id": img_id_distractor, "target_sentence": distractor_sentence,
-                                                 "distractor_sentence": target_sentence})
+                                            sample_1 = {"img_id": img_id, "target_sentence": target_sentence,
+                                                        "distractor_sentence": distractor_sentence}
+                                            sample_2 = {"img_id": img_id_distractor,
+                                                        "target_sentence": distractor_sentence,
+                                                        "distractor_sentence": target_sentence}
+                                            if sample_1 not in samples and sample_2 not in samples:
+                                                samples.append(sample_1)
+                                                samples.append(sample_2)
 
         # show_image(images[str(img_id)])
     data = pd.DataFrame(samples)
@@ -225,11 +234,14 @@ def generate_eval_set_verbs(image_ids, meta_data, images, captions, vocab, verbs
                                                 print(distractor_caption)
                                                 target_sentence = " ".join(target_caption)
                                                 distractor_sentence = " ".join(distractor_caption)
-                                                samples.append({"img_id": img_id, "target_sentence": target_sentence,
-                                                                "distractor_sentence": distractor_sentence})
-                                                samples.append(
-                                                    {"img_id": img_id_distractor, "target_sentence": distractor_sentence,
-                                                     "distractor_sentence": target_sentence})
+                                                sample_1 = {"img_id": img_id, "target_sentence": target_sentence,
+                                                            "distractor_sentence": distractor_sentence}
+                                                sample_2 = {"img_id": img_id_distractor,
+                                                            "target_sentence": distractor_sentence,
+                                                            "distractor_sentence": target_sentence}
+                                                if sample_1 not in samples and sample_2 not in samples:
+                                                    samples.append(sample_1)
+                                                    samples.append(sample_2)
 
     data = pd.DataFrame(samples)
     data = data.drop_duplicates()
@@ -257,25 +269,25 @@ def main(args):
         captions = pickle.load(file)
 
     image_ids = [int(key) for key in images.keys()]
-    #
-    # data_persons = generate_eval_set_persons(image_ids.copy(), meta_data, images, captions, vocab)
-    # data_persons.to_csv("data/semantics_eval_persons.csv", index=False)
 
-    # data_animals_1 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_ANIMALS)
-    # data_animals_2 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_ANIMALS_2)
-    # pd.concat((data_animals_1, data_animals_2)).to_csv("data/semantics_eval_animals.csv", index=False)
-    #
-    # data_inanimates_1 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_INANIMATE)
-    # data_inanimates_2 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_INANIMATE_2)
-    # pd.concat((data_inanimates_1, data_inanimates_2)).to_csv("data/semantics_eval_inanimates.csv", index=False)
-    #
+    data_persons = generate_eval_set_persons(image_ids.copy(), meta_data, images, captions, vocab)
+    data_persons.to_csv("data/semantics_eval_persons.csv", index=False)
+
+    data_animals_1 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_ANIMALS)
+    data_animals_2 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_ANIMALS_2)
+    pd.concat((data_animals_1, data_animals_2)).to_csv("data/semantics_eval_animals.csv", index=False)
+
+    data_inanimates_1 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_INANIMATE)
+    data_inanimates_2 = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, OBJECTS_INANIMATE_2)
+    pd.concat((data_inanimates_1, data_inanimates_2)).to_csv("data/semantics_eval_inanimates.csv", index=False)
+
     data_verbs_1 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_1)
     data_verbs_2 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_2)
     data_verbs_3 = generate_eval_set_verbs(image_ids.copy(), meta_data, images, captions, vocab, VERBS_3)
     pd.concat((data_verbs_1, data_verbs_2, data_verbs_3)).to_csv("data/semantics_eval_verbs.csv", index=False)
 
-    # data_agent_patient = generate_eval_set_agent_patient(image_ids.copy(), meta_data, images, captions, vocab)
-    # data_agent_patient.to_csv("data/semantics_eval_agent_patient.csv", index=False)
+    data_agent_patient = generate_eval_set_agent_patient(image_ids.copy(), meta_data, images, captions, vocab)
+    data_agent_patient.to_csv("data/semantics_eval_agent_patient.csv", index=False)
 
 
 def get_args():

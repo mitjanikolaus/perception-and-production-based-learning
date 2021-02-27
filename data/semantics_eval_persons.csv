@@ -5,58 +5,47 @@ img_id,target_sentence,distractor_sentence
 9233,mike is smiling at the owl,jenny is smiling at the owl
 1639,jenny is wearing sunglasses,mike is wearing sunglasses
 3143,mike is wearing sunglasses,jenny is wearing sunglasses
-3241,mike is wearing sunglasses,jenny is wearing sunglasses
 1862,jenny is scared of the snake,mike is scared of the snake
 6509,mike is scared of the snake,jenny is scared of the snake
-9431,mike is scared of the snake,jenny is scared of the snake
 219,jenny is wearing a blue hat,mike is wearing a blue hat
 2677,mike is wearing a blue hat,jenny is wearing a blue hat
 2590,jenny is wearing a pirate hat,mike is wearing a pirate hat
 1168,mike is wearing a pirate hat,jenny is wearing a pirate hat
-5994,mike is wearing a pirate hat,jenny is wearing a pirate hat
 2629,jenny is wearing a colorful hat,mike is wearing a colorful hat
 5654,mike is wearing a colorful hat,jenny is wearing a colorful hat
 2839,jenny is wearing sunglasses,mike is wearing sunglasses
+3241,mike is wearing sunglasses,jenny is wearing sunglasses
 3024,the dog is looking at jenny,the dog is looking at mike
 3458,the dog is looking at mike,the dog is looking at jenny
-7215,the dog is looking at mike,the dog is looking at jenny
 3146,jenny is sitting on the ground,mike is sitting on the ground
 3143,mike is sitting on the ground,jenny is sitting on the ground
-3241,mike is sitting on the ground,jenny is sitting on the ground
 341,jenny wants to play baseball,mike wants to play baseball
 1529,mike wants to play baseball,jenny wants to play baseball
-7023,mike wants to play baseball,jenny wants to play baseball
 3574,jenny is near a slide,mike is near a slide
 4228,mike is near a slide,jenny is near a slide
-558,jenny is wearing a crown,mike is wearing a crown
 5603,the dog is watching jenny,the dog is watching mike
 4878,the dog is watching mike,the dog is watching jenny
 5758,jenny is wearing the hat,mike is wearing the hat
 606,mike is wearing the hat,jenny is wearing the hat
-6325,mike is wearing the hat,jenny is wearing the hat
-883,mike is wearing the hat,jenny is wearing the hat
 6439,jenny is wearing a hat,mike is wearing a hat
 1113,mike is wearing a hat,jenny is wearing a hat
-3656,mike is wearing a hat,jenny is wearing a hat
-3816,mike is wearing a hat,jenny is wearing a hat
-902,mike is wearing a hat,jenny is wearing a hat
 6738,jenny is playing in the sandbox,mike is playing in the sandbox
 6323,mike is playing in the sandbox,jenny is playing in the sandbox
 6968,jenny is scared of the bear,mike is scared of the bear
 1333,mike is scared of the bear,jenny is scared of the bear
-3558,mike is scared of the bear,jenny is scared of the bear
-3713,mike is scared of the bear,jenny is scared of the bear
 7023,jenny is in the tent,mike is in the tent
 6738,mike is in the tent,jenny is in the tent
 7521,jenny is scared of the snake,mike is scared of the snake
+9431,mike is scared of the snake,jenny is scared of the snake
 7815,jenny is scared of the bear,mike is scared of the bear
-8079,jenny is wearing sunglasses,mike is wearing sunglasses
+3558,mike is scared of the bear,jenny is scared of the bear
 8254,jenny is wearing a viking hat,mike is wearing a viking hat
 7341,mike is wearing a viking hat,jenny is wearing a viking hat
 8256,jenny is wearing a hat,mike is wearing a hat
+3656,mike is wearing a hat,jenny is wearing a hat
 8524,jenny is wearing a hat,mike is wearing a hat
+3816,mike is wearing a hat,jenny is wearing a hat
 8797,jenny is scared of the bear,mike is scared of the bear
-8797,jenny is wearing a blue hat,mike is wearing a blue hat
+3713,mike is scared of the bear,jenny is scared of the bear
 937,jenny is standing by the tree,mike is standing by the tree
 3458,mike is standing by the tree,jenny is standing by the tree
-963,jenny is wearing sunglasses,mike is wearing sunglasses
