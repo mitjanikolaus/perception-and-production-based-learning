@@ -54,6 +54,9 @@ class CaptioningModel(nn.Module):
 
         return next_words
 
+    def lstm_input_first_timestep(self, batch_size, encoder_output):
+        raise NotImplementedError()
+
     def forward(self, images, target_captions=None, decode_lengths=None):
         """
         Forward propagation.
@@ -96,13 +99,8 @@ class CaptioningModel(nn.Module):
             batch_size, max(decode_lengths), encoder_output.size(1), device=device
         )
 
-        # At the start, all 'previous words' are the <start> token
-        prev_words = torch.full(
-            (batch_size,), self.vocab[TOKEN_START], dtype=torch.int64, device=device
-        )
-
         for t in range(max(decode_lengths)):
-            if not use_teacher_forcing:
+            if not use_teacher_forcing and not t == 0:
                 # Find all sequences where an <end> token has been produced in the last timestep
                 ind_end_token = (
                     torch.nonzero(prev_words == self.vocab[TOKEN_END])
@@ -121,7 +119,11 @@ class CaptioningModel(nn.Module):
             if len(indices_incomplete_sequences) == 0:
                 break
 
-            prev_words_embedded = self.word_embedding(prev_words)
+            if t == 0:
+                prev_words_embedded = self.lstm_input_first_timestep(batch_size, encoder_output)
+            else:
+                prev_words_embedded = self.word_embedding(prev_words)
+
             scores_for_timestep, states, alphas_for_timestep = self.forward_step(
                 encoder_output, prev_words_embedded, states
             )

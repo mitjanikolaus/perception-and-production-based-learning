@@ -63,6 +63,8 @@ class ShowAndTell(CaptioningModel):
             fine_tune_decoder_word_embeddings,
         )
         self.encoder = Encoder(visual_embeddings_size, fine_tune_resnet)
+        if word_embedding_size != visual_embeddings_size:
+            raise ValueError("word embeddings must have same size as visual embeddings")
 
         self.lstm_hidden_size = lstm_hidden_size
 
@@ -72,7 +74,7 @@ class ShowAndTell(CaptioningModel):
         self.word_embedding = nn.Embedding(self.vocab_size, word_embedding_size)
 
         self.lstm = nn.LSTMCell(
-            input_size=visual_embeddings_size + word_embedding_size,
+            input_size=visual_embeddings_size,
             hidden_size=lstm_hidden_size,
         )
         self.dropout = nn.Dropout(p=dropout)
@@ -89,16 +91,16 @@ class ShowAndTell(CaptioningModel):
             torch.zeros(batch_size, self.lstm_hidden_size).to(device),
         )
 
+    def lstm_input_first_timestep(self, batch_size, encoder_output):
+        # At the start, we feed the image features into the LSTM
+        return encoder_output.squeeze(1)
+
     def forward_step(self, encoder_output, prev_word_embeddings, states):
         """Perform a single decoding step."""
         decoder_hidden_state, decoder_cell_state = states
 
-        encoder_output = encoder_output.squeeze(1)
-
-        # TODO: do not feed image every timestep?
-        decoder_input = torch.cat((prev_word_embeddings, encoder_output), dim=1)
         decoder_hidden_state, decoder_cell_state = self.lstm(
-            decoder_input, (decoder_hidden_state, decoder_cell_state)
+            prev_word_embeddings, (decoder_hidden_state, decoder_cell_state)
         )
 
         scores = self.fc(decoder_hidden_state)

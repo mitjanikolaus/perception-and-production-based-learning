@@ -3,6 +3,7 @@ from torch import nn
 import torchvision
 
 from models.image_captioning.captioning_model import CaptioningModel
+from preprocess import TOKEN_START
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -124,6 +125,13 @@ class ShowAttendAndTell(CaptioningModel):
 
         states = [h, c]
         return states
+
+    def lstm_input_first_timestep(self, batch_size, encoder_output):
+        # At the start, all 'previous words' are the <start> token
+        start_tokens = torch.full(
+            (batch_size,), self.vocab[TOKEN_START], dtype=torch.int64, device=device
+        )
+        return self.word_embedding(start_tokens)
 
     def forward_step(self, encoder_output, prev_word_embeddings, states):
         """Perform a single decoding step."""
