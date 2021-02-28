@@ -32,6 +32,7 @@ SEMANTICS_EVAL_FILES = [
     "data/semantics_eval_persons.csv",
     "data/semantics_eval_animals.csv",
     "data/semantics_eval_inanimates.csv",
+    "data/semantics_eval_adjectives.csv",
     "data/semantics_eval_verbs.csv",
     "data/semantics_eval_agent_patient_filtered.csv",
 ]
