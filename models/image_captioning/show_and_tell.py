@@ -74,6 +74,10 @@ class ShowAndTell(CaptioningModel):
 
         self.word_embedding = nn.Embedding(self.vocab_size, word_embedding_size)
 
+        # Linear layers to find initial states of LSTMs
+        self.init_h = nn.Linear(visual_embeddings_size, lstm_hidden_size)
+        self.init_c = nn.Linear(visual_embeddings_size, lstm_hidden_size)
+
         self.lstm = nn.LSTMCell(
             input_size=visual_embeddings_size,
             hidden_size=lstm_hidden_size,
@@ -85,12 +89,12 @@ class ShowAndTell(CaptioningModel):
         """
         :return: hidden state, cell state
         """
-        batch_size = encoder_output.shape[0]
+        mean_encoder_out = encoder_output.squeeze(1)
+        h = self.init_h(mean_encoder_out)  # (batch_size, decoder_dim)
+        c = self.init_c(mean_encoder_out)
 
-        return (
-            torch.zeros(batch_size, self.lstm_hidden_size).to(device),
-            torch.zeros(batch_size, self.lstm_hidden_size).to(device),
-        )
+        states = [h, c]
+        return states
 
     def lstm_input_first_timestep(self, batch_size, encoder_output):
         # At the start, we feed the image features into the LSTM
