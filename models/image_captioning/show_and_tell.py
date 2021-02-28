@@ -4,7 +4,7 @@ from torchvision.models import resnet50
 import torch.nn.functional as F
 
 from models.image_captioning.captioning_model import CaptioningModel
-from preprocess import TOKEN_PADDING
+from preprocess import TOKEN_PADDING, TOKEN_START
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -79,7 +79,7 @@ class ShowAndTell(CaptioningModel):
         self.init_c = nn.Linear(visual_embeddings_size, lstm_hidden_size)
 
         self.lstm = nn.LSTMCell(
-            input_size=visual_embeddings_size,
+            input_size=visual_embeddings_size+word_embedding_size,
             hidden_size=lstm_hidden_size,
         )
         self.dropout = nn.Dropout(p=dropout)
@@ -97,15 +97,21 @@ class ShowAndTell(CaptioningModel):
         return states
 
     def lstm_input_first_timestep(self, batch_size, encoder_output):
-        # At the start, we feed the image features into the LSTM
-        return encoder_output.squeeze(1)
+        # At the start, all 'previous words' are the <start> token
+        start_tokens = torch.full(
+            (batch_size,), self.vocab[TOKEN_START], dtype=torch.int64, device=device
+        )
+        return self.word_embedding(start_tokens)
 
     def forward_step(self, encoder_output, prev_word_embeddings, states):
         """Perform a single decoding step."""
         decoder_hidden_state, decoder_cell_state = states
 
+        encoder_output = encoder_output.squeeze(1)
+
+        lstm_input = torch.cat((encoder_output, prev_word_embeddings), dim=1)
         decoder_hidden_state, decoder_cell_state = self.lstm(
-            prev_word_embeddings, (decoder_hidden_state, decoder_cell_state)
+            lstm_input, (decoder_hidden_state, decoder_cell_state)
         )
 
         scores = self.fc(decoder_hidden_state)
