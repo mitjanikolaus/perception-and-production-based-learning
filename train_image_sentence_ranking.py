@@ -153,7 +153,7 @@ def main(params):
             best_val_loss = val_loss
             save_model(model, optimizer, best_val_loss, epoch)
 
-        print(f"Train Epoch: {epoch}, train loss: {np.mean(losses)} best val loss: {best_val_loss}")
+        print(f"Train Epoch: {epoch}, train loss: {np.mean(losses)} best val loss: {best_val_loss}\n\n")
 
 
     core.close()

@@ -1,0 +1,193 @@
+img_id,target_sentence,distractor_sentence
+10004,jenny is very happy,jenny is very sad
+2469,jenny is very sad,jenny is very happy
+1003,mike is sad,mike is happy
+1079,mike is happy,mike is sad
+1423,mike is sad,mike is happy
+1562,mike is happy,mike is sad
+1739,mike looks happy,mike looks sad
+6310,mike looks sad,mike looks happy
+1955,jenny is happy,jenny is sad
+2486,jenny is sad,jenny is happy
+2240,mike is sad,mike is happy
+312,mike is happy,mike is sad
+2985,jenny is sad,jenny is happy
+3195,jenny is happy,jenny is sad
+3295,jenny is very sad,jenny is very happy
+397,jenny is very happy,jenny is very sad
+3295,jenny is sad,jenny is happy
+5177,jenny is happy,jenny is sad
+3721,mike is happy,mike is sad
+5330,mike is sad,mike is happy
+4171,jenny is sad,jenny is happy
+6141,jenny is happy,jenny is sad
+4171,mike is happy,mike is sad
+6122,mike is sad,mike is happy
+4428,mike is happy,mike is sad
+6162,mike is sad,mike is happy
+4428,jenny is sad,jenny is happy
+718,jenny is happy,jenny is sad
+463,jenny is sad,jenny is happy
+7673,jenny is happy,jenny is sad
+5315,jenny is sad,jenny is happy
+8519,jenny is happy,jenny is sad
+5384,mike is happy,mike is sad
+6553,mike is sad,mike is happy
+5411,mike is happy,mike is sad
+7375,mike is sad,mike is happy
+5413,mike is happy,mike is sad
+7907,mike is sad,mike is happy
+5448,jenny is sad,jenny is happy
+8801,jenny is happy,jenny is sad
+5448,mike is happy,mike is sad
+8130,mike is sad,mike is happy
+6,mike is happy,mike is sad
+8801,mike is sad,mike is happy
+6361,mike is happy,mike is sad
+9117,mike is sad,mike is happy
+6902,mike is happy,mike is sad
+9260,mike is sad,mike is happy
+10004,jenny is very happy,jenny is very angry
+6953,jenny is very angry,jenny is very happy
+1079,mike is happy,mike is angry
+3619,mike is angry,mike is happy
+1208,mike looks angry,mike looks happy
+1739,mike looks happy,mike looks angry
+1562,mike is happy,mike is angry
+5034,mike is angry,mike is happy
+1955,jenny is happy,jenny is angry
+4471,jenny is angry,jenny is happy
+312,mike is happy,mike is angry
+718,mike is angry,mike is happy
+3195,jenny is happy,jenny is angry
+4473,jenny is angry,jenny is happy
+3721,mike is happy,mike is angry
+9758,mike is angry,mike is happy
+5177,jenny is happy,jenny is angry
+7415,jenny is angry,jenny is happy
+6141,jenny is happy,jenny is angry
+790,jenny is angry,jenny is happy
+718,jenny is happy,jenny is angry
+8165,jenny is angry,jenny is happy
+1079,mike is happy,mike is upset
+3865,mike is upset,mike is happy
+1562,mike is happy,mike is upset
+7673,mike is upset,mike is happy
+1955,jenny is happy,jenny is upset
+222,jenny is upset,jenny is happy
+312,mike is happy,mike is upset
+8995,mike is upset,mike is happy
+3195,jenny is happy,jenny is upset
+9998,jenny is upset,jenny is happy
+3721,mike is happy,mike is upset
+9646,mike is upset,mike is happy
+1079,mike is happy,mike is scared
+2975,mike is scared,mike is happy
+1445,jenny is scared,jenny is happy
+1955,jenny is happy,jenny is scared
+1562,mike is happy,mike is scared
+3287,mike is scared,mike is happy
+1834,jenny is scared,jenny is happy
+3195,jenny is happy,jenny is scared
+2469,mike is very happy,mike is very scared
+2975,mike is very scared,mike is very happy
+312,mike is happy,mike is scared
+5330,mike is scared,mike is happy
+3721,mike is happy,mike is scared
+6203,mike is scared,mike is happy
+4641,jenny is scared,jenny is happy
+5177,jenny is happy,jenny is scared
+6141,jenny is happy,jenny is scared
+6373,jenny is scared,jenny is happy
+6972,jenny is scared,jenny is happy
+718,jenny is happy,jenny is scared
+7673,jenny is happy,jenny is scared
+8011,jenny is scared,jenny is happy
+8519,jenny is happy,jenny is scared
+9083,jenny is scared,jenny is happy
+8801,jenny is happy,jenny is scared
+9223,jenny is scared,jenny is happy
+10004,jenny is very happy,jenny is very mad
+2771,jenny is very mad,jenny is very happy
+1047,jenny is mad,jenny is happy
+1955,jenny is happy,jenny is mad
+1079,mike is happy,mike is mad
+2515,mike is mad,mike is happy
+1562,mike is happy,mike is mad
+5378,mike is mad,mike is happy
+1590,jenny is mad,jenny is happy
+3195,jenny is happy,jenny is mad
+1919,jenny is mad,jenny is happy
+5177,jenny is happy,jenny is mad
+2060,jenny is mad,jenny is happy
+6141,jenny is happy,jenny is mad
+2469,mike is very happy,mike is very mad
+4401,mike is very mad,mike is very happy
+312,mike is happy,mike is mad
+6692,mike is mad,mike is happy
+3380,jenny is mad,jenny is happy
+718,jenny is happy,jenny is mad
+3721,mike is happy,mike is mad
+718,mike is mad,mike is happy
+397,jenny is very happy,jenny is very mad
+4475,jenny is very mad,jenny is very happy
+4078,jenny is mad,jenny is happy
+7673,jenny is happy,jenny is mad
+4171,mike is happy,mike is mad
+7637,mike is mad,mike is happy
+4428,mike is happy,mike is mad
+9376,mike is mad,mike is happy
+4471,jenny is mad,jenny is happy
+8519,jenny is happy,jenny is mad
+4473,jenny is mad,jenny is happy
+8801,jenny is happy,jenny is mad
+5384,mike is happy,mike is mad
+9646,mike is mad,mike is happy
+1079,mike is happy,mike is afraid
+5856,mike is afraid,mike is happy
+148,jenny is afraid,jenny is happy
+1955,jenny is happy,jenny is afraid
+1562,mike is happy,mike is afraid
+603,mike is afraid,mike is happy
+1834,jenny is afraid,jenny is happy
+3195,jenny is happy,jenny is afraid
+312,mike is happy,mike is afraid
+6552,mike is afraid,mike is happy
+3721,mike is happy,mike is afraid
+8358,mike is afraid,mike is happy
+4008,jenny is afraid,jenny is happy
+5177,jenny is happy,jenny is afraid
+5142,jenny is afraid,jenny is happy
+6141,jenny is happy,jenny is afraid
+6773,jenny is afraid,jenny is happy
+718,jenny is happy,jenny is afraid
+7673,jenny is happy,jenny is afraid
+9392,jenny is afraid,jenny is happy
+10004,mike is very surprised,mike is very happy
+2469,mike is very happy,mike is very surprised
+1079,mike is happy,mike is surprised
+1276,mike is surprised,mike is happy
+1562,mike is happy,mike is surprised
+6141,mike is surprised,mike is happy
+1739,mike looks happy,mike looks surprised
+7708,mike looks surprised,mike looks happy
+1955,jenny is happy,jenny is surprised
+403,jenny is surprised,jenny is happy
+2985,mike is very happy,mike is very surprised
+3195,mike is very surprised,mike is very happy
+311,mike is very happy,mike is very surprised
+4588,mike is very surprised,mike is very happy
+312,mike is happy,mike is surprised
+788,mike is surprised,mike is happy
+3195,jenny is happy,jenny is surprised
+7309,jenny is surprised,jenny is happy
+4475,mike is very happy,mike is very surprised
+6444,mike is very surprised,mike is very happy
+4709,mike is very happy,mike is very surprised
+6445,mike is very surprised,mike is very happy
+5177,jenny is happy,jenny is surprised
+8360,jenny is surprised,jenny is happy
+6141,jenny is happy,jenny is surprised
+9172,jenny is surprised,jenny is happy
+650,mike is very surprised,mike is very happy
+8381,mike is very happy,mike is very surprised
