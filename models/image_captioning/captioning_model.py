@@ -203,9 +203,13 @@ class CaptioningModel(nn.Module):
         for step in range(0, self.max_caption_length - 1):
             prev_words = top_k_sequences[:, step]
 
-            prev_word_embeddings = self.word_embedding(prev_words)
+            if step == 0:
+                prev_words_embedded = self.lstm_input_first_timestep(beam_size, encoder_output)
+            else:
+                prev_words_embedded = self.word_embedding(prev_words)
+
             predictions, states, alpha = self.forward_step(
-                encoder_output, prev_word_embeddings, states
+                encoder_output, prev_words_embedded, states
             )
             scores = F.log_softmax(predictions, dim=1)
 
@@ -330,9 +334,13 @@ class CaptioningModel(nn.Module):
         for step in range(0, self.max_caption_length - 1):
             prev_words = top_k_sequences[:, step]
 
-            prev_word_embeddings = self.word_embedding(prev_words)
+            if step == 0:
+                prev_words_embedded = self.lstm_input_first_timestep(num_samples, encoder_output)
+            else:
+                prev_words_embedded = self.word_embedding(prev_words)
+
             predictions, states, alpha = self.forward_step(
-                encoder_output, prev_word_embeddings, states
+                encoder_output, prev_words_embedded, states
             )
             scores = F.log_softmax(predictions, dim=1)
 

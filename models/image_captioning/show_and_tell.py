@@ -1,9 +1,10 @@
 import torch
 from torch import nn
-import torchvision
 from torchvision.models import resnet50
+import torch.nn.functional as F
 
 from models.image_captioning.captioning_model import CaptioningModel
+from preprocess import TOKEN_PADDING
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -36,8 +37,8 @@ class Encoder(nn.Module):
     def set_fine_tuning_enabled(self, enable_fine_tuning):
         """
 
-            :param enable_fine_tuning: Set to True to enable fine tuning
-            """
+        :param enable_fine_tuning: Set to True to enable fine tuning
+        """
         for param in self.resnet.parameters():
             param.requires_grad = enable_fine_tuning
 

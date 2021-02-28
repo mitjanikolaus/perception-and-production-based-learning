@@ -20,8 +20,6 @@ from tqdm import tqdm
 
 import numpy as np
 
-nltk.download("punkt")
-
 VOCAB_FILENAME = "vocab.p"
 IMAGES_FILENAME = {"train": "images_train.hdf5", "val": "images_val.hdf5", "test": "images_test.hdf5"}
 CAPTIONS_FILENAME = {"train": "captions_train.p", "val": "captions_val.p", "test": "captions_test.p"}
