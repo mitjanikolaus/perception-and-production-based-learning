@@ -23,11 +23,12 @@ from preprocess import (
     MAX_CAPTION_LEN,
     DATA_PATH,
 )
-from utils import decode_caption, CHECKPOINT_DIR_IMAGE_CAPTIONING
+from utils import decode_caption, CHECKPOINT_DIR_IMAGE_CAPTIONING, SEMANTICS_EVAL_FILES
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 EVAL_MAX_SAMPLES = 300
+
 
 def get_semantics_eval_dataloader(eval_file, vocab):
     return torch.utils.data.DataLoader(
@@ -146,12 +147,18 @@ def main(args):
 
     model.load_state_dict(checkpoint["model_state_dict"])
 
-    test_images_loader = get_semantics_eval_dataloader(args.eval_csv, vocab)
-
     model = model.to(device)
 
-    score = eval_semantics_score(model, test_images_loader, vocab, verbose=True)
-    print(f"\nScore: {score}")
+    semantics_eval_loaders = {
+        file: get_semantics_eval_dataloader(file, vocab)
+        for file in SEMANTICS_EVAL_FILES
+    }
+
+    semantic_accuracies = {}
+    for name, semantic_images_loader in semantics_eval_loaders.items():
+        acc = eval_semantics_score(model, semantic_images_loader, vocab, verbose=args.verbose)
+        print(f"Accuracy for {name}: {acc}\n")
+        semantic_accuracies[name] = acc
 
 
 def get_args():
@@ -160,7 +167,9 @@ def get_args():
         "--checkpoint", type=str,
     )
     parser.add_argument(
-        "--eval-csv", default="data/semantics_eval_persons.csv", type=str,
+        "--verbose",
+        default=False,
+        action="store_true",
     )
 
     return core.init(parser)
