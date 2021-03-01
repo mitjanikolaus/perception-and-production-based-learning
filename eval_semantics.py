@@ -115,13 +115,27 @@ def main(args):
     print("Loading model checkpoint from {}".format(args.checkpoint))
     checkpoint = torch.load(args.checkpoint, map_location=device)
 
-    if "captioning" in args.checkpoint:
-        print("Loading image captioning model.")
+    if "show_attend_and_tell" in args.checkpoint:
+        print("Loading sat image captioning model.")
         word_embedding_size = 512
         visual_embedding_size = 512
         lstm_hidden_size = 512
         model = ShowAttendAndTell(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN,
                                   fine_tune_resnet=False)
+
+    elif "show_and_tell" in args.checkpoint:
+        print("Loading st image captioning model.")
+        word_embedding_size = 512
+        visual_embedding_size = 512
+        lstm_hidden_size = 512
+        model = ShowAndTell(
+            word_embedding_size,
+            visual_embedding_size,
+            lstm_hidden_size,
+            vocab,
+            MAX_CAPTION_LEN,
+            fine_tune_resnet=False,
+        )
 
     elif "ranking" in args.checkpoint:
         print('Loading image sentence ranking model.')

@@ -34,7 +34,7 @@ def get_args():
         "--rolling-window", default=10, type=int,
     )
     parser.add_argument(
-        "--x-lim", default=200000, type=int,
+        "--x-lim", default=400000, type=int,
     )
 
     return parser.parse_args()
