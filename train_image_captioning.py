@@ -29,7 +29,7 @@ from preprocess import (
 from utils import (
     print_caption,
     CHECKPOINT_DIR_IMAGE_CAPTIONING,
-    SEMANTICS_EVAL_FILES,
+    SEMANTICS_EVAL_FILES, DEFAULT_LOG_FREQUENCY,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -179,7 +179,7 @@ def main(args):
         )
 
     best_val_loss = math.inf
-    semantic_accuracies_over_time = []
+    accuracies_over_time = []
     for epoch in range(args.n_epochs):
         losses = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(
@@ -193,10 +193,11 @@ def main(args):
                     semantics_eval_loaders,
                     vocab,
                 )
-                semantic_accuracies_over_time.append(semantic_accuracies)
+                semantic_accuracies["val_loss"] = val_loss
+                accuracies_over_time.append(semantic_accuracies)
                 pickle.dump(
-                    semantic_accuracies_over_time,
-                    open(CHECKPOINT_DIR_IMAGE_CAPTIONING+args.model+"_semantic_accuracies.p", "wb"),
+                    accuracies_over_time,
+                    open(CHECKPOINT_DIR_IMAGE_CAPTIONING+args.model+"_accuracies.p", "wb"),
                 )
                 print(
                     f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss}"
@@ -262,7 +263,7 @@ def get_args():
     )
     parser.add_argument(
         "--log-frequency",
-        default=100,
+        default=DEFAULT_LOG_FREQUENCY,
         type=int,
         help="Logging frequency (number of batches)",
     )

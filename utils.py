@@ -8,6 +8,9 @@ from dataclasses import dataclass
 from egg.core import Interaction, LoggingStrategy
 from preprocess import TOKEN_START, TOKEN_END, TOKEN_PADDING
 
+DEFAULT_LOG_FREQUENCY = 100
+DEFAULT_BATCH_SIZE = 32
+
 SPECIAL_CHARACTERS = [TOKEN_START, TOKEN_END, TOKEN_PADDING]
 
 CHECKPOINT_DIR_IMAGE_CAPTIONING = os.path.join(
@@ -18,7 +21,7 @@ CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING = os.path.join(
     Path.home(), "data/visual_ref/checkpoints/ranking/image_sentence_ranking.pt"
 )
 SEMANTIC_ACCURACIES_PATH_RANKING = os.path.join(
-    Path.home(), "data/visual_ref/checkpoints/ranking/semantic_accuracies_ranking.p"
+    Path.home(), "data/visual_ref/checkpoints/ranking/accuracies_ranking.p"
 )
 
 CHECKPOINT_PATH_LANGUAGE_MODEL_BEST = os.path.join(

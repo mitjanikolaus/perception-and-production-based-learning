@@ -23,11 +23,10 @@ from preprocess import (
     VOCAB_FILENAME,
     DATA_PATH,
 )
-from utils import SEMANTICS_EVAL_FILES, SEMANTIC_ACCURACIES_PATH_RANKING, CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING
+from utils import SEMANTICS_EVAL_FILES, SEMANTIC_ACCURACIES_PATH_RANKING, CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING, \
+    DEFAULT_LOG_FREQUENCY
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-VAL_INTERVAL = 100
 
 
 def validate_model(model, dataloader, semantic_images_loaders, vocab):
@@ -123,18 +122,19 @@ def main(params):
         )
 
     best_val_loss = math.inf
-    semantic_accuracies_over_time = []
+    accuracies_over_time = []
     for epoch in range(opts.n_epochs):
         losses = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(train_loader):
-            if batch_idx % VAL_INTERVAL == 0:
+            if batch_idx % DEFAULT_LOG_FREQUENCY == 0:
                 val_loss, val_acc, semantic_accuracies = validate_model(model, val_images_loader, semantics_eval_loaders, vocab)
                 print(f"Batch {batch_idx}: train loss: {np.mean(losses)} val loss: {val_loss} val acc: {val_acc}")
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
                     save_model(model, optimizer, best_val_loss, epoch)
-                semantic_accuracies_over_time.append(semantic_accuracies)
-                pickle.dump(semantic_accuracies_over_time, open(SEMANTIC_ACCURACIES_PATH_RANKING, "wb"))
+                semantic_accuracies["val_loss"] = val_loss
+                accuracies_over_time.append(semantic_accuracies)
+                pickle.dump(accuracies_over_time, open(SEMANTIC_ACCURACIES_PATH_RANKING, "wb"))
 
             model.train()
             images_embedded, captions_embedded = model(
