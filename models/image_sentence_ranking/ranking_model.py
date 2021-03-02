@@ -14,7 +14,7 @@ class ContrastiveLoss(nn.Module):
     Compute contrastive loss
     """
 
-    def __init__(self, margin=0.2, max_violation=True):
+    def __init__(self, margin=0.2, max_violation=False):
         super(ContrastiveLoss, self).__init__()
 
         self.margin = margin
