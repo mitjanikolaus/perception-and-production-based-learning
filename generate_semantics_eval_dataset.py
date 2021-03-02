@@ -408,12 +408,12 @@ def generate_eval_set_verbs_or_adjectives(image_ids, meta_data, images, captions
                                                     if sample_1 not in samples and sample_2 not in samples:
                                                         samples.append(sample_1)
                                                         samples.append(sample_2)
-                                                        print(img_id)
-                                                        print(img_id_distractor)
-                                                        print(target_caption)
-                                                        print(distractor_caption)
-                                                        show_image(images[str(img_id)])
-                                                        show_image(images[str(img_id_distractor)])
+                                                        # print(img_id)
+                                                        # print(img_id_distractor)
+                                                        # print(target_caption)
+                                                        # print(distractor_caption)
+                                                        # show_image(images[str(img_id)])
+                                                        # show_image(images[str(img_id_distractor)])
 
     data = pd.DataFrame(samples)
     return data
@@ -458,9 +458,9 @@ def main(args):
     # data_inanimates = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, TUPLES_INANIMATE)
     # data_inanimates.to_csv("data/semantics_eval_inanimates.csv", index=False)
 
-    # data_verbs = generate_eval_set_verbs_or_adjectives(image_ids_single_actor.copy(), meta_data, images, captions,
-    #                                                    vocab, VERBS)
-    # data_verbs.to_csv("data/semantics_eval_verbs.csv", index=False)
+    data_verbs = generate_eval_set_verbs_or_adjectives(image_ids_single_actor.copy(), meta_data, images, captions,
+                                                       vocab, VERBS)
+    data_verbs.to_csv("data/semantics_eval_verbs.csv", index=False)
 
     data_verbs = generate_eval_set_verbs_or_adjectives(image_ids_two_actors.copy(), meta_data, images, captions,
                                                        vocab, VERBS)

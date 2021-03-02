@@ -71,7 +71,3 @@ img_id,target_sentence,distractor_sentence
 8335,mike is kicking,mike is sitting
 2629,jenny is sitting,jenny is jumping
 5775,jenny is jumping,jenny is sitting
-1905,jenny is running,jenny is jumping
-5775,jenny is jumping,jenny is running
-5775,jenny is jumping,jenny is kicking
-8076,jenny is kicking,jenny is jumping
