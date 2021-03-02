@@ -11,5 +11,5 @@
 #SBATCH --error=out/train_lm.out
 
 source activate egg
-python -u train_language_model.py --lr 0.0001 --n_epochs 50
+python -u train_language_model.py --lr 0.0001 --n_epochs 30
 

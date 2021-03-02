@@ -11,5 +11,5 @@
 #SBATCH --error=out/train_ranking.out
 
 source activate egg
-python -u train_image_sentence_ranking.py --lr 0.0001 --n_epochs 50
+python -u train_image_sentence_ranking.py --lr 0.0001 --n_epochs 10
 
