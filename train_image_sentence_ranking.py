@@ -23,8 +23,7 @@ from preprocess import (
     VOCAB_FILENAME,
     DATA_PATH,
 )
-from utils import SEMANTICS_EVAL_FILES, SEMANTIC_ACCURACIES_PATH_RANKING, CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING, \
-    DEFAULT_LOG_FREQUENCY
+from utils import SEMANTICS_EVAL_FILES, CHECKPOINT_DIR_RANKING, DEFAULT_LOG_FREQUENCY
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -63,8 +62,8 @@ def main(params):
     opts = core.init(params=params)
 
     # create model checkpoint directory
-    if not os.path.exists(os.path.dirname(CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING)):
-        os.makedirs(os.path.dirname(CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING))
+    if not os.path.exists(os.path.dirname(CHECKPOINT_DIR_RANKING)):
+        os.makedirs(os.path.dirname(CHECKPOINT_DIR_RANKING))
 
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
     print("Loading vocab from {}".format(vocab_path))
@@ -118,7 +117,7 @@ def main(params):
                 "optimizer_state_dict": optimizer.state_dict(),
                 "loss": best_val_loss,
             },
-            CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING,
+            CHECKPOINT_DIR_RANKING+"ranking.pt",
         )
 
     best_val_loss = math.inf
@@ -134,7 +133,7 @@ def main(params):
                     save_model(model, optimizer, best_val_loss, epoch)
                 semantic_accuracies["val_loss"] = val_loss
                 accuracies_over_time.append(semantic_accuracies)
-                pickle.dump(accuracies_over_time, open(SEMANTIC_ACCURACIES_PATH_RANKING, "wb"))
+                pickle.dump(accuracies_over_time, open(CHECKPOINT_DIR_RANKING+"ranking_accuracies.p", "wb"))
 
             model.train()
             images_embedded, captions_embedded = model(
@@ -154,9 +153,6 @@ def main(params):
             save_model(model, optimizer, best_val_loss, epoch)
 
         print(f"Train Epoch: {epoch}, train loss: {np.mean(losses)} best val loss: {best_val_loss}\n\n")
-
-
-    core.close()
 
 
 if __name__ == "__main__":

@@ -17,11 +17,8 @@ CHECKPOINT_DIR_IMAGE_CAPTIONING = os.path.join(
     Path.home(), "data/visual_ref/checkpoints/captioning/"
 )
 
-CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING = os.path.join(
-    Path.home(), "data/visual_ref/checkpoints/ranking/image_sentence_ranking.pt"
-)
-SEMANTIC_ACCURACIES_PATH_RANKING = os.path.join(
-    Path.home(), "data/visual_ref/checkpoints/ranking/accuracies_ranking.p"
+CHECKPOINT_DIR_RANKING = os.path.join(
+    Path.home(), "data/visual_ref/checkpoints/ranking/"
 )
 
 CHECKPOINT_PATH_LANGUAGE_MODEL_BEST = os.path.join(
