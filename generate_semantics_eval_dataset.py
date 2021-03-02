@@ -195,7 +195,7 @@ def generate_eval_set_persons(image_ids, meta_data, images, captions, vocab):
     return data
 
 
-def generate_eval_set_agent_patient(image_ids, meta_data, images, captions, vocab):
+def generate_eval_set_semantic_roles(image_ids, meta_data, images, captions, vocab):
     samples = []
 
     for img_id in image_ids:
@@ -219,8 +219,6 @@ def generate_eval_set_agent_patient(image_ids, meta_data, images, captions, voca
                             replaced = [replacements.get(word, word) for word in distractor_caption]
 
                             if replaced == target_caption:
-                                print(target_caption)
-                                # print(distractor_caption)
                                 target_sentence = " ".join(target_caption)
                                 distractor_sentence = " ".join(distractor_caption)
                                 sample_1 = {"img_id": img_id, "target_sentence": target_sentence,
@@ -230,8 +228,14 @@ def generate_eval_set_agent_patient(image_ids, meta_data, images, captions, voca
                                 if sample_1 not in samples and sample_2 not in samples:
                                     samples.append(sample_1)
                                     samples.append(sample_2)
+
+                                    print(target_sentence)
+                                    print(distractor_sentence)
                                     print(img_id)
+                                    print(img_id_distractor)
                                     show_image(images[str(img_id)])
+                                    show_image(images[str(img_id_distractor)])
+
 
     data = pd.DataFrame(samples)
     data = data.drop_duplicates()
@@ -458,13 +462,13 @@ def main(args):
     # data_inanimates = generate_eval_set_objects(image_ids.copy(), meta_data, images, captions, vocab, TUPLES_INANIMATE)
     # data_inanimates.to_csv("data/semantics_eval_inanimates.csv", index=False)
 
-    data_verbs = generate_eval_set_verbs_or_adjectives(image_ids_single_actor.copy(), meta_data, images, captions,
-                                                       vocab, VERBS)
-    data_verbs.to_csv("data/semantics_eval_verbs.csv", index=False)
-
-    data_verbs = generate_eval_set_verbs_or_adjectives(image_ids_two_actors.copy(), meta_data, images, captions,
-                                                       vocab, VERBS)
-    data_verbs.to_csv("data/semantics_eval_verb_noun_binding.csv", index=False)
+    # data_verbs = generate_eval_set_verbs_or_adjectives(image_ids_single_actor.copy(), meta_data, images, captions,
+    #                                                    vocab, VERBS)
+    # data_verbs.to_csv("data/semantics_eval_verbs.csv", index=False)
+    #
+    # data_verbs = generate_eval_set_verbs_or_adjectives(image_ids_two_actors.copy(), meta_data, images, captions,
+    #                                                    vocab, VERBS)
+    # data_verbs.to_csv("data/semantics_eval_verb_noun_binding.csv", index=False)
 
     # data_adj = generate_eval_set_verbs_or_adjectives(image_ids_single_actor.copy(), meta_data, images, captions, vocab, ADJECTIVES)
     # data_adj.to_csv("data/semantics_eval_adjectives.csv", index=False)
@@ -473,8 +477,8 @@ def main(args):
     #                                                  ADJECTIVES)
     # data_adj.to_csv("data/semantics_eval_adjective_noun_binding.csv", index=False)
     #
-    # data_agent_patient = generate_eval_set_agent_patient(image_ids.copy(), meta_data, images, captions, vocab)
-    # data_agent_patient.to_csv("data/semantics_eval_semantic_roles.csv", index=False)
+    data_agent_patient = generate_eval_set_semantic_roles(image_ids.copy(), meta_data, images, captions, vocab)
+    data_agent_patient.to_csv("data/semantics_eval_semantic_roles.csv", index=False)
 
 
 def get_args():
