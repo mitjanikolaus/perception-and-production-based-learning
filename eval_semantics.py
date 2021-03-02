@@ -27,7 +27,7 @@ from utils import decode_caption, CHECKPOINT_DIR_IMAGE_CAPTIONING, SEMANTICS_EVA
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-EVAL_MAX_SAMPLES = 300
+EVAL_MAX_SAMPLES = 500
 
 
 def get_semantics_eval_dataloader(eval_file, vocab):

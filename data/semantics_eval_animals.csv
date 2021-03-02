@@ -45,6 +45,246 @@ img_id,target_sentence,distractor_sentence
 6170,the dog is watching mike and jenny,the cat is watching mike and jenny
 6122,the cat is watching mike and jenny,the dog is watching mike and jenny
 6781,the dog is watching mike and jenny,the cat is watching mike and jenny
+1079,the cat is watching the snake,the cat is watching the dog
+2043,the cat is watching the dog,the cat is watching the snake
+1445,jenny is scared of the snake,jenny is scared of the dog
+4888,jenny is scared of the dog,jenny is scared of the snake
+1446,the snake is looking at jenny,the dog is looking at jenny
+3024,the dog is looking at jenny,the snake is looking at jenny
+1771,the snake is behind mike,the dog is behind mike
+3327,the dog is behind mike,the snake is behind mike
+2945,mike and jenny are afraid of the dog,mike and jenny are afraid of the snake
+4617,mike and jenny are afraid of the snake,mike and jenny are afraid of the dog
+3036,the dog is next to jenny,the snake is next to jenny
+8087,the snake is next to jenny,the dog is next to jenny
+3369,the dog is looking at mike,the snake is looking at mike
+6509,the snake is looking at mike,the dog is looking at mike
+4594,a dog is standing beside the tree,a snake is standing beside the tree
+8383,a snake is standing beside the tree,a dog is standing beside the tree
+5856,mike is afraid of the dog,mike is afraid of the snake
+6754,mike is afraid of the snake,mike is afraid of the dog
+6226,the snake is behind mike,the dog is behind mike
+6358,the dog is behind mike,the snake is behind mike
+8438,the dog is behind the tree,the snake is behind the tree
+954,the snake is behind the tree,the dog is behind the tree
+1333,the bear is wearing a hat,the dog is wearing a hat
+4028,the dog is wearing a hat,the bear is wearing a hat
+1344,the bear is wearing a viking hat,the dog is wearing a viking hat
+2030,the dog is wearing a viking hat,the bear is wearing a viking hat
+1785,the bear is wearing sunglasses,the dog is wearing sunglasses
+6497,the dog is wearing sunglasses,the bear is wearing sunglasses
+1785,the bear is wearing the sun glasses,the dog is wearing the sun glasses
+5020,the dog is wearing the sun glasses,the bear is wearing the sun glasses
+2043,the cat is watching the dog,the cat is watching the bear
+5765,the cat is watching the bear,the cat is watching the dog
+2288,mike and jenny are afraid of the bear,mike and jenny are afraid of the dog
+2945,mike and jenny are afraid of the dog,mike and jenny are afraid of the bear
+2602,jenny is sitting next to the bear,jenny is sitting next to the dog
+4967,jenny is sitting next to the dog,jenny is sitting next to the bear
+3327,the dog is behind mike,the bear is behind mike
+6553,the bear is behind mike,the dog is behind mike
+3464,jenny is scared of the bear,jenny is scared of the dog
+4888,jenny is scared of the dog,jenny is scared of the bear
+3731,jenny is near a dog,jenny is near a bear
+3806,jenny is near a bear,jenny is near a dog
+3839,the bear wants to play with mike,the dog wants to play with mike
+8011,the dog wants to play with mike,the bear wants to play with mike
+4028,the dog is wearing a witch hat,the bear is wearing a witch hat
+811,the bear is wearing a witch hat,the dog is wearing a witch hat
+4886,a dog is near mike,a bear is near mike
+5559,a bear is near mike,a dog is near mike
+4953,jenny is near a bear,jenny is near a dog
+6198,jenny is near a dog,jenny is near a bear
+5315,the dog is in front of mike,the bear is in front of mike
+7860,the bear is in front of mike,the dog is in front of mike
+5384,mike is happy to see the dog,mike is happy to see the bear
+813,mike is happy to see the bear,mike is happy to see the dog
+5411,mike is near a dog,mike is near a bear
+7663,mike is near a bear,mike is near a dog
+5856,mike is afraid of the dog,mike is afraid of the bear
+6552,mike is afraid of the bear,mike is afraid of the dog
+6020,mike wants the bear to go away,mike wants the dog to go away
+6310,mike wants the dog to go away,mike wants the bear to go away
+6175,mike is near a dog,mike is near a bear
+902,mike is near a bear,mike is near a dog
+668,the dog is standing in front of the tree,the bear is standing in front of the tree
+6968,the bear is standing in front of the tree,the dog is standing in front of the tree
+1227,the duck is wearing a hat,the dog is wearing a hat
+4028,the dog is wearing a hat,the duck is wearing a hat
+164,the duck is watching mike and jenny,the dog is watching mike and jenny
+6170,the dog is watching mike and jenny,the duck is watching mike and jenny
+2087,the duck is looking at the cat,the dog is looking at the cat
+7,the dog is looking at the cat,the duck is looking at the cat
+2088,jenny is standing next to the duck,jenny is standing next to the dog
+8254,jenny is standing next to the dog,jenny is standing next to the duck
+2672,mike is happy to see the duck,mike is happy to see the dog
+5384,mike is happy to see the dog,mike is happy to see the duck
+2677,the duck wants to play,the dog wants to play
+5177,the dog wants to play,the duck wants to play
+3024,the dog is looking at jenny,the duck is looking at jenny
+5142,the duck is looking at jenny,the dog is looking at jenny
+3305,the dog is standing by mike,the duck is standing by mike
+606,the duck is standing by mike,the dog is standing by mike
+3369,the dog is looking at mike,the duck is looking at mike
+603,the duck is looking at mike,the dog is looking at mike
+3729,the dog is watching jenny,the duck is watching jenny
+4336,the duck is watching jenny,the dog is watching jenny
+4007,the duck is by jenny,the dog is by jenny
+9938,the dog is by jenny,the duck is by jenny
+4493,theres a duck behind mike,theres a dog behind mike
+6358,theres a dog behind mike,theres a duck behind mike
+4493,mike is standing by the duck,mike is standing by the dog
+8011,mike is standing by the dog,mike is standing by the duck
+606,the duck wants to play with mike,the dog wants to play with mike
+8011,the dog wants to play with mike,the duck wants to play with mike
+6163,the dog is beside mike,the duck is beside mike
+9007,the duck is beside mike,the dog is beside mike
+6872,the dog is standing next to jenny,the duck is standing next to jenny
+6968,the duck is standing next to jenny,the dog is standing next to jenny
+1324,jenny is smiling at the owl,jenny is smiling at the dog
+4927,jenny is smiling at the dog,jenny is smiling at the owl
+1881,the owl is between jenny and mike,the dog is between jenny and mike
+2946,the dog is between jenny and mike,the owl is between jenny and mike
+4888,jenny is scared of the dog,jenny is scared of the owl
+9223,jenny is scared of the owl,jenny is scared of the dog
+6170,the dog is watching mike and jenny,the owl is watching mike and jenny
+9015,the owl is watching mike and jenny,the dog is watching mike and jenny
+1020,the dog is looking at the snake,the dog is looking at the cat
+7,the dog is looking at the cat,the dog is looking at the snake
+1020,jenny is scared of the snake,jenny is scared of the cat
+4623,jenny is scared of the cat,jenny is scared of the snake
+1123,there is a cat by mike,there is a snake by mike
+2637,there is a snake by mike,there is a cat by mike
+1446,the snake is looking at jenny,the cat is looking at jenny
+226,the cat is looking at jenny,the snake is looking at jenny
+3646,the cat is looking at mike,the snake is looking at mike
+6509,the snake is looking at mike,the cat is looking at mike
+3670,the cat is under the apple tree,the snake is under the apple tree
+7447,the snake is under the apple tree,the cat is under the apple tree
+4994,jenny is sitting by the cat,jenny is sitting by the snake
+8081,jenny is sitting by the snake,jenny is sitting by the cat
+5775,the cat is behind jenny,the snake is behind jenny
+9082,the snake is behind jenny,the cat is behind jenny
+691,the snake is under the tree,the cat is under the tree
+8079,the cat is under the tree,the snake is under the tree
+1333,the bear is wearing a hat,the cat is wearing a hat
+2359,the cat is wearing a hat,the bear is wearing a hat
+2359,the cat is wearing a pirate hat,the bear is wearing a pirate hat
+6363,the bear is wearing a pirate hat,the cat is wearing a pirate hat
+2682,mike sees the bear,mike sees the cat
+9385,mike sees the cat,mike sees the bear
+2804,mike is surprised to see the bear,mike is surprised to see the cat
+6141,mike is surprised to see the cat,mike is surprised to see the bear
+3464,jenny is scared of the bear,jenny is scared of the cat
+4623,jenny is scared of the cat,jenny is scared of the bear
+3531,mike is near a cat,mike is near a bear
+7663,mike is near a bear,mike is near a cat
+4710,the cat is wearing a chef hat,the bear is wearing a chef hat
+5405,the bear is wearing a chef hat,the cat is wearing a chef hat
+479,a cat is near mike,a bear is near mike
+5559,a bear is near mike,a cat is near mike
+5984,the bear is in the tree,the cat is in the tree
+743,the cat is in the tree,the bear is in the tree
+6961,the bear is by the table,the cat is by the table
+7010,the cat is by the table,the bear is by the table
+1003,the duck is under the tree,the cat is under the tree
+8079,the cat is under the tree,the duck is under the tree
+1227,the duck is wearing a hat,the cat is wearing a hat
+2359,the cat is wearing a hat,the duck is wearing a hat
+164,the duck is watching mike and jenny,the cat is watching mike and jenny
+5330,the cat is watching mike and jenny,the duck is watching mike and jenny
+226,the cat is looking at jenny,the duck is looking at jenny
+5142,the duck is looking at jenny,the cat is looking at jenny
+2272,the dog is looking at the duck,the dog is looking at the cat
+7,the dog is looking at the cat,the dog is looking at the duck
+2272,the duck is in the sandbox,the cat is in the sandbox
+3241,the cat is in the sandbox,the duck is in the sandbox
+2593,the cat is watching jenny,the duck is watching jenny
+4336,the duck is watching jenny,the cat is watching jenny
+3535,the cat is in the sandbox,the duck is in the sandbox
+3681,the duck is in the sandbox,the cat is in the sandbox
+3646,the cat is looking at mike,the duck is looking at mike
+603,the duck is looking at mike,the cat is looking at mike
+4333,jenny is sitting by the duck,jenny is sitting by the cat
+4994,jenny is sitting by the cat,jenny is sitting by the duck
+434,the cat is standing next to mike,the duck is standing next to mike
+4924,the duck is standing next to mike,the cat is standing next to mike
+4638,the duck is on the slide,the cat is on the slide
+8371,the cat is on the slide,the duck is on the slide
+5994,the cat is standing by mike,the duck is standing by mike
+606,the duck is standing by mike,the cat is standing by mike
+6141,mike is surprised to see the cat,mike is surprised to see the duck
+7023,mike is surprised to see the duck,mike is surprised to see the cat
+1393,the owl is in the tree,the cat is in the tree
+743,the cat is in the tree,the owl is in the tree
+1477,the owl is in the sandbox,the cat is in the sandbox
+3241,the cat is in the sandbox,the owl is in the sandbox
+3535,the cat is in the sandbox,the owl is in the sandbox
+9941,the owl is in the sandbox,the cat is in the sandbox
+4570,the cat is on the picnic table,the owl is on the picnic table
+6803,the owl is on the picnic table,the cat is on the picnic table
+4623,jenny is scared of the cat,jenny is scared of the owl
+9223,jenny is scared of the owl,jenny is scared of the cat
+5330,the cat is watching mike and jenny,the owl is watching mike and jenny
+9015,the owl is watching mike and jenny,the cat is watching mike and jenny
+558,a owl is sitting on a table,a cat is sitting on a table
+8972,a cat is sitting on a table,a owl is sitting on a table
+5758,the owl is on the slide,the cat is on the slide
+8371,the cat is on the slide,the owl is on the slide
+5758,the owl is sitting on the slide,the cat is sitting on the slide
+8371,the cat is sitting on the slide,the owl is sitting on the slide
+6122,the cat is watching mike and jenny,the owl is watching mike and jenny
+9533,the owl is watching mike and jenny,the cat is watching mike and jenny
+1020,jenny is scared of the snake,jenny is scared of the bear
+3464,jenny is scared of the bear,jenny is scared of the snake
+1020,the dog sees the snake,the dog sees the bear
+9847,the dog sees the bear,the dog sees the snake
+1079,the cat is watching the snake,the cat is watching the bear
+5765,the cat is watching the bear,the cat is watching the snake
+1333,mike is scared of the bear,mike is scared of the snake
+1771,mike is scared of the snake,mike is scared of the bear
+1445,jenny is scared of the snake,jenny is scared of the bear
+6373,jenny is scared of the bear,jenny is scared of the snake
+148,jenny is afraid of the snake,jenny is afraid of the bear
+9392,jenny is afraid of the bear,jenny is afraid of the snake
+1536,the bear is scaring jenny,the snake is scaring jenny
+8087,the snake is scaring jenny,the bear is scaring jenny
+1771,jenny is running from the snake,jenny is running from the bear
+9691,jenny is running from the bear,jenny is running from the snake
+1771,the snake is behind mike,the bear is behind mike
+6553,the bear is behind mike,the snake is behind mike
+1834,jenny is scared of the snake,jenny is scared of the bear
+6968,jenny is scared of the bear,jenny is scared of the snake
+1862,jenny is scared of the snake,jenny is scared of the bear
+6972,jenny is scared of the bear,jenny is scared of the snake
+2288,mike and jenny are afraid of the bear,mike and jenny are afraid of the snake
+4617,mike and jenny are afraid of the snake,mike and jenny are afraid of the bear
+2604,the bear is scaring jenny and mike,the snake is scaring jenny and mike
+6226,the snake is scaring jenny and mike,the bear is scaring jenny and mike
+3558,mike is scared of the bear,mike is scared of the snake
+6509,mike is scared of the snake,mike is scared of the bear
+3713,mike is scared of the bear,mike is scared of the snake
+6816,mike is scared of the snake,mike is scared of the bear
+3716,mike is running away from the bear,mike is running away from the snake
+6509,mike is running away from the snake,mike is running away from the bear
+3806,jenny is running away from the bear,jenny is running away from the snake
+82,jenny is running away from the snake,jenny is running away from the bear
+4349,jenny is scared of the snake,jenny is scared of the bear
+7815,jenny is scared of the bear,jenny is scared of the snake
+6552,mike is afraid of the bear,mike is afraid of the snake
+6754,mike is afraid of the snake,mike is afraid of the bear
+735,mike and jenny are afraid of the bear,mike and jenny are afraid of the snake
+8441,mike and jenny are afraid of the snake,mike and jenny are afraid of the bear
+7438,jenny is scared of the snake,jenny is scared of the bear
+8797,jenny is scared of the bear,jenny is scared of the snake
+7521,jenny is scared of the snake,jenny is scared of the bear
+9691,jenny is scared of the bear,jenny is scared of the snake
+7860,jenny is mad at the bear,jenny is mad at the snake
+8247,jenny is mad at the snake,jenny is mad at the bear
+8247,jenny is angry at the snake,jenny is angry at the bear
+8789,jenny is angry at the bear,jenny is angry at the snake
+8797,the bear is behind jenny,the snake is behind jenny
+9082,the snake is behind jenny,the bear is behind jenny
 1003,the duck is under the tree,the snake is under the tree
 1862,the snake is under the tree,the duck is under the tree
 1020,the dog is looking at the snake,the dog is looking at the duck
@@ -71,3 +311,51 @@ img_id,target_sentence,distractor_sentence
 6961,jenny is holding a duck,jenny is holding a snake
 603,the duck is looking at mike,the snake is looking at mike
 6509,the snake is looking at mike,the duck is looking at mike
+1020,jenny is scared of the snake,jenny is scared of the owl
+9223,jenny is scared of the owl,jenny is scared of the snake
+1283,jenny is angry at the owl,jenny is angry at the snake
+8247,jenny is angry at the snake,jenny is angry at the owl
+2469,jenny is holding a owl,jenny is holding a snake
+4563,jenny is holding a snake,jenny is holding a owl
+5970,mike is trying to scare the snake away,mike is trying to scare the owl away
+9941,mike is trying to scare the owl away,mike is trying to scare the snake away
+10016,mike is waving at the duck,mike is waving at the bear
+2804,mike is waving at the bear,mike is waving at the duck
+1227,the duck is wearing a hat,the bear is wearing a hat
+1333,the bear is wearing a hat,the duck is wearing a hat
+1785,the cat is sitting by the bear,the cat is sitting by the duck
+3473,the cat is sitting by the duck,the cat is sitting by the bear
+2672,mike is happy to see the duck,mike is happy to see the bear
+813,mike is happy to see the bear,mike is happy to see the duck
+2804,mike is surprised to see the bear,mike is surprised to see the duck
+7023,mike is surprised to see the duck,mike is surprised to see the bear
+3839,the bear wants to play with mike,the duck wants to play with mike
+606,the duck wants to play with mike,the bear wants to play with mike
+4008,jenny is afraid of the duck,jenny is afraid of the bear
+9392,jenny is afraid of the bear,jenny is afraid of the duck
+7601,the duck wants some pizza too,the bear wants some pizza too
+8613,the bear wants some pizza too,the duck wants some pizza too
+7860,the bear is in front of mike,the duck is in front of mike
+8062,the duck is in front of mike,the bear is in front of mike
+1283,jenny is angry at the owl,jenny is angry at the bear
+8789,jenny is angry at the bear,jenny is angry at the owl
+1393,the owl is in the tree,the bear is in the tree
+5984,the bear is in the tree,the owl is in the tree
+3464,jenny is scared of the bear,jenny is scared of the owl
+9223,jenny is scared of the owl,jenny is scared of the bear
+813,mike is happy to see the bear,mike is happy to see the owl
+9049,mike is happy to see the owl,mike is happy to see the bear
+1477,the owl is in the sandbox,the duck is in the sandbox
+2272,the duck is in the sandbox,the owl is in the sandbox
+164,the duck is watching mike and jenny,the owl is watching mike and jenny
+9015,the owl is watching mike and jenny,the duck is watching mike and jenny
+2146,mike and jenny sit next to the owl,mike and jenny sit next to the duck
+4007,mike and jenny sit next to the duck,mike and jenny sit next to the owl
+2469,jenny is holding a owl,jenny is holding a duck
+6961,jenny is holding a duck,jenny is holding a owl
+2672,mike is happy to see the duck,mike is happy to see the owl
+9049,mike is happy to see the owl,mike is happy to see the duck
+3681,the duck is in the sandbox,the owl is in the sandbox
+9941,the owl is in the sandbox,the duck is in the sandbox
+4638,the duck is on the slide,the owl is on the slide
+5758,the owl is on the slide,the duck is on the slide

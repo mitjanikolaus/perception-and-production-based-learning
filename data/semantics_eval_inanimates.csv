@@ -1,38 +1,64 @@
 img_id,target_sentence,distractor_sentence
-1301,mike is sharing a pizza with jenny,mike is sharing a pie with jenny
-8947,mike is sharing a pie with jenny,mike is sharing a pizza with jenny
-1344,jenny has a pizza,jenny has a pie
-6358,jenny has a pie,jenny has a pizza
-2045,there is a pie on the table,there is a pizza on the table
-4459,there is a pizza on the table,there is a pie on the table
-2045,there is a pie on the picnic table,there is a pizza on the picnic table
-9071,there is a pizza on the picnic table,there is a pie on the picnic table
-28,jenny is holding a pie,jenny is holding a pizza
-5537,jenny is holding a pizza,jenny is holding a pie
-282,a pie is on the table,a pizza is on the table
-6636,a pizza is on the table,a pie is on the table
-311,jenny is holding a pie,jenny is holding a pizza
-6870,jenny is holding a pizza,jenny is holding a pie
-3127,there is a pie on the table,there is a pizza on the table
-7656,there is a pizza on the table,there is a pie on the table
-3127,the pie is on the table,the pizza is on the table
-5205,the pizza is on the table,the pie is on the table
-328,jenny is holding a pie,jenny is holding a pizza
-9769,jenny is holding a pizza,jenny is holding a pie
-3563,there is a pie on the table,there is a pizza on the table
-858,there is a pizza on the table,there is a pie on the table
-3563,the pie is on the table,the pizza is on the table
-6636,the pizza is on the table,the pie is on the table
-4058,mike is holding a pizza,mike is holding a pie
-4908,mike is holding a pie,mike is holding a pizza
-4744,the duck wants some pie too,the duck wants some pizza too
-7601,the duck wants some pizza too,the duck wants some pie too
-5845,mike is holding a pizza,mike is holding a pie
-8165,mike is holding a pie,mike is holding a pizza
-6876,jenny has a pizza,jenny has a pie
-8713,jenny has a pie,jenny has a pizza
-8381,mike is holding a pie,mike is holding a pizza
-9075,mike is holding a pizza,mike is holding a pie
+5527,jenny is holding a ball,jenny is holding a hat
+7852,jenny is holding a hat,jenny is holding a ball
+6223,jenny is sad because she wants the hat,jenny is sad because she wants the ball
+9637,jenny is sad because she wants the ball,jenny is sad because she wants the hat
+3305,mike is holding the ball,mike is holding the tree
+4333,mike is holding the tree,mike is holding the ball
+5128,mike is standing by the tree,mike is standing by the ball
+6950,mike is standing by the ball,mike is standing by the tree
+1862,the cat is sitting by the ball,the cat is sitting by the table
+5831,the cat is sitting by the table,the cat is sitting by the ball
+6950,mike is standing by the ball,mike is standing by the table
+9259,mike is standing by the table,mike is standing by the ball
+3797,the ball is behind mike,the sandbox is behind mike
+8563,the sandbox is behind mike,the ball is behind mike
+8081,the owl is sitting on the ball,the owl is sitting on the sandbox
+9946,the owl is sitting on the sandbox,the owl is sitting on the ball
+4993,mike is sitting by the slide,mike is sitting by the ball
+7215,mike is sitting by the ball,mike is sitting by the slide
+5758,the owl is sitting on the slide,the owl is sitting on the ball
+8081,the owl is sitting on the ball,the owl is sitting on the slide
+6950,mike is standing by the ball,mike is standing by the slide
+8179,mike is standing by the slide,mike is standing by the ball
+10002,jenny wants the ball,jenny wants the pie
+7415,jenny wants the pie,jenny wants the ball
+2385,mike is holding a pie,mike is holding a ball
+3305,mike is holding a ball,mike is holding a pie
+2490,theres a ball in front of mike,theres a pie in front of mike
+9567,theres a pie in front of mike,theres a ball in front of mike
+311,jenny is holding a pie,jenny is holding a ball
+5527,jenny is holding a ball,jenny is holding a pie
+5994,there is a pie in the sandbox,there is a ball in the sandbox
+9862,there is a ball in the sandbox,there is a pie in the sandbox
+1836,the ball is on the ground,the pizza is on the ground
+6622,the pizza is on the ground,the ball is on the ground
+3305,mike is holding a ball,mike is holding a pizza
+9075,mike is holding a pizza,mike is holding a ball
+3305,mike is holding the ball,mike is holding the pizza
+4710,mike is holding the pizza,mike is holding the ball
+4710,jenny is holding the pizza,jenny is holding the ball
+718,jenny is holding the ball,jenny is holding the pizza
+5289,mike has a ball,mike has a pizza
+7601,mike has a pizza,mike has a ball
+5527,jenny is holding a ball,jenny is holding a pizza
+5537,jenny is holding a pizza,jenny is holding a ball
+10002,jenny wants the ball,jenny wants the hamburger
+1195,jenny wants the hamburger,jenny wants the ball
+1192,mike is holding a hamburger,mike is holding a ball
+3305,mike is holding a ball,mike is holding a hamburger
+1794,mike has a hamburger,mike has a ball
+5289,mike has a ball,mike has a hamburger
+2077,jenny is holding a hamburger,jenny is holding a ball
+5527,jenny is holding a ball,jenny is holding a hamburger
+4493,mike holds a ball,mike holds a hamburger
+6358,mike holds a hamburger,mike holds a ball
+556,the owl is sitting on the hamburger,the owl is sitting on the ball
+8081,the owl is sitting on the ball,the owl is sitting on the hamburger
+6358,mike has a hamburger,mike has a ball
+8722,mike has a ball,mike has a hamburger
+4994,jenny is holding the balloons,jenny is holding the ball
+718,jenny is holding the ball,jenny is holding the balloons
 1123,mike threw the ball to jenny,mike threw the frisbee to jenny
 2646,mike threw the frisbee to jenny,mike threw the ball to jenny
 1619,jenny is catching the ball,jenny is catching the frisbee
@@ -67,3 +93,281 @@ img_id,target_sentence,distractor_sentence
 832,mike is throwing the ball,mike is throwing the frisbee
 7054,jenny is waiting to catch the frisbee,jenny is waiting to catch the ball
 837,jenny is waiting to catch the ball,jenny is waiting to catch the frisbee
+219,jenny is wearing purple hat,jenny is wearing purple sunglasses
+3396,jenny is wearing purple sunglasses,jenny is wearing purple hat
+2252,jenny is wearing a hat,jenny is wearing a sunglasses
+6615,jenny is wearing a sunglasses,jenny is wearing a hat
+28,jenny is holding a pie,jenny is holding a hat
+7852,jenny is holding a hat,jenny is holding a pie
+6358,jenny has a pie,jenny has a hat
+6982,jenny has a hat,jenny has a pie
+5537,jenny is holding a pizza,jenny is holding a hat
+7852,jenny is holding a hat,jenny is holding a pizza
+6876,jenny has a pizza,jenny has a hat
+6982,jenny has a hat,jenny has a pizza
+2077,jenny is holding a hamburger,jenny is holding a hat
+7852,jenny is holding a hat,jenny is holding a hamburger
+6982,jenny has a hat,jenny has a hamburger
+7493,jenny has a hamburger,jenny has a hat
+6127,jenny is holding a frisbee,jenny is holding a hat
+7852,jenny is holding a hat,jenny is holding a frisbee
+1003,jenny is standing next to the tree,jenny is standing next to the table
+963,jenny is standing next to the table,jenny is standing next to the tree
+1243,jenny is near a table,jenny is near a tree
+2088,jenny is near a tree,jenny is near a table
+2330,the cat is sitting by the tree,the cat is sitting by the table
+5831,the cat is sitting by the table,the cat is sitting by the tree
+1123,jenny is standing by the tree,jenny is standing by the sandbox
+278,jenny is standing by the sandbox,jenny is standing by the tree
+1393,the owl is in the tree,the owl is in the sandbox
+1477,the owl is in the sandbox,the owl is in the tree
+1562,mike and jenny are in a sandbox,mike and jenny are in a tree
+6122,mike and jenny are in a tree,mike and jenny are in a sandbox
+1777,there is an owl on the tree,there is an owl on the sandbox
+3195,there is an owl on the sandbox,there is an owl on the tree
+2088,jenny is near a tree,jenny is near a sandbox
+3531,jenny is near a sandbox,jenny is near a tree
+238,mike is sitting in the tree,mike is sitting in the sandbox
+3382,mike is sitting in the sandbox,mike is sitting in the tree
+3036,the tree is behind mike,the sandbox is behind mike
+8563,the sandbox is behind mike,the tree is behind mike
+3241,the cat is in the sandbox,the cat is in the tree
+743,the cat is in the tree,the cat is in the sandbox
+1003,the duck is under the tree,the duck is under the slide
+9210,the duck is under the slide,the duck is under the tree
+1003,jenny is standing next to the tree,jenny is standing next to the slide
+9957,jenny is standing next to the slide,jenny is standing next to the tree
+1123,jenny is standing by the tree,jenny is standing by the slide
+9957,jenny is standing by the slide,jenny is standing by the tree
+2116,the dog is looking at the slide,the dog is looking at the tree
+3156,the dog is looking at the tree,the dog is looking at the slide
+3458,mike is standing by the tree,mike is standing by the slide
+8179,mike is standing by the slide,mike is standing by the tree
+3721,the dog is standing in front of the slide,the dog is standing in front of the tree
+668,the dog is standing in front of the tree,the dog is standing in front of the slide
+4993,mike is sitting by the slide,mike is sitting by the tree
+9243,mike is sitting by the tree,mike is sitting by the slide
+5758,the owl is on the slide,the owl is on the tree
+7049,the owl is on the tree,the owl is on the slide
+2088,jenny is near a tree,jenny is near a pizza
+8482,jenny is near a pizza,jenny is near a tree
+3156,the dog is looking at the tree,the dog is looking at the pizza
+5102,the dog is looking at the pizza,the dog is looking at the tree
+4333,mike is holding the tree,mike is holding the pizza
+8360,mike is holding the pizza,mike is holding the tree
+556,the owl is on the hamburger,the owl is on the tree
+7049,the owl is on the tree,the owl is on the hamburger
+1243,jenny is near a table,jenny is near a sandbox
+3531,jenny is near a sandbox,jenny is near a table
+226,mike is sitting next to the sandbox,mike is sitting next to the table
+5012,mike is sitting next to the table,mike is sitting next to the sandbox
+278,jenny is standing by the sandbox,jenny is standing by the table
+5603,jenny is standing by the table,jenny is standing by the sandbox
+1243,jenny is near a table,jenny is near a slide
+3574,jenny is near a slide,jenny is near a table
+1920,mike is sitting on the slide,mike is sitting on the table
+4734,mike is sitting on the table,mike is sitting on the slide
+1920,jenny is sitting on the slide,jenny is sitting on the table
+4706,jenny is sitting on the table,jenny is sitting on the slide
+3146,jenny is sitting by the table,jenny is sitting by the slide
+4171,jenny is sitting by the slide,jenny is sitting by the table
+3430,jenny is on the slide,jenny is on the table
+4708,jenny is on the table,jenny is on the slide
+3513,jenny is sitting on the slide,jenny is sitting on the table
+5020,jenny is sitting on the table,jenny is sitting on the slide
+3515,jenny is sitting on the slide,jenny is sitting on the table
+5823,jenny is sitting on the table,jenny is sitting on the slide
+3990,mike is on the table,mike is on the slide
+4831,mike is on the slide,mike is on the table
+45,the cat is on the table,the cat is on the slide
+8371,the cat is on the slide,the cat is on the table
+5012,mike is sitting next to the table,mike is sitting next to the slide
+9730,mike is sitting next to the slide,mike is sitting next to the table
+5603,jenny is standing by the table,jenny is standing by the slide
+9299,jenny is standing by the slide,jenny is standing by the table
+5741,the dog is standing by the slide,the dog is standing by the table
+6803,the dog is standing by the table,the dog is standing by the slide
+6870,jenny is standing by the table,jenny is standing by the slide
+9957,jenny is standing by the slide,jenny is standing by the table
+8179,mike is standing by the slide,mike is standing by the table
+9259,mike is standing by the table,mike is standing by the slide
+963,jenny is standing next to the table,jenny is standing next to the slide
+9957,jenny is standing next to the slide,jenny is standing next to the table
+2682,jenny is sitting next to the pie,jenny is sitting next to the table
+8482,jenny is sitting next to the table,jenny is sitting next to the pie
+3669,the dog is standing by the pie,the dog is standing by the table
+6803,the dog is standing by the table,the dog is standing by the pie
+226,mike is sitting next to the sandbox,mike is sitting next to the slide
+9730,mike is sitting next to the slide,mike is sitting next to the sandbox
+278,jenny is standing by the sandbox,jenny is standing by the slide
+9299,jenny is standing by the slide,jenny is standing by the sandbox
+3531,jenny is near a sandbox,jenny is near a slide
+3574,jenny is near a slide,jenny is near a sandbox
+5758,the owl is sitting on the slide,the owl is sitting on the sandbox
+9946,the owl is sitting on the sandbox,the owl is sitting on the slide
+3531,jenny is near a sandbox,jenny is near a pizza
+8482,jenny is near a pizza,jenny is near a sandbox
+556,the owl is sitting on the hamburger,the owl is sitting on the sandbox
+9946,the owl is sitting on the sandbox,the owl is sitting on the hamburger
+1243,mike is near a pie,mike is near a slide
+4228,mike is near a slide,mike is near a pie
+3669,the dog is standing by the pie,the dog is standing by the slide
+5741,the dog is standing by the slide,the dog is standing by the pie
+2116,the dog is looking at the slide,the dog is looking at the pizza
+5537,the dog is looking at the pizza,the dog is looking at the slide
+3574,jenny is near a slide,jenny is near a pizza
+8482,jenny is near a pizza,jenny is near a slide
+4993,mike is sitting by the slide,mike is sitting by the pizza
+6533,mike is sitting by the pizza,mike is sitting by the slide
+556,the owl is sitting on the hamburger,the owl is sitting on the slide
+5758,the owl is sitting on the slide,the owl is sitting on the hamburger
+556,the owl is on the hamburger,the owl is on the slide
+5758,the owl is on the slide,the owl is on the hamburger
+1301,mike is sharing a pizza with jenny,mike is sharing a pie with jenny
+8947,mike is sharing a pie with jenny,mike is sharing a pizza with jenny
+1344,jenny has a pizza,jenny has a pie
+6358,jenny has a pie,jenny has a pizza
+2045,there is a pie on the table,there is a pizza on the table
+4459,there is a pizza on the table,there is a pie on the table
+2045,there is a pie on the picnic table,there is a pizza on the picnic table
+9071,there is a pizza on the picnic table,there is a pie on the picnic table
+28,jenny is holding a pie,jenny is holding a pizza
+5537,jenny is holding a pizza,jenny is holding a pie
+282,a pie is on the table,a pizza is on the table
+6636,a pizza is on the table,a pie is on the table
+311,jenny is holding a pie,jenny is holding a pizza
+6870,jenny is holding a pizza,jenny is holding a pie
+3127,there is a pie on the table,there is a pizza on the table
+7656,there is a pizza on the table,there is a pie on the table
+3127,the pie is on the table,the pizza is on the table
+5205,the pizza is on the table,the pie is on the table
+328,jenny is holding a pie,jenny is holding a pizza
+9769,jenny is holding a pizza,jenny is holding a pie
+3563,there is a pie on the table,there is a pizza on the table
+858,there is a pizza on the table,there is a pie on the table
+3563,the pie is on the table,the pizza is on the table
+6636,the pizza is on the table,the pie is on the table
+4058,mike is holding a pizza,mike is holding a pie
+4908,mike is holding a pie,mike is holding a pizza
+4744,the duck wants some pie too,the duck wants some pizza too
+7601,the duck wants some pizza too,the duck wants some pie too
+5845,mike is holding a pizza,mike is holding a pie
+8165,mike is holding a pie,mike is holding a pizza
+6876,jenny has a pizza,jenny has a pie
+8713,jenny has a pie,jenny has a pizza
+8381,mike is holding a pie,mike is holding a pizza
+9075,mike is holding a pizza,mike is holding a pie
+1192,mike is holding a hamburger,mike is holding a pie
+2385,mike is holding a pie,mike is holding a hamburger
+1195,jenny wants the hamburger,jenny wants the pie
+5634,jenny wants the pie,jenny wants the hamburger
+1195,a hamburger is on the table,a pie is on the table
+282,a pie is on the table,a hamburger is on the table
+1235,mike is eating a hamburger,mike is eating a pie
+6830,mike is eating a pie,mike is eating a hamburger
+1798,mike is holding a hamburger,mike is holding a pie
+4712,mike is holding a pie,mike is holding a hamburger
+2045,there is a pie on the table,there is a hamburger on the table
+6930,there is a hamburger on the table,there is a pie on the table
+2045,there is a pie on the picnic table,there is a hamburger on the picnic table
+6800,there is a hamburger on the picnic table,there is a pie on the picnic table
+2070,jenny brought mike a hamburger,jenny brought mike a pie
+328,jenny brought mike a pie,jenny brought mike a hamburger
+2077,jenny is holding a hamburger,jenny is holding a pie
+28,jenny is holding a pie,jenny is holding a hamburger
+2411,jenny holds a pie,jenny holds a hamburger
+841,jenny holds a hamburger,jenny holds a pie
+311,jenny is holding a pie,jenny is holding a hamburger
+841,jenny is holding a hamburger,jenny is holding a pie
+3127,the pie is on the table,the hamburger is on the table
+5577,the hamburger is on the table,the pie is on the table
+3382,mike is holding a hamburger,mike is holding a pie
+4908,mike is holding a pie,mike is holding a hamburger
+3563,the pie is on the table,the hamburger is on the table
+7251,the hamburger is on the table,the pie is on the table
+4188,mike is holding a hamburger,mike is holding a pie
+8165,mike is holding a pie,mike is holding a hamburger
+4641,mike is holding a hamburger,mike is holding a pie
+8381,mike is holding a pie,mike is holding a hamburger
+4817,the pie is on the grill,the hamburger is on the grill
+556,the hamburger is on the grill,the pie is on the grill
+7493,jenny has a hamburger,jenny has a pie
+8713,jenny has a pie,jenny has a hamburger
+8276,mike is holding a hamburger,mike is holding a pie
+8383,mike is holding a pie,mike is holding a hamburger
+866,a pie is on the table,a hamburger is on the table
+9061,a hamburger is on the table,a pie is on the table
+2385,mike is holding a pie,mike is holding a frisbee
+3963,mike is holding a frisbee,mike is holding a pie
+28,jenny is holding a pie,jenny is holding a frisbee
+6127,jenny is holding a frisbee,jenny is holding a pie
+311,jenny is holding a pie,jenny is holding a frisbee
+7266,jenny is holding a frisbee,jenny is holding a pie
+3716,the bear is holding a frisbee,the bear is holding a pie
+8076,the bear is holding a pie,the bear is holding a frisbee
+4712,mike is holding a pie,mike is holding a frisbee
+5365,mike is holding a frisbee,mike is holding a pie
+4908,mike is holding a pie,mike is holding a frisbee
+6125,mike is holding a frisbee,mike is holding a pie
+1192,mike is holding a hamburger,mike is holding a pizza
+4058,mike is holding a pizza,mike is holding a hamburger
+1195,a hamburger is on the table,a pizza is on the table
+2385,a pizza is on the table,a hamburger is on the table
+1235,mike has a hamburger,mike has a pizza
+7601,mike has a pizza,mike has a hamburger
+1344,jenny has a pizza,jenny has a hamburger
+7493,jenny has a hamburger,jenny has a pizza
+1794,mike has a hamburger,mike has a pizza
+8089,mike has a pizza,mike has a hamburger
+1798,mike is holding a hamburger,mike is holding a pizza
+5845,mike is holding a pizza,mike is holding a hamburger
+2077,jenny is holding a hamburger,jenny is holding a pizza
+5537,jenny is holding a pizza,jenny is holding a hamburger
+2385,the pizza is on the table,the hamburger is on the table
+5577,the hamburger is on the table,the pizza is on the table
+3382,mike is holding a hamburger,mike is holding a pizza
+9075,mike is holding a pizza,mike is holding a hamburger
+4459,there is a pizza on the table,there is a hamburger on the table
+6930,there is a hamburger on the table,there is a pizza on the table
+4673,jenny made a hamburger,jenny made a pizza
+5102,jenny made a pizza,jenny made a hamburger
+5205,the pizza is on the table,the hamburger is on the table
+7251,the hamburger is on the table,the pizza is on the table
+6636,a pizza is on the table,a hamburger is on the table
+9061,a hamburger is on the table,a pizza is on the table
+6800,there is a hamburger on the picnic table,there is a pizza on the picnic table
+9071,there is a pizza on the picnic table,there is a hamburger on the picnic table
+6870,jenny is holding a pizza,jenny is holding a hamburger
+841,jenny is holding a hamburger,jenny is holding a pizza
+4710,jenny is holding the pizza,jenny is holding the balloons
+4994,jenny is holding the balloons,jenny is holding the pizza
+2373,mike is holding the frisbee,mike is holding the pizza
+4710,mike is holding the pizza,mike is holding the frisbee
+3963,mike is holding a frisbee,mike is holding a pizza
+4058,mike is holding a pizza,mike is holding a frisbee
+5537,jenny is holding a pizza,jenny is holding a frisbee
+7266,jenny is holding a frisbee,jenny is holding a pizza
+5845,mike is holding a pizza,mike is holding a frisbee
+6125,mike is holding a frisbee,mike is holding a pizza
+6397,mike is holding the frisbee,mike is holding the pizza
+8360,mike is holding the pizza,mike is holding the frisbee
+7601,mike has a pizza,mike has a frisbee
+9814,mike has a frisbee,mike has a pizza
+1192,mike is holding a hamburger,mike is holding a frisbee
+3963,mike is holding a frisbee,mike is holding a hamburger
+1235,mike has a hamburger,mike has a frisbee
+9814,mike has a frisbee,mike has a hamburger
+1798,mike is holding a hamburger,mike is holding a frisbee
+5365,mike is holding a frisbee,mike is holding a hamburger
+2076,mike wants the hamburger,mike wants the frisbee
+8680,mike wants the frisbee,mike wants the hamburger
+2077,jenny is holding a hamburger,jenny is holding a frisbee
+6127,jenny is holding a frisbee,jenny is holding a hamburger
+3382,mike is holding a hamburger,mike is holding a frisbee
+6125,mike is holding a frisbee,mike is holding a hamburger
+3716,the bear is holding a frisbee,the bear is holding a hamburger
+4139,the bear is holding a hamburger,the bear is holding a frisbee
+7266,jenny is holding a frisbee,jenny is holding a hamburger
+841,jenny is holding a hamburger,jenny is holding a frisbee
+4401,mike wants to play with the balloons,mike wants to play with the frisbee
+5984,mike wants to play with the frisbee,mike wants to play with the balloons
