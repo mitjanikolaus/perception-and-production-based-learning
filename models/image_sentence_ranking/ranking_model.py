@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torch.autograd import Variable
-from torchvision.models import resnet50, resnet152
+from torchvision.models import resnet50
 
 import numpy as np
 
@@ -175,7 +175,7 @@ class ImageEmbedding(nn.Module):
     def __init__(self, joint_embeddings_size, fine_tune_resnet):
         super(ImageEmbedding, self).__init__()
 
-        resnet = resnet152(pretrained=True)
+        resnet = resnet50(pretrained=True)
 
         if not fine_tune_resnet:
             for param in resnet.parameters():
