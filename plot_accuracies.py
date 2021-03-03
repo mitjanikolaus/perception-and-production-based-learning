@@ -30,6 +30,17 @@ def main(args):
     for column_name in scores.columns:
         scores[column_name] = scores[column_name].rolling(args.rolling_window, min_periods=1).mean()
 
+    # Delete superfluous logging entries (these mess up epoch calculation otherwise)
+    epoch = TRAINING_SET_SIZE
+    to_delete = []
+    for i, row in scores.iterrows():
+        if row.name * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY > epoch:
+            epoch += TRAINING_SET_SIZE
+            to_delete.append(row.name)
+            print(row)
+    scores.drop(labels=to_delete, inplace=True)
+    scores.reset_index(drop=True, inplace=True)
+
     scores["epoch"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY) / TRAINING_SET_SIZE)
 
     scores.set_index("epoch", inplace=True)
@@ -55,7 +66,7 @@ def get_args():
         "--rolling-window", default=100, type=int,
     )
     parser.add_argument(
-        "--x-lim", default=10, type=int,
+        "--x-lim", default=15, type=int,
     )
 
     return parser.parse_args()
