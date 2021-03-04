@@ -274,7 +274,7 @@ def generate_eval_set_objects(image_ids, meta_data, images, captions, vocab, tar
                                                     samples.append(sample_1)
                                                     samples.append(sample_2)
 
-        # show_image(images[str(img_id)])
+                                                # show_image(images[str(img_id)])
     data = pd.DataFrame(samples)
 
     return data
@@ -470,15 +470,15 @@ def main(args):
     #                                                    vocab, VERBS)
     # data_verbs.to_csv("data/semantics_eval_verb_noun_binding.csv", index=False)
 
-    # data_adj = generate_eval_set_verbs_or_adjectives(image_ids_single_actor.copy(), meta_data, images, captions, vocab, ADJECTIVES)
-    # data_adj.to_csv("data/semantics_eval_adjectives.csv", index=False)
+    data_adj = generate_eval_set_verbs_or_adjectives(image_ids_single_actor.copy(), meta_data, images, captions, vocab, ADJECTIVES)
+    data_adj.to_csv("data/semantics_eval_adjectives.csv", index=False)
     #
     # data_adj = generate_eval_set_adjectives_hard(image_ids_two_actors.copy(), meta_data_adjectives, images, captions, vocab,
     #                                                  ADJECTIVES)
     # data_adj.to_csv("data/semantics_eval_adjective_noun_binding.csv", index=False)
     #
-    data_agent_patient = generate_eval_set_semantic_roles(image_ids.copy(), meta_data, images, captions, vocab)
-    data_agent_patient.to_csv("data/semantics_eval_semantic_roles.csv", index=False)
+    # data_agent_patient = generate_eval_set_semantic_roles(image_ids.copy(), meta_data, images, captions, vocab)
+    # data_agent_patient.to_csv("data/semantics_eval_semantic_roles.csv", index=False)
 
 
 def get_args():

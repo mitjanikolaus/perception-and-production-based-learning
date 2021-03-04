@@ -19,10 +19,11 @@ LEGEND = {
     "data/semantics_eval_inanimates.csv": "objects",
     "data/semantics_eval_verbs.csv": "verbs",
     "data/semantics_eval_adjectives.csv": "adjectives",
-    "data/semantics_eval_adjective_noun_binding.csv": "adjective-noun binding",
-    "data/semantics_eval_verb_noun_binding_filtered.csv": "verb-noun binding",
+    "data/semantics_eval_adjective_noun_binding.csv": "adjective-noun dependency",
+    "data/semantics_eval_verb_noun_binding_filtered.csv": "verb-noun dependency",
     "data/semantics_eval_semantic_roles_filtered.csv": "semantic roles",
 }
+
 
 def main(args):
     scores = pickle.load(open(args.scores_file, "rb"))
@@ -37,13 +38,13 @@ def main(args):
         if row.name * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY > epoch:
             epoch += TRAINING_SET_SIZE
             to_delete.append(row.name)
-            print(row)
     scores.drop(labels=to_delete, inplace=True)
     scores.reset_index(drop=True, inplace=True)
 
-    scores["epoch"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY) / TRAINING_SET_SIZE)
+    scores["num_samples"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY))
+    # scores["epoch"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY) / TRAINING_SET_SIZE)
 
-    scores.set_index("epoch", inplace=True)
+    scores.set_index("num_samples", inplace=True)
 
     del scores["val_loss"]
 
@@ -66,7 +67,7 @@ def get_args():
         "--rolling-window", default=100, type=int,
     )
     parser.add_argument(
-        "--x-lim", default=15, type=int,
+        "--x-lim", default=TRAINING_SET_SIZE*15, type=int,
     )
 
     return parser.parse_args()

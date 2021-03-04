@@ -13,7 +13,6 @@ from preprocess import (
     VOCAB_FILENAME, show_image,
 )
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def main(args):
     images = h5py.File(
@@ -42,9 +41,8 @@ def get_args():
         type=int,
         required=True,
     )
-    args = core.init(parser)
 
-    return args
+    return parser.parse_args()
 
 
 if __name__ == "__main__":

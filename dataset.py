@@ -126,10 +126,6 @@ class SemanticsEvalDataset(Dataset):
 
         self.features_scale_factor = features_scale_factor
 
-        # Load captions
-        with open(os.path.join(data_folder, captions_filename), "rb") as file:
-            captions = pickle.load(file)
-
         # Set pytorch transformation pipeline
         self.normalize = transforms.Normalize(mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES)
 
