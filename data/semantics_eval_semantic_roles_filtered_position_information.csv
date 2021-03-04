@@ -1,0 +1,51 @@
+img_id,target_sentence,distractor_sentence,agent_is_left
+6902,mike is happy to see jenny,jenny is happy to see mike,1
+1955,jenny is happy to see mike,mike is happy to see jenny,0
+1003,jenny is waving to mike,mike is waving to jenny,1
+6343,jenny is waving to mike,mike is waving to jenny,1
+9957,jenny is waving to mike,mike is waving to jenny,0
+1478,mike is waving to jenny,jenny is waving to mike,1
+4473,mike is waving to jenny,jenny is waving to mike,0
+4924,mike is waving to jenny,jenny is waving to mike,1
+1079,mike is running toward jenny,jenny is running toward mike,1
+5384,mike is running toward jenny,jenny is running toward mike,1
+7518,jenny is running toward mike,mike is running toward jenny,1
+9075,jenny is running toward mike,mike is running toward jenny,0
+112,mike is kicking the ball to jenny,jenny is kicking the ball to mike,1
+5053,mike is kicking the ball to jenny,jenny is kicking the ball to mike,1
+6605,jenny is kicking the ball to mike,mike is kicking the ball to jenny,1
+9172,jenny is kicking the ball to mike,mike is kicking the ball to jenny,0
+1123,mike is throwing a baseball to jenny,jenny is throwing a baseball to mike,1
+5393,jenny is throwing a baseball to mike,mike is throwing a baseball to jenny,0
+1423,mike kicked the ball to jenny,jenny kicked the ball to mike,1
+2937,jenny kicked the ball to mike,mike kicked the ball to jenny,0
+1834,mike is laughing at jenny,jenny is laughing at mike,1
+3179,mike is laughing at jenny,jenny is laughing at mike,1
+6141,jenny is laughing at mike,mike is laughing at jenny,0
+7637,jenny is laughing at mike,mike is laughing at jenny,0
+2012,jenny is running away from mike,mike is running away from jenny,0
+4845,mike is running away from jenny,jenny is running away from mike,1
+2070,mike is mad at jenny,jenny is mad at mike,0
+4564,mike is mad at jenny,jenny is mad at mike,1
+625,mike is mad at jenny,jenny is mad at mike,0
+2359,jenny is mad at mike,mike is mad at jenny,0
+888,jenny is mad at mike,mike is mad at jenny,0
+9814,jenny is mad at mike,mike is mad at jenny,0
+224,mike is running towards jenny,jenny is running towards mike,0
+5096,jenny is running towards mike,mike is running towards jenny,1
+4475,mike is waving at jenny,jenny is waving at mike,1
+5831,mike is waving at jenny,jenny is waving at mike,0
+8563,mike is waving at jenny,jenny is waving at mike,1
+3161,jenny is waving at mike,mike is waving at jenny,0
+3369,jenny is waving at mike,mike is waving at jenny,1
+5427,jenny is waving at mike,mike is waving at jenny,0
+278,jenny is throwing the ball to mike,mike is throwing the ball to jenny,1
+9269,mike is throwing the ball to jenny,jenny is throwing the ball to mike,1
+3880,mike is running to jenny,jenny is running to mike,0
+4564,jenny is running to mike,mike is running to jenny,0
+6565,mike is running to jenny,jenny is running to mike,0
+6667,jenny is running to mike,mike is running to jenny,0
+770,mike is cheering jenny,jenny is cheering mike,0
+4399,jenny is cheering mike,mike is cheering jenny,0
+8635,jenny kicked mike,mike kicked jenny,1
+1371,mike kicked jenny,jenny kicked mike,0
