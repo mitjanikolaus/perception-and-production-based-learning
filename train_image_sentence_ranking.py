@@ -1,9 +1,8 @@
 from __future__ import print_function
 
+import argparse
 import math
 import pickle
-import sys
-from pathlib import Path
 import os
 
 import numpy as np
@@ -57,13 +56,10 @@ def validate_model(model, dataloader, semantic_images_loaders, vocab):
     return val_loss, val_acc, semantic_accuracies
 
 
-def main(params):
-    # initialize the egg lib
-    opts = core.init(params=params)
-
+def main(args):
     # create model checkpoint directory
-    if not os.path.exists(os.path.dirname(CHECKPOINT_DIR_RANKING)):
-        os.makedirs(os.path.dirname(CHECKPOINT_DIR_RANKING))
+    if not os.path.exists(os.path.dirname(args.checkpoint_dir)):
+        os.makedirs(os.path.dirname(args.checkpoint_dir))
 
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
     print("Loading vocab from {}".format(vocab_path))
@@ -74,7 +70,7 @@ def main(params):
         CaptionDataset(
             DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab,
         ),
-        batch_size=opts.batch_size,
+        batch_size=args.batch_size,
         shuffle=True,
         num_workers=0,
         pin_memory=False,
@@ -82,7 +78,7 @@ def main(params):
     )
     val_images_loader = torch.utils.data.DataLoader(
         CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab),
-        batch_size=opts.batch_size,
+        batch_size=args.batch_size,
         shuffle=True,
         num_workers=0,
         pin_memory=False,
@@ -101,7 +97,7 @@ def main(params):
         joint_embeddings_size,
         lstm_hidden_size,
         len(vocab),
-        fine_tune_resnet=False,
+        fine_tune_resnet=args.fine_tune_resnet,
     )
 
     # uses command-line parameters we passed to core.init
@@ -117,15 +113,15 @@ def main(params):
                 "optimizer_state_dict": optimizer.state_dict(),
                 "loss": best_val_loss,
             },
-            CHECKPOINT_DIR_RANKING+"ranking.pt",
+            args.checkpoint_dir+"/ranking.pt",
         )
 
     best_val_loss = math.inf
     accuracies_over_time = []
-    for epoch in range(opts.n_epochs):
+    for epoch in range(args.n_epochs):
         losses = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(train_loader):
-            if batch_idx % DEFAULT_LOG_FREQUENCY == 0:
+            if batch_idx % args.log_frequency == 0:
                 val_loss, val_acc, semantic_accuracies = validate_model(model, val_images_loader, semantics_eval_loaders, vocab)
                 print(f"Batch {batch_idx}: train loss: {np.mean(losses)} val loss: {val_loss} val acc: {val_acc}")
                 if val_loss < best_val_loss:
@@ -133,7 +129,7 @@ def main(params):
                     save_model(model, optimizer, best_val_loss, epoch)
                 semantic_accuracies["val_loss"] = val_loss
                 accuracies_over_time.append(semantic_accuracies)
-                pickle.dump(accuracies_over_time, open(CHECKPOINT_DIR_RANKING+"ranking_accuracies.p", "wb"))
+                pickle.dump(accuracies_over_time, open(args.checkpoint_dir+"/ranking_accuracies.p", "wb"))
 
             model.train()
             images_embedded, captions_embedded = model(
@@ -155,6 +151,34 @@ def main(params):
         print(f"Train Epoch: {epoch}, train loss: {np.mean(losses)} best val loss: {best_val_loss}\n\n")
 
 
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--checkpoint-dir",
+        default=CHECKPOINT_DIR_RANKING,
+        type=str,
+    )
+    parser.add_argument(
+        "--fine-tune-resnet",
+        default=False,
+        action="store_true",
+        help="Fine tune the ResNet module.",
+    )
+    parser.add_argument(
+        "--log-frequency",
+        default=DEFAULT_LOG_FREQUENCY,
+        type=int,
+        help="Logging frequency (number of batches)",
+    )
+
+    # initialize the egg lib
+    # get pre-defined common line arguments (batch/vocab size, etc).
+    # See egg/core/util.py for a list
+    args = core.init(parser)
+
+    return args
+
+
 if __name__ == "__main__":
     print("Start training on device: ", device)
-    main(sys.argv[1:])
+    main(get_args())
