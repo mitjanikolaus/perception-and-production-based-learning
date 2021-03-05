@@ -44,11 +44,14 @@ def main(args):
         scores.reset_index(drop=True, inplace=True)
 
         scores["num_samples"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY))
-        # scores["epoch"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY) / TRAINING_SET_SIZE)
+        scores["epoch"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY) / TRAINING_SET_SIZE)
+
+        print(f"Epoch with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['epoch'].values[0]}")
+        print(f"num_samples with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['num_samples'].values[0]}")
+        del scores["epoch"]
+        del scores["val_loss"]
 
         scores.set_index("num_samples", inplace=True)
-
-        del scores["val_loss"]
 
         scores.rename(columns=LEGEND, inplace=True)
 
@@ -59,6 +62,11 @@ def main(args):
     sns.lineplot(data=all_scores, ci="sd")
 
     plt.xlim((0, args.x_lim))
+
+    # Add chance level line
+    plt.axhline(y=0.5, color="black", label="Chance level", linestyle="--")
+    plt.text(450000, 0.505, 'Chance level', fontsize=10, va='center', ha='center')
+
     plt.ylabel("Accuracy")
     plt.tight_layout()
     plt.show()
@@ -73,7 +81,7 @@ def get_args():
         "--rolling-window", default=30, type=int,
     )
     parser.add_argument(
-        "--x-lim", default=TRAINING_SET_SIZE*15, type=int,
+        "--x-lim", default=TRAINING_SET_SIZE*10, type=int,
     )
 
     return parser.parse_args()
