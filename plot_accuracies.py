@@ -26,31 +26,37 @@ LEGEND = {
 
 
 def main(args):
-    scores = pickle.load(open(args.scores_file, "rb"))
-    scores = pd.DataFrame(scores)
-    for column_name in scores.columns:
-        scores[column_name] = scores[column_name].rolling(args.rolling_window, min_periods=1).mean()
+    all_scores = []
+    for run, scores_file in enumerate(args.scores_files):
+        scores = pickle.load(open(scores_file, "rb"))
+        scores = pd.DataFrame(scores)
+        for column_name in scores.columns:
+            scores[column_name] = scores[column_name].rolling(args.rolling_window, min_periods=1).mean()
 
-    # Delete superfluous logging entries (these mess up epoch calculation otherwise)
-    epoch = TRAINING_SET_SIZE
-    to_delete = []
-    for i, row in scores.iterrows():
-        if row.name * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY > epoch:
-            epoch += TRAINING_SET_SIZE
-            to_delete.append(row.name)
-    scores.drop(labels=to_delete, inplace=True)
-    scores.reset_index(drop=True, inplace=True)
+        # Delete superfluous logging entries (these mess up epoch calculation otherwise)
+        epoch = TRAINING_SET_SIZE
+        to_delete = []
+        for i, row in scores.iterrows():
+            if row.name * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY > epoch:
+                epoch += TRAINING_SET_SIZE
+                to_delete.append(row.name)
+        scores.drop(labels=to_delete, inplace=True)
+        scores.reset_index(drop=True, inplace=True)
 
-    scores["num_samples"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY))
-    # scores["epoch"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY) / TRAINING_SET_SIZE)
+        scores["num_samples"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY))
+        # scores["epoch"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY) / TRAINING_SET_SIZE)
 
-    scores.set_index("num_samples", inplace=True)
+        scores.set_index("num_samples", inplace=True)
 
-    del scores["val_loss"]
+        del scores["val_loss"]
 
-    scores.rename(columns=LEGEND, inplace=True)
+        scores.rename(columns=LEGEND, inplace=True)
 
-    sns.lineplot(data=scores)
+        all_scores.append(scores.copy())
+
+    all_scores = pd.concat(all_scores)
+
+    sns.lineplot(data=all_scores, ci="sd")
 
     plt.xlim((0, args.x_lim))
     plt.ylabel("Accuracy")
@@ -61,10 +67,10 @@ def main(args):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--scores-file", type=str,
+        "--scores-files", type=str, nargs="+", required=True,
     )
     parser.add_argument(
-        "--rolling-window", default=100, type=int,
+        "--rolling-window", default=30, type=int,
     )
     parser.add_argument(
         "--x-lim", default=TRAINING_SET_SIZE*15, type=int,
