@@ -73,7 +73,7 @@ def validate_model(
         )
         for name, semantic_images_loader in semantic_images_loaders.items():
             acc = eval_semantics_score(model, semantic_images_loader, vocab)
-            print(f"Accuracy for {name}: {acc}")
+            print(f"Accuracy for {name}: {acc:.3f}")
             semantic_accuracies[name] = acc
 
         val_losses = []

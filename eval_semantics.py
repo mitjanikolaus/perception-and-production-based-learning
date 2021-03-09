@@ -171,7 +171,7 @@ def main(args):
     semantic_accuracies = {}
     for name, semantic_images_loader in semantics_eval_loaders.items():
         acc = eval_semantics_score(model, semantic_images_loader, vocab, verbose=args.verbose)
-        print(f"Accuracy for {name}: {acc}\n")
+        print(f"Accuracy for {name}: {acc:.3f}\n")
         semantic_accuracies[name] = acc
 
 
