@@ -1,8 +1,10 @@
 import argparse
 import os
 import pickle
+from typing import Optional, Dict
 
 import torch
+from dataclasses import dataclass
 from torch.utils.data import DataLoader
 
 from torch.nn import functional as F
@@ -10,7 +12,7 @@ from torch.nn import functional as F
 import matplotlib.pyplot as plt
 
 import egg.core as core
-from egg.core import ConsoleLogger, Callback, Interaction, SenderReceiverRnnReinforce
+from egg.core import ConsoleLogger, Callback, Interaction, SenderReceiverRnnReinforce, LoggingStrategy
 from dataset import VisualRefGameDataset
 from models.image_sentence_ranking.ranking_model import ImageSentenceRanker
 from models.interactive.models import VisualRefListenerOracle, VisualRefSpeakerDiscriminativeOracle, \
@@ -264,6 +266,37 @@ def main(args):
     game.eval()
 
     core.close()
+
+@dataclass
+class VisualRefLoggingStrategy(LoggingStrategy):
+    def filtered_interaction(
+            self,
+            sender_input: Optional[torch.Tensor],
+            receiver_input: Optional[torch.Tensor],
+            labels: Optional[torch.Tensor],
+            message: Optional[torch.Tensor],
+            receiver_output: Optional[torch.Tensor],
+            message_length: Optional[torch.Tensor],
+            aux: Dict[str, torch.Tensor],
+    ):
+        # Store only image IDs but not data
+        (
+            target_image,
+            distractor_image,
+            target_image_id,
+            distractor_image_id,
+        ) = sender_input
+        filtered_sender_input = torch.stack((target_image_id, distractor_image_id))
+
+        return Interaction(
+            sender_input=filtered_sender_input,
+            receiver_input=None,
+            labels=labels,
+            message=message,
+            receiver_output=receiver_output,
+            message_length=message_length,
+            aux=aux,
+        )
 
 
 def get_args():

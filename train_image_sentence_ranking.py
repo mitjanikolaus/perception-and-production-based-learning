@@ -10,9 +10,9 @@ import numpy as np
 import torch
 import torch.distributions
 import torch.utils.data
+from torch.optim import Adam
 from torch.utils.data import DataLoader
 
-import egg.core as core
 from dataset import CaptionDataset
 from eval_semantics import get_semantics_eval_dataloader, eval_semantics_score
 from models.image_sentence_ranking.ranking_model import ImageSentenceRanker
@@ -100,8 +100,7 @@ def main(args):
         fine_tune_resnet=args.fine_tune_resnet,
     )
 
-    # uses command-line parameters we passed to core.init
-    optimizer = core.build_optimizer(model.parameters())
+    optimizer = Adam(model.parameters(), lr=args.lr)
 
     model = model.to(device)
 
@@ -170,13 +169,23 @@ def get_args():
         type=int,
         help="Logging frequency (number of batches)",
     )
+    parser.add_argument(
+        "--n_epochs",
+        type=int,
+        default=15,
+        help="Number of epochs to train (default: 15)",
+    )
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=32,
+        help="Input batch size for training (default: 32)",
+    )
+    parser.add_argument(
+        "--lr", type=float, default=1e-4, help="Initial learning rate"
+    )
 
-    # initialize the egg lib
-    # get pre-defined common line arguments (batch/vocab size, etc).
-    # See egg/core/util.py for a list
-    args = core.init(parser)
-
-    return args
+    return parser.parse_args()
 
 
 if __name__ == "__main__":

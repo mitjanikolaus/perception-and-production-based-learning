@@ -5,12 +5,10 @@ import os
 import h5py
 import torch
 
-import egg.core as core
 from preprocess import (
     DATA_PATH,
     IMAGES_FILENAME,
-    CAPTIONS_FILENAME,
-    VOCAB_FILENAME, show_image,
+    show_image,
 )
 
 

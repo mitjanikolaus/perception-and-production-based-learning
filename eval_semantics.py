@@ -10,7 +10,6 @@ import torch
 import torch.distributions
 import torch.utils.data
 
-import egg.core as core
 from dataset import SemanticsEvalDataset
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
@@ -186,7 +185,7 @@ def get_args():
         action="store_true",
     )
 
-    return core.init(parser)
+    return parser.parse_args()
 
 
 if __name__ == "__main__":

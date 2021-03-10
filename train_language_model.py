@@ -12,9 +12,9 @@ import numpy as np
 import torch
 import torch.distributions
 import torch.utils.data
+from torch.optim import Adam
 from torch.utils.data import DataLoader
 
-import egg.core as core
 from dataset import CaptionDataset, SemanticsEvalDataset
 from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
@@ -117,8 +117,7 @@ def main(args):
     dropout = 0.2
     model = LanguageModel(word_embedding_size, lstm_hidden_size, vocab, dropout,)
 
-    # uses command-line parameters we passed to core.init
-    optimizer = core.build_optimizer(model.parameters())
+    optimizer = Adam(model.parameters(), lr=args.lr)
 
     model = model.to(device)
 
@@ -193,7 +192,6 @@ def main(args):
             f"End of epoch: {epoch} | train loss: {np.mean(losses)} | best val loss: {best_val_loss}\n\n"
         )
 
-    core.close()
 
 
 def get_args():
@@ -204,13 +202,23 @@ def get_args():
         type=int,
         help="Logging frequency (number of batches)",
     )
+    parser.add_argument(
+        "--n_epochs",
+        type=int,
+        default=15,
+        help="Number of epochs to train (default: 15)",
+    )
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=32,
+        help="Input batch size for training (default: 32)",
+    )
+    parser.add_argument(
+        "--lr", type=float, default=1e-4, help="Initial learning rate"
+    )
 
-    # initialize the egg lib
-    # get pre-defined common line arguments (batch/vocab size, etc).
-    # See egg/core/util.py for a list
-    args = core.init(parser)
-
-    return args
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
