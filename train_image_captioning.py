@@ -79,9 +79,16 @@ def validate_model(
 
         val_losses = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
-            scores, decode_lengths, alphas = model(images, captions, caption_lengths)
-
-            loss = model.loss(scores, captions, decode_lengths, alphas)
+            if args.model == "joint":
+                scores, decode_lengths, alphas, images_embedded, captions_embedded = model(
+                    images, captions, caption_lengths
+                )
+                loss_captioning, loss_ranking = model.loss(scores, captions, decode_lengths, alphas, images_embedded, captions_embedded)
+                # TODO weigh losses
+                loss = loss_captioning + loss_ranking
+            else:
+                scores, decode_lengths, alphas = model(images, captions, caption_lengths)
+                loss = model.loss(scores, captions, decode_lengths, alphas)
 
             val_losses.append(loss.mean().item())
 
