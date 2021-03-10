@@ -19,6 +19,7 @@ from dataset import CaptionDataset, SemanticsEvalDataset
 from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
+from models.joint.joint_learner import JointLearner
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -68,9 +69,9 @@ def validate_model(
 
     model.eval()
     with torch.no_grad():
-        print_sample_model_output(
-            model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS
-        )
+        # print_sample_model_output(
+        #     model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS
+        # )
         for name, semantic_images_loader in semantic_images_loaders.items():
             acc = eval_semantics_score(model, semantic_images_loader, vocab)
             print(f"Accuracy for {name}: {acc:.3f}")
@@ -135,8 +136,9 @@ def main(args):
         for file in SEMANTICS_EVAL_FILES
     }
 
-    word_embedding_size = 512
+    word_embedding_size = 128
     visual_embedding_size = 512
+    joint_embeddings_size = visual_embedding_size
     lstm_hidden_size = 512
     dropout = 0.2
 
@@ -150,12 +152,23 @@ def main(args):
             fine_tune_resnet=args.fine_tune_resnet,
         )
     elif args.model == "show_and_tell":
+        word_embedding_size = 512
         model = ShowAndTell(
             word_embedding_size,
             visual_embedding_size,
             lstm_hidden_size,
             vocab,
             MAX_CAPTION_LEN,
+            dropout,
+            fine_tune_resnet=args.fine_tune_resnet,
+        )
+    elif args.model == "joint":
+        model = JointLearner(
+            word_embedding_size,
+            lstm_hidden_size,
+            vocab,
+            MAX_CAPTION_LEN,
+            joint_embeddings_size,
             dropout,
             fine_tune_resnet=args.fine_tune_resnet,
         )
@@ -214,9 +227,17 @@ def main(args):
             model.train()
 
             # Forward pass
-            scores, decode_lengths, alphas = model(images, captions, caption_lengths)
+            if args.model == "joint":
+                scores, decode_lengths, alphas, images_embedded, captions_embedded = model(
+                    images, captions, caption_lengths
+                )
+                loss_captioning, loss_ranking = model.loss(scores, captions, decode_lengths, alphas, images_embedded, captions_embedded)
+                # TODO weigh losses
+                loss = loss_captioning + loss_ranking
+            else:
+                scores, decode_lengths, alphas = model(images, captions, caption_lengths)
+                loss = model.loss(scores, captions, decode_lengths, alphas)
 
-            loss = model.loss(scores, captions, decode_lengths, alphas)
             losses.append(loss.mean().item())
 
             optimizer.zero_grad()
@@ -250,7 +271,7 @@ def get_args():
     parser.add_argument(
         "--model",
         default="show_attend_and_tell",
-        choices=["show_and_tell", "show_attend_and_tell"],
+        choices=["show_and_tell", "show_attend_and_tell", "joint"],
     )
     parser.add_argument(
         "--fine-tune-resnet",
