@@ -39,6 +39,8 @@ PRINT_SAMPLE_CAPTIONS = 1
 
 NUM_BATCHES_VALIDATION = 10
 
+WEIGH_RANKING_LOSS = 100
+
 
 def print_model_output(output, target_captions, image_ids, vocab, num_captions=1):
     captions_model = torch.argmax(output, dim=1)
@@ -89,6 +91,7 @@ def validate_model(
                 captioning_losses.append(loss_captioning.mean().item())
                 ranking_losses.append(loss_ranking.mean().item())
                 # TODO weigh losses
+                loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
                 loss = loss_captioning + loss_ranking
             else:
                 scores, decode_lengths, alphas = model(images, captions, caption_lengths)
@@ -224,8 +227,8 @@ def main(args):
                     open(CHECKPOINT_DIR_IMAGE_CAPTIONING+args.model+"_accuracies.p", "wb"),
                 )
                 print(
-                    f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss} | captioning loss:"
-                    f" {captioning_loss} | ranking loss: {ranking_loss}"
+                    f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | val loss: {val_loss:.3f} | captioning loss:"
+                    f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f}"
                 )
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
