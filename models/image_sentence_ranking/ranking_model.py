@@ -59,30 +59,7 @@ def cosine_sim(images_embedded, captions_embedded):
     return images_embedded.mm(captions_embedded.t())
 
 
-class ImageSentenceRanker(nn.Module):
-    def __init__(
-        self,
-        word_embedding_size,
-        joint_embeddings_size,
-        lstm_hidden_size,
-        vocab_size,
-        fine_tune_resnet=True,
-    ):
-        super(ImageSentenceRanker, self).__init__()
-        self.image_embedding = ImageEmbedding(joint_embeddings_size, fine_tune_resnet)
-        self.caption_embedding = nn.Linear(lstm_hidden_size, joint_embeddings_size,)
-
-        self.word_embedding = nn.Embedding(vocab_size, word_embedding_size)
-
-        self.language_encoding_lstm = LanguageEncodingLSTM(
-            word_embedding_size, lstm_hidden_size,
-        )
-
-        self.lstm_hidden_size = lstm_hidden_size
-
-        self.loss = ContrastiveLoss()
-
-    def accuracy_discrimination(self, images_embedded, captions_embedded):
+def accuracy_discrimination(images_embedded, captions_embedded):
         """Calculate accuracy of model when discriminating 2 images/captions"""
         accuracies = []
         for i, (image_1_embedded, caption_1_embedded) in enumerate(
@@ -110,6 +87,30 @@ class ImageSentenceRanker(nn.Module):
                         accuracies.append(0)
 
         return np.mean(accuracies)
+
+
+class ImageSentenceRanker(nn.Module):
+    def __init__(
+        self,
+        word_embedding_size,
+        joint_embeddings_size,
+        lstm_hidden_size,
+        vocab_size,
+        fine_tune_resnet=True,
+    ):
+        super(ImageSentenceRanker, self).__init__()
+        self.image_embedding = ImageEmbedding(joint_embeddings_size, fine_tune_resnet)
+        self.caption_embedding = nn.Linear(lstm_hidden_size, joint_embeddings_size,)
+
+        self.word_embedding = nn.Embedding(vocab_size, word_embedding_size)
+
+        self.language_encoding_lstm = LanguageEncodingLSTM(
+            word_embedding_size, lstm_hidden_size,
+        )
+
+        self.lstm_hidden_size = lstm_hidden_size
+
+        self.loss = ContrastiveLoss()
 
     def embed_captions(self, captions, decode_lengths):
         # Initialize LSTM state

@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 
 from dataset import CaptionDataset
 from eval_semantics import get_semantics_eval_dataloader, eval_semantics_score
-from models.image_sentence_ranking.ranking_model import ImageSentenceRanker
+from models.image_sentence_ranking.ranking_model import ImageSentenceRanker, accuracy_discrimination
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -44,7 +44,7 @@ def validate_model(model, dataloader, semantic_images_loaders, vocab):
                 images, captions, caption_lengths
             )
 
-            acc = model.accuracy_discrimination(images_embedded, captions_embedded)
+            acc = accuracy_discrimination(images_embedded, captions_embedded)
             val_accuracies.append(acc)
 
             loss = model.loss(images_embedded, captions_embedded)

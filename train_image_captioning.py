@@ -19,6 +19,7 @@ from dataset import CaptionDataset, SemanticsEvalDataset
 from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
+from models.image_sentence_ranking.ranking_model import accuracy_discrimination
 from models.joint.joint_learner import JointLearner
 from preprocess import (
     IMAGES_FILENAME,
@@ -71,17 +72,18 @@ def validate_model(
 
     model.eval()
     with torch.no_grad():
-        print_sample_model_output(
-            model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS
-        )
-        for name, semantic_images_loader in semantic_images_loaders.items():
-            acc = eval_semantics_score(model, semantic_images_loader, vocab)
-            print(f"Accuracy for {name}: {acc:.3f}")
-            semantic_accuracies[name] = acc
+        # print_sample_model_output(
+        #     model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS
+        # )
+        # for name, semantic_images_loader in semantic_images_loaders.items():
+        #     acc = eval_semantics_score(model, semantic_images_loader, vocab)
+        #     print(f"Accuracy for {name}: {acc:.3f}")
+        #     semantic_accuracies[name] = acc
 
         val_losses = []
         captioning_losses = []
         ranking_losses = []
+        val_accuracies = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
             if args.model == "joint":
                 scores, decode_lengths, alphas, images_embedded, captions_embedded = model(
@@ -92,6 +94,9 @@ def validate_model(
                 # TODO weigh losses
                 loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
                 loss = loss_captioning + loss_ranking
+
+                acc = accuracy_discrimination(images_embedded, captions_embedded)
+                val_accuracies.append(acc)
 
                 captioning_losses.append(loss_captioning.item())
                 ranking_losses.append(loss_ranking.item())
@@ -105,7 +110,7 @@ def validate_model(
                 break
 
     model.train()
-    return np.mean(val_losses), semantic_accuracies, np.mean(captioning_losses), np.mean(ranking_losses)
+    return np.mean(val_losses), semantic_accuracies, np.mean(captioning_losses), np.mean(ranking_losses), np.mean(val_accuracies)
 
 
 def main(args):
@@ -215,7 +220,7 @@ def main(args):
             train_loader
         ):
             if batch_idx % args.log_frequency == 0:
-                val_loss, semantic_accuracies, captioning_loss, ranking_loss = validate_model(
+                val_loss, semantic_accuracies, captioning_loss, ranking_loss, val_acc = validate_model(
                     model,
                     val_images_loader,
                     print_captions_loader,
@@ -230,7 +235,7 @@ def main(args):
                 )
                 print(
                     f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | val loss: {val_loss:.3f} | captioning loss:"
-                    f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f}"
+                    f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f}"
                 )
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
@@ -262,7 +267,7 @@ def main(args):
             loss.backward()
             optimizer.step()
 
-        val_loss, semantic_accuracies, _, _ = validate_model(
+        val_loss, semantic_accuracies, _, _, _ = validate_model(
             model,
             val_images_loader,
             print_captions_loader,
