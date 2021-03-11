@@ -78,12 +78,16 @@ def validate_model(
             semantic_accuracies[name] = acc
 
         val_losses = []
+        captioning_losses = []
+        ranking_losses = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
             if args.model == "joint":
                 scores, decode_lengths, alphas, images_embedded, captions_embedded = model(
                     images, captions, caption_lengths
                 )
                 loss_captioning, loss_ranking = model.loss(scores, captions, decode_lengths, alphas, images_embedded, captions_embedded)
+                captioning_losses.append(loss_captioning)
+                ranking_losses.append(loss_ranking)
                 # TODO weigh losses
                 loss = loss_captioning + loss_ranking
             else:
@@ -96,7 +100,7 @@ def validate_model(
                 break
 
     model.train()
-    return np.mean(val_losses), semantic_accuracies
+    return np.mean(val_losses), semantic_accuracies, np.mean(captioning_losses), np.mean(ranking_losses)
 
 
 def main(args):
@@ -206,7 +210,7 @@ def main(args):
             train_loader
         ):
             if batch_idx % args.log_frequency == 0:
-                val_loss, semantic_accuracies = validate_model(
+                val_loss, semantic_accuracies, captioning_loss, ranking_loss = validate_model(
                     model,
                     val_images_loader,
                     print_captions_loader,
@@ -220,7 +224,8 @@ def main(args):
                     open(CHECKPOINT_DIR_IMAGE_CAPTIONING+args.model+"_accuracies.p", "wb"),
                 )
                 print(
-                    f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss}"
+                    f"Batch {batch_idx}: train loss: {np.mean(losses)} | val loss: {val_loss} | captioning loss:"
+                    f" {captioning_loss} | ranking loss: {ranking_loss}"
                 )
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
