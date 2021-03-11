@@ -86,8 +86,8 @@ def validate_model(
                     images, captions, caption_lengths
                 )
                 loss_captioning, loss_ranking = model.loss(scores, captions, decode_lengths, alphas, images_embedded, captions_embedded)
-                captioning_losses.append(loss_captioning)
-                ranking_losses.append(loss_ranking)
+                captioning_losses.append(loss_captioning.mean().item())
+                ranking_losses.append(loss_ranking.mean().item())
                 # TODO weigh losses
                 loss = loss_captioning + loss_ranking
             else:
