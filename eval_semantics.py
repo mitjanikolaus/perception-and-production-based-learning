@@ -141,7 +141,7 @@ def main(args):
 
     elif "show_and_tell" in args.checkpoint:
         print("Loading st image captioning model.")
-        word_embedding_size = 512
+        word_embedding_size = 128
         visual_embedding_size = 512
         lstm_hidden_size = 512
         model = ShowAndTell(
@@ -150,6 +150,20 @@ def main(args):
             lstm_hidden_size,
             vocab,
             MAX_CAPTION_LEN,
+            fine_tune_resnet=False,
+        )
+
+    elif "joint" in args.checkpoint:
+        print('Loading joint learner model.')
+        word_embedding_size = 512
+        joint_embeddings_size = 512
+        lstm_hidden_size = 512
+        model = JointLearner(
+            word_embedding_size,
+            lstm_hidden_size,
+            vocab,
+            MAX_CAPTION_LEN,
+            joint_embeddings_size,
             fine_tune_resnet=False,
         )
 

@@ -73,7 +73,7 @@ class CaptioningModel(nn.Module):
             # Do not decode at last timestep (after EOS token)
             decode_lengths = decode_lengths - 1
 
-        encoder_output = self.encoder(images)
+        encoder_output = self.image_encoder(images)
 
         batch_size = encoder_output.size(0)
 
@@ -301,7 +301,7 @@ class CaptioningModel(nn.Module):
 
     def decode_nucleus_sampling(self, images, num_samples, top_p, print_beam=False):
         """Generate and return the top k sequences using nucleus sampling."""
-        encoder_output = self.encoder(images)
+        encoder_output = self.image_encoder(images)
 
         current_beam_width = num_samples
 

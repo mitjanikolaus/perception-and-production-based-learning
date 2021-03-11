@@ -9,9 +9,9 @@ from preprocess import TOKEN_PADDING, TOKEN_START
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-class Encoder(nn.Module):
+class ImageEncoder(nn.Module):
     def __init__(self, visual_embedding_size, fine_tune_resnet=False):
-        super(Encoder, self).__init__()
+        super(ImageEncoder, self).__init__()
 
         resnet = resnet50(pretrained=True)
 
@@ -63,7 +63,7 @@ class ShowAndTell(CaptioningModel):
             pretrained_embeddings,
             fine_tune_decoder_word_embeddings,
         )
-        self.encoder = Encoder(visual_embeddings_size, fine_tune_resnet)
+        self.encoder = ImageEncoder(visual_embeddings_size, fine_tune_resnet)
         if word_embedding_size != visual_embeddings_size:
             raise ValueError("word embeddings must have same size as visual embeddings")
 
