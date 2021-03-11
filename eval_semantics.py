@@ -14,6 +14,7 @@ from dataset import SemanticsEvalDataset
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.image_sentence_ranking.ranking_model import ImageSentenceRanker, cosine_sim
+from models.image_sentence_ranking.ranking_model_grounded import ImageSentenceRankerGrounded
 from models.joint.joint_learner import JointLearner
 from models.language_modeling.language_model import LanguageModel
 from preprocess import (
@@ -69,7 +70,7 @@ def eval_semantics_score(model, dataloader, vocab, verbose=False):
                 elif perplexities[0] > perplexities[1]:
                     accuracies.append(0)
 
-            elif isinstance(model, ImageSentenceRanker):
+            elif isinstance(model, ImageSentenceRanker) or isinstance(model, ImageSentenceRankerGrounded):
                 images_embedded, captions_embedded = model(
                     images, captions, caption_lengths
                 )

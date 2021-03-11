@@ -96,7 +96,7 @@ class ImageSentenceRanker(nn.Module):
         joint_embeddings_size,
         lstm_hidden_size,
         vocab_size,
-        fine_tune_resnet=True,
+        fine_tune_resnet=False,
     ):
         super(ImageSentenceRanker, self).__init__()
         self.image_embedding = ImageEmbedding(joint_embeddings_size, fine_tune_resnet)
@@ -116,8 +116,6 @@ class ImageSentenceRanker(nn.Module):
         # Initialize LSTM state
         batch_size = captions.size(0)
         h_lan_enc, c_lan_enc = self.language_encoding_lstm.init_state(batch_size)
-
-        # TODO use packed sequences
 
         # Tensor to store hidden activations
         lang_enc_hidden_activations = torch.zeros(

@@ -72,13 +72,13 @@ def validate_model(
 
     model.eval()
     with torch.no_grad():
-        # print_sample_model_output(
-        #     model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS
-        # )
-        # for name, semantic_images_loader in semantic_images_loaders.items():
-        #     acc = eval_semantics_score(model, semantic_images_loader, vocab)
-        #     print(f"Accuracy for {name}: {acc:.3f}")
-        #     semantic_accuracies[name] = acc
+        print_sample_model_output(
+            model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS
+        )
+        for name, semantic_images_loader in semantic_images_loaders.items():
+            acc = eval_semantics_score(model, semantic_images_loader, vocab)
+            print(f"Accuracy for {name}: {acc:.3f}")
+            semantic_accuracies[name] = acc
 
         val_losses = []
         captioning_losses = []
