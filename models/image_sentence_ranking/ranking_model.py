@@ -189,5 +189,6 @@ class ImageEmbedding(nn.Module):
     def forward(self, images):
         images_embedded = self.resnet(images)
         images_embedded = self.embed(images_embedded.squeeze())
+        images_embedded = l2_norm(images_embedded)
 
         return images_embedded
