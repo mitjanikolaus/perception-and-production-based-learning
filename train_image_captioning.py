@@ -71,13 +71,13 @@ def validate_model(
 
     model.eval()
     with torch.no_grad():
-        print_sample_model_output(
-            model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS
-        )
-        for name, semantic_images_loader in semantic_images_loaders.items():
-            acc = eval_semantics_score(model, semantic_images_loader, vocab)
-            print(f"Accuracy for {name}: {acc:.3f}")
-            semantic_accuracies[name] = acc
+        # print_sample_model_output(
+        #     model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS
+        # )
+        # for name, semantic_images_loader in semantic_images_loaders.items():
+        #     acc = eval_semantics_score(model, semantic_images_loader, vocab)
+        #     print(f"Accuracy for {name}: {acc:.3f}")
+        #     semantic_accuracies[name] = acc
 
         val_losses = []
         captioning_losses = []
@@ -88,11 +88,13 @@ def validate_model(
                     images, captions, caption_lengths
                 )
                 loss_captioning, loss_ranking = model.loss(scores, captions, decode_lengths, alphas, images_embedded, captions_embedded)
-                captioning_losses.append(loss_captioning.mean().item())
-                ranking_losses.append(loss_ranking.mean().item())
+
                 # TODO weigh losses
                 loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
                 loss = loss_captioning + loss_ranking
+
+                captioning_losses.append(loss_captioning.item())
+                ranking_losses.append(loss_ranking.item())
             else:
                 scores, decode_lengths, alphas = model(images, captions, caption_lengths)
                 loss = model.loss(scores, captions, decode_lengths, alphas)
