@@ -262,7 +262,7 @@ def main(args):
             loss.backward()
             optimizer.step()
 
-        val_loss, semantic_accuracies = validate_model(
+        val_loss, semantic_accuracies, _, _ = validate_model(
             model,
             val_images_loader,
             print_captions_loader,
