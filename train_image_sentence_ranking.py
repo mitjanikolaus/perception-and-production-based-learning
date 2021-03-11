@@ -155,16 +155,32 @@ def main(args):
                 pickle.dump(accuracies_over_time, open(args.checkpoint_dir+"/ranking_accuracies.p", "wb"))
 
             model.train()
-            images_embedded, captions_embedded = model(
-                images, captions, caption_lengths
-            )
 
-            loss = model.loss(images_embedded, captions_embedded)
-            losses.append(loss.mean().item())
+            if args.alternative_objective:
+                for image in images:
+                    image_repeated = image.unsqueeze(0).repeat(images.shape[0], 1, 1, 1)
+                    images_embedded, captions_embedded = model(
+                        image_repeated, captions, caption_lengths
+                    )
 
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+                    loss = model.loss(images_embedded, captions_embedded)
+                    losses.append(loss.item())
+
+                    optimizer.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+
+            else:
+                images_embedded, captions_embedded = model(
+                    images, captions, caption_lengths
+                )
+
+                loss = model.loss(images_embedded, captions_embedded)
+                losses.append(loss.item())
+
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
 
         val_loss, _, _ = validate_model(model, val_images_loader, semantics_eval_loaders, vocab, args)
         if val_loss < best_val_loss:
