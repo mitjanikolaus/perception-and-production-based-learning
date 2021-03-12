@@ -65,11 +65,13 @@ class JointLearner(CaptioningModel):
         :return: hidden state, cell state
         """
         mean_encoder_out = encoder_output.squeeze(1)
-        h = self.init_h(mean_encoder_out)  # (batch_size, decoder_dim)
-        c = self.init_c(mean_encoder_out)
+        h_decoder = self.init_h(mean_encoder_out)  # (batch_size, decoder_dim)
+        c_decoder = self.init_c(mean_encoder_out)
 
-        states = [h, c]
-        return states
+        batch_size = encoder_output.shape[0]
+        h_encoder, c_encoder = self.language_encoding_lstm.init_state(batch_size)
+
+        return h_encoder, c_encoder, h_decoder, c_decoder
 
     def lstm_input_first_timestep(self, batch_size, encoder_output):
         # At the start, all 'previous words' are the <start> token
@@ -109,8 +111,7 @@ class JointLearner(CaptioningModel):
             )
 
         # Initialize LSTM states
-        states_generation_lstm = self.init_hidden_states(images_embedded)
-        states_encoding_lstm = self.language_encoding_lstm.init_state(batch_size)
+        states = self.init_hidden_states(images_embedded)
 
         # Tensors to hold word prediction scores
         scores = torch.zeros(
@@ -147,13 +148,9 @@ class JointLearner(CaptioningModel):
             else:
                 prev_words_embedded = self.word_embedding(prev_words)
 
-            states_encoding_lstm = self.language_encoding_lstm(
-                states_encoding_lstm, prev_words_embedded
-            )
-
             # Feed output of encoding LSTM into generation LSTM
-            scores_for_timestep, states_generation_lstm, _ = self.forward_step(
-                images_embedded, states_encoding_lstm[0], states_generation_lstm
+            scores_for_timestep, states, _ = self.forward_step(
+                images_embedded, prev_words_embedded, states
             )
 
             # Update the previously predicted words
@@ -167,8 +164,8 @@ class JointLearner(CaptioningModel):
             ]
 
             # Store last hidden activations of LSTM for finished sequences
-            h_lan_enc = states_encoding_lstm[0]
-            lang_enc_hidden_activations[decode_lengths == t + 1] = h_lan_enc[
+            encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state = states
+            lang_enc_hidden_activations[decode_lengths == t + 1] = encoder_hidden_state[
                 decode_lengths == t + 1
             ]
 
@@ -181,18 +178,22 @@ class JointLearner(CaptioningModel):
 
     def forward_step(self, encoder_output, prev_word_embeddings, states):
         """Perform a single decoding step."""
-        decoder_hidden_state, decoder_cell_state = states
+        encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state = states
 
         encoder_output = encoder_output.squeeze(1)
 
-        lstm_input = torch.cat((encoder_output, prev_word_embeddings), dim=1)
+        encoder_hidden_state, encoder_cell_state = self.language_encoding_lstm(
+            encoder_hidden_state, encoder_cell_state, prev_word_embeddings
+        )
+
+        lstm_input = torch.cat((encoder_output, encoder_hidden_state), dim=1)
         decoder_hidden_state, decoder_cell_state = self.language_generation_lstm(
             lstm_input, (decoder_hidden_state, decoder_cell_state)
         )
 
         scores = self.fc(decoder_hidden_state)
 
-        states = [decoder_hidden_state, decoder_cell_state]
+        states = [encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state]
         return scores, states, None
 
     def loss(self, scores, target_captions, decode_lengths, alphas, images_embedded, captions_embedded, reduction="mean"):
@@ -211,9 +212,8 @@ class LanguageEncodingLSTM(nn.Module):
         super(LanguageEncodingLSTM, self).__init__()
         self.lstm_cell = nn.LSTMCell(word_embeddings_size, hidden_size)
 
-    def forward(self, states, prev_words_embedded):
-        h, c = states
-        h_out, c_out = self.lstm_cell(prev_words_embedded, (h, c))
+    def forward(self, encoder_hidden_state, encoder_call_state, prev_words_embedded):
+        h_out, c_out = self.lstm_cell(prev_words_embedded, (encoder_hidden_state, encoder_call_state))
         return (h_out, c_out)
 
     def init_state(self, batch_size):
