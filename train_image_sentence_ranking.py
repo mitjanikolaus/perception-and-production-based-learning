@@ -182,11 +182,6 @@ def main(args):
                 loss.backward()
                 optimizer.step()
 
-        val_loss, _, _ = validate_model(model, val_images_loader, semantics_eval_loaders, vocab, args)
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            save_model(model, optimizer, best_val_loss, epoch)
-
         print(f"Train Epoch: {epoch}, train loss: {np.mean(losses)} best val loss: {best_val_loss}\n\n")
 
 

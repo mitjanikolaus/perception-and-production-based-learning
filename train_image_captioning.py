@@ -267,23 +267,6 @@ def main(args):
             loss.backward()
             optimizer.step()
 
-        val_loss, semantic_accuracies, _, _, _ = validate_model(
-            model,
-            val_images_loader,
-            print_captions_loader,
-            semantics_eval_loaders,
-            vocab,
-        )
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            save_model(
-                model,
-                optimizer,
-                best_val_loss,
-                epoch,
-                CHECKPOINT_DIR_IMAGE_CAPTIONING+args.model+".pt",
-            )
-
         print(
             f"End of epoch: {epoch} | train loss: {np.mean(losses)} | best val loss: {best_val_loss}\n\n"
         )
