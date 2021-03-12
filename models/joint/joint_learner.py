@@ -205,6 +205,20 @@ class JointLearner(CaptioningModel):
 
         return loss_captioning, loss_ranking
 
+    def perplexity(self, images, captions, caption_lengths):
+        """Return perplexities of captions given images."""
+
+        scores, decode_lengths, alphas, _, _ = self.forward(images, captions, caption_lengths)
+
+        loss_captioning = self.loss_cross_entropy(scores, captions, decode_lengths, reduction="none")
+
+        perplexities = torch.exp(loss_captioning)
+
+        # sum up cross entropies of all words
+        perplexities = perplexities.sum(dim=1)
+
+        return perplexities
+
 
 
 class LanguageEncodingLSTM(nn.Module):
