@@ -46,7 +46,9 @@ class JointLearner(CaptioningModel):
         self.init_h = nn.Linear(joint_embeddings_size, lstm_hidden_size)
         self.init_c = nn.Linear(joint_embeddings_size, lstm_hidden_size)
 
-        self.lstm = nn.LSTMCell(
+        self.language_encoding_lstm = LanguageEncodingLSTM(word_embedding_size, lstm_hidden_size)
+
+        self.language_generation_lstm = nn.LSTMCell(
             input_size=joint_embeddings_size + word_embedding_size,
             hidden_size=lstm_hidden_size,
         )
@@ -106,8 +108,9 @@ class JointLearner(CaptioningModel):
                 device=device,
             )
 
-        # Initialize LSTM state
-        states = self.init_hidden_states(images_embedded)
+        # Initialize LSTM states
+        states_generation_lstm = self.init_hidden_states(images_embedded)
+        states_encoding_lstm = self.language_encoding_lstm.init_state(batch_size)
 
         # Tensors to hold word prediction scores
         scores = torch.zeros(
@@ -144,8 +147,13 @@ class JointLearner(CaptioningModel):
             else:
                 prev_words_embedded = self.word_embedding(prev_words)
 
-            scores_for_timestep, states, _ = self.forward_step(
-                images_embedded, prev_words_embedded, states
+            states_encoding_lstm = self.language_encoding_lstm(
+                states_encoding_lstm, prev_words_embedded
+            )
+
+            # Feed output of encoding LSTM into generation LSTM
+            scores_for_timestep, states_generation_lstm, _ = self.forward_step(
+                images_embedded, states_encoding_lstm[0], states_generation_lstm
             )
 
             # Update the previously predicted words
@@ -159,7 +167,7 @@ class JointLearner(CaptioningModel):
             ]
 
             # Store last hidden activations of LSTM for finished sequences
-            h_lan_enc = states[0]
+            h_lan_enc = states_encoding_lstm[0]
             lang_enc_hidden_activations[decode_lengths == t + 1] = h_lan_enc[
                 decode_lengths == t + 1
             ]
@@ -178,7 +186,7 @@ class JointLearner(CaptioningModel):
         encoder_output = encoder_output.squeeze(1)
 
         lstm_input = torch.cat((encoder_output, prev_word_embeddings), dim=1)
-        decoder_hidden_state, decoder_cell_state = self.lstm(
+        decoder_hidden_state, decoder_cell_state = self.language_generation_lstm(
             lstm_input, (decoder_hidden_state, decoder_cell_state)
         )
 
@@ -197,3 +205,18 @@ class JointLearner(CaptioningModel):
         return loss_captioning, loss_ranking
 
 
+
+class LanguageEncodingLSTM(nn.Module):
+    def __init__(self, word_embeddings_size, hidden_size):
+        super(LanguageEncodingLSTM, self).__init__()
+        self.lstm_cell = nn.LSTMCell(word_embeddings_size, hidden_size)
+
+    def forward(self, states, prev_words_embedded):
+        h, c = states
+        h_out, c_out = self.lstm_cell(prev_words_embedded, (h, c))
+        return (h_out, c_out)
+
+    def init_state(self, batch_size):
+        h = torch.zeros((batch_size, self.lstm_cell.hidden_size), device=device)
+        c = torch.zeros((batch_size, self.lstm_cell.hidden_size), device=device)
+        return [h, c]
