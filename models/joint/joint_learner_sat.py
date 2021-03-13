@@ -4,13 +4,16 @@ import torchvision
 
 from models.image_captioning.captioning_model import CaptioningModel
 from models.image_sentence_ranking.ranking_model import l2_norm, ContrastiveLoss
+from models.joint.joint_learner import LanguageEncodingLSTM
 from preprocess import TOKEN_START, TOKEN_END
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class ImageEncoder(nn.Module):
-    def __init__(self, fine_tune_resnet=False, encoded_image_size=14):
+    ENCODER_DIM = 2048
+
+    def __init__(self, joint_embeddings_size, fine_tune_resnet=False, encoded_image_size=14):
         super(ImageEncoder, self).__init__()
 
         resnet = torchvision.models.resnet152(pretrained=True)
@@ -32,6 +35,8 @@ class ImageEncoder(nn.Module):
         if fine_tune_resnet:
             self.set_fine_tuning_enabled(fine_tune_resnet)
 
+        self.image_embedding = nn.Linear(self.ENCODER_DIM, joint_embeddings_size)
+
     def forward(self, images):
         """
         Forward propagation.
@@ -48,6 +53,8 @@ class ImageEncoder(nn.Module):
         out = out.permute(
             0, 2, 3, 1
         )  # output shape: (batch_size, encoded_image_size, encoded_image_size, 2048)
+
+        out = self.image_embedding(out)
         return out
 
     def set_fine_tuning_enabled(self, enable_fine_tuning):
@@ -65,7 +72,6 @@ class ImageEncoder(nn.Module):
 class JointLearnerSAT(CaptioningModel):
     """Joint learner with attention (based on the Show, Attend and Tell model)."""
 
-    ENCODER_DIM = 2048
     ATTENTION_DIM = 512
     ALPHA_C = 1.0
 
@@ -88,9 +94,9 @@ class JointLearnerSAT(CaptioningModel):
             pretrained_embeddings,
             fine_tune_decoder_word_embeddings,
         )
-        self.image_encoder = ImageEncoder(fine_tune_resnet)
+        self.image_encoder = ImageEncoder(joint_embeddings_size, fine_tune_resnet)
 
-        self.image_embedding = nn.Linear(self.ENCODER_DIM, joint_embeddings_size)
+        self.language_encoding_lstm = LanguageEncodingLSTM(word_embedding_size, lstm_hidden_size)
 
         self.attention = AttentionModule(
             lstm_hidden_size, self.ATTENTION_DIM,
@@ -131,11 +137,13 @@ class JointLearnerSAT(CaptioningModel):
         :return: hidden state, cell state
         """
         mean_encoder_out = encoder_out.mean(dim=1)
-        h = self.init_h(mean_encoder_out)  # (batch_size, decoder_dim)
-        c = self.init_c(mean_encoder_out)
+        h_decoder = self.init_h(mean_encoder_out)  # (batch_size, decoder_dim)
+        c_decoder = self.init_c(mean_encoder_out)
 
-        states = [h, c]
-        return states
+        batch_size = encoder_out.shape[0]
+        h_encoder, c_encoder = self.language_encoding_lstm.init_state(batch_size)
+
+        return h_encoder, c_encoder, h_decoder, c_decoder
 
     def lstm_input_first_timestep(self, batch_size, encoder_output):
         # At the start, all 'previous words' are the <start> token
@@ -154,15 +162,12 @@ class JointLearnerSAT(CaptioningModel):
         :param decode_lengths: caption lengths, shape: (batch_size, 1)
         :return: scores for vocabulary, decode lengths, weights
         """
-        encoder_output = self.image_encoder(images)
+        images_embedded = self.image_encoder(images)
 
-        batch_size = encoder_output.size(0)
+        batch_size = images_embedded.size(0)
 
         # Flatten image
-        encoder_output = encoder_output.view(batch_size, -1, encoder_output.size(-1))
-
-        # Embed image
-        images_embedded = self.image_embedding(encoder_output)
+        images_embedded = images_embedded.view(batch_size, -1, images_embedded.size(-1))
 
         use_teacher_forcing = False
         if decode_lengths is not None:
@@ -234,8 +239,8 @@ class JointLearnerSAT(CaptioningModel):
             ]
 
             # Store last hidden activations of LSTM for finished sequences
-            h_lan_enc = states[0]
-            lang_enc_hidden_activations[decode_lengths == t + 1] = h_lan_enc[
+            encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state = states
+            lang_enc_hidden_activations[decode_lengths == t + 1] = encoder_hidden_state[
                 decode_lengths == t + 1
             ]
 
@@ -254,7 +259,7 @@ class JointLearnerSAT(CaptioningModel):
 
     def forward_step(self, encoder_output, prev_word_embeddings, states):
         """Perform a single decoding step."""
-        decoder_hidden_state, decoder_cell_state = states
+        encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state = states
 
         attention_weighted_encoding, alpha = self.attention(
             encoder_output, decoder_hidden_state
@@ -262,8 +267,12 @@ class JointLearnerSAT(CaptioningModel):
         gating_scalars = self.sigmoid(self.f_beta(decoder_hidden_state))
         attention_weighted_encoding = gating_scalars * attention_weighted_encoding
 
+        encoder_hidden_state, encoder_cell_state = self.language_encoding_lstm(
+            encoder_hidden_state, encoder_cell_state, prev_word_embeddings
+        )
+
         decoder_input = torch.cat(
-            (prev_word_embeddings, attention_weighted_encoding), dim=1
+            (encoder_hidden_state, attention_weighted_encoding), dim=1
         )
         decoder_hidden_state, decoder_cell_state = self.lstm(
             decoder_input, (decoder_hidden_state, decoder_cell_state)
@@ -281,7 +290,7 @@ class JointLearnerSAT(CaptioningModel):
             )
         )
 
-        states = [decoder_hidden_state, decoder_cell_state]
+        states = [encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state]
         return scores, states, alpha
 
     def loss(self, scores, target_captions, decode_lengths, alphas, images_embedded, captions_embedded, reduction="mean"):

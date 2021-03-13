@@ -21,6 +21,7 @@ from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.image_sentence_ranking.ranking_model import accuracy_discrimination
 from models.joint.joint_learner import JointLearner
+from models.joint.joint_learner_sat import JointLearnerSAT
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -185,7 +186,7 @@ def main(args):
         )
     elif args.model == "joint":
         word_embedding_size = 512
-        model = JointLearner(
+        model = JointLearnerSAT(
             word_embedding_size,
             lstm_hidden_size,
             vocab,

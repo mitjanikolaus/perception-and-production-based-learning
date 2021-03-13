@@ -16,6 +16,7 @@ from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.image_sentence_ranking.ranking_model import ImageSentenceRanker, cosine_sim
 from models.image_sentence_ranking.ranking_model_grounded import ImageSentenceRankerGrounded
 from models.joint.joint_learner import JointLearner
+from models.joint.joint_learner_sat import JointLearnerSAT
 from models.language_modeling.language_model import LanguageModel
 from preprocess import (
     IMAGES_FILENAME,
@@ -86,7 +87,7 @@ def eval_semantics_score(model, dataloader, vocab, verbose=False):
                 elif similarities[0] < similarities[1]:
                     accuracies.append(0)
 
-            elif isinstance(model, JointLearner):
+            elif isinstance(model, JointLearner) or isinstance(model, JointLearnerSAT):
                 _, _, _, images_embedded, captions_embedded = model(
                     images, captions, caption_lengths
                 )
