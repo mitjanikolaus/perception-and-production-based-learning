@@ -160,7 +160,7 @@ def main(args):
         word_embedding_size = 512
         joint_embeddings_size = 512
         lstm_hidden_size = 512
-        model = JointLearner(
+        model = JointLearnerSAT(
             word_embedding_size,
             lstm_hidden_size,
             vocab,
