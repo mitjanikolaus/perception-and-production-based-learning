@@ -81,7 +81,7 @@ def main(args):
     sns.lineplot(data=all_scores, ci="sd")
 
     plt.xlim((0, args.x_lim))
-    plt.ylim((0.49, 0.86))
+    plt.ylim((0.49, args.y_lim))
 
     # Add chance level line
     plt.axhline(y=0.5, color="black", label="Chance level", linestyle="--")
@@ -101,7 +101,10 @@ def get_args():
         "--rolling-window", default=30, type=int,
     )
     parser.add_argument(
-        "--x-lim", default=TRAINING_SET_SIZE*10, type=int,
+        "--x-lim", default=TRAINING_SET_SIZE*15, type=int,
+    )
+    parser.add_argument(
+        "--y-lim", default=1.0, type=float,
     )
     parser.add_argument(
         "--group-noun-accuracies",
