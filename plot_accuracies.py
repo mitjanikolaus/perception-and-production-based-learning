@@ -35,6 +35,8 @@ LEGEND_GROUPED_NOUNS = {
     "data/semantics_eval_semantic_roles_filtered.csv": "semantic roles",
 }
 
+LOG_FREQUENCY = DEFAULT_LOG_FREQUENCY
+
 
 def main(args):
     sns.set_context("paper", rc={"font.size": 12, "axes.titlesize": 12, "axes.labelsize": 12, "xtick.labelsize": 12,
@@ -51,14 +53,14 @@ def main(args):
         epoch = TRAINING_SET_SIZE
         to_delete = []
         for i, row in scores.iterrows():
-            if row.name * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY > epoch:
+            if row.name * DEFAULT_BATCH_SIZE * LOG_FREQUENCY > epoch:
                 epoch += TRAINING_SET_SIZE
                 to_delete.append(row.name)
         scores.drop(labels=to_delete, inplace=True)
         scores.reset_index(drop=True, inplace=True)
 
-        scores["num_samples"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY))
-        scores["epoch"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * DEFAULT_LOG_FREQUENCY) / TRAINING_SET_SIZE)
+        scores["num_samples"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * LOG_FREQUENCY))
+        scores["epoch"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * LOG_FREQUENCY) / TRAINING_SET_SIZE)
 
         print(f"Epoch with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['epoch'].values[0]}")
         print(f"num_samples with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['num_samples'].values[0]}")
