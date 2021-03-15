@@ -60,7 +60,7 @@ def main(args):
 
     if "show_attend_and_tell" in args.checkpoint:
         print("Loading sat image captioning model.")
-        word_embedding_size = 512
+        word_embedding_size = 128
         lstm_hidden_size = 512
         model = ShowAttendAndTell(word_embedding_size, lstm_hidden_size, vocab, MAX_CAPTION_LEN,
                                   fine_tune_resnet=False)
