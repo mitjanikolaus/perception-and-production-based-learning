@@ -67,7 +67,7 @@ def main(args):
 
     elif "show_and_tell" in args.checkpoint:
         print("Loading st image captioning model.")
-        word_embedding_size = 128
+        word_embedding_size = 512
         visual_embedding_size = 512
         lstm_hidden_size = 512
         model = ShowAndTell(
