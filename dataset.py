@@ -184,6 +184,7 @@ class VisualRefGameDataset(Dataset):
         captions_filename,
         batch_size,
         features_scale_factor=1 / 255.0,
+        max_samples = None,
     ):
         """
         :param data_folder: folder where data files are stored
@@ -209,6 +210,9 @@ class VisualRefGameDataset(Dataset):
         for i in all_image_ids:
             for j in all_image_ids:
                 self.sample_image_ids.append((i, j))
+
+        if max_samples:
+            self.sample_image_ids = self.sample_image_ids[:max_samples]
 
         self.batch_size = batch_size
 
@@ -253,7 +257,7 @@ class VisualRefGameDataset(Dataset):
         return images, target_label, target_image_id, distractor_image_id, caption
 
     def __len__(self):
-        length = len(self.images) ** 2
+        length = len(self.sample_image_ids)
 
         # discard last incomplete batch
         return length - (length % self.batch_size)

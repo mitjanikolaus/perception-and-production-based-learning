@@ -82,11 +82,11 @@ class VisualRefTrainer(Trainer):
         n_batches = 0
         interactions = []
 
-        self.game.train()
-
         self.optimizer.zero_grad()
 
         for batch_id, batch in enumerate(self.train_data):
+            self.game.train()
+
             batch = move_to(batch, self.device)
 
             context = autocast() if self.scaler else nullcontext()

@@ -29,6 +29,7 @@ from utils import decode_caption
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+NUM_VAL_SAMPLES = 320
 
 class PrintDebugEvents(Callback):
     def __init__(self, train_dataset, val_dataset, args):
@@ -95,7 +96,6 @@ class PrintDebugEvents(Callback):
             self.train_loss += loss.detach()
             self.train_accuracies += interaction_logs.aux["acc"].sum()
 
-            print(batch_id)
             if (batch_id % self.args.log_frequency) == (self.args.log_frequency - 1):
                 mean_loss = self.train_loss / self.args.log_frequency
                 batch_size = interaction_logs.aux["acc"].size()[0]
@@ -166,7 +166,7 @@ def main(args):
         collate_fn=pad_collate_visua_ref
     )
     val_dataset = VisualRefGameDataset(
-        DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], args.batch_size
+        DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], args.batch_size, max_samples=NUM_VAL_SAMPLES
     )
     val_loader = DataLoader(
         val_dataset,
