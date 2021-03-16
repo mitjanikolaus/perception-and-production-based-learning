@@ -1,5 +1,6 @@
 import os
 import pickle
+import random
 
 import nltk
 import pandas as pd
@@ -180,6 +181,7 @@ class VisualRefGameDataset(Dataset):
         self,
         data_folder,
         features_filename,
+        captions_filename,
         batch_size,
         features_scale_factor=1 / 255.0,
     ):
@@ -198,9 +200,14 @@ class VisualRefGameDataset(Dataset):
         # Set pytorch transformation pipeline
         self.normalize = transforms.Normalize(mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES)
 
+        # Load captions
+        with open(os.path.join(data_folder, captions_filename), "rb") as file:
+            self.captions = pickle.load(file)
+
+        all_image_ids = list(self.images.keys())
         self.sample_image_ids = []
-        for i in range(len(self.images)):
-            for j in range(len(self.images)):
+        for i in all_image_ids:
+            for j in all_image_ids:
                 self.sample_image_ids.append((i, j))
 
         self.batch_size = batch_size
@@ -235,14 +242,34 @@ class VisualRefGameDataset(Dataset):
             images = distractor_image, target_image
         target_label = target_position
 
-        sender_input = images, target_label, target_image_id, distractor_image_id
-        receiver_input = images
+        target_image_id = int(target_image_id)
+        distractor_image_id = int(distractor_image_id)
 
-        return sender_input, target_label, receiver_input
+        caption_id = random.choice(range(6))
+        caption = self.captions[target_image_id][caption_id]
+
+        caption = torch.tensor(caption, device=device)
+
+        return images, target_label, target_image_id, distractor_image_id, caption
 
     def __len__(self):
         length = len(self.images) ** 2
 
         # discard last incomplete batch
         return length - (length % self.batch_size)
+
+def pad_collate_visua_ref(batch):
+    images = torch.stack((torch.stack([s[0][0] for s in batch]), torch.stack([s[0][1] for s in batch])))
+    target_labels = torch.tensor([s[1] for s in batch], device=device)
+    target_image_ids = torch.tensor([s[2] for s in batch], device=device)
+    distractor_image_ids = torch.tensor([s[3] for s in batch], device=device)
+    captions = [s[4] for s in batch]
+
+    sequence_lengths = torch.tensor([len(c) for c in captions], device=device)
+    padded_captions = pad_sequence(captions, batch_first=True)
+
+    sender_inputs = images, target_labels, target_image_ids, distractor_image_ids, padded_captions, sequence_lengths
+    receiver_inputs = images
+
+    return sender_inputs, target_labels, receiver_inputs
 

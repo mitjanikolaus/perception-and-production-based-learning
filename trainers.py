@@ -20,7 +20,7 @@ from torch.utils.data import DataLoader
 
 from egg.core import Trainer, Callback, Interaction, move_to, get_opts
 
-CHECKPOINT_DIR = os.path.join(pathlib.Path.home(), "data/egg/visual_ref/checkpoints")
+CHECKPOINT_DIR = os.path.join(pathlib.Path.home(), "data/visual_ref/checkpoints")
 
 CHECKPOINT_PATH_LISTENER_ORACLE = os.path.join(CHECKPOINT_DIR, "listener_oracle.pt")
 

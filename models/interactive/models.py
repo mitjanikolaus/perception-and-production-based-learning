@@ -105,7 +105,7 @@ class VisualRefListenerOracle(nn.Module):
     def forward(self, messages, receiver_input, message_lengths):
         batch_size = receiver_input[0].shape[0]
 
-        images_1, images_2 = receiver_input
+        images_1, images_2 = receiver_input[0], receiver_input[1]
 
         images_1_embedded, messages_embedded = self.ranking_model(images_1, messages, message_lengths)
         images_2_embedded, messages_embedded = self.ranking_model(images_2, messages, message_lengths)
@@ -137,8 +137,10 @@ class VisualRefSenderFunctional(nn.Module):
         self.embed = nn.Linear(resnet.fc.in_features, visual_embedding_size)
 
     def forward(self, input):
-        images, target_label, target_image_ids, distractor_image_ids = input
-        images_target, images_receiver = images
+        images, target_label, target_image_ids, distractor_image_ids, captions, sequence_lengths = input
+
+        # TODO: verify
+        images_target = images[target_label, range(images.size(1))]
 
         image_features = self.resnet(images_target)
         image_features = image_features.view(image_features.size(0), -1)
@@ -146,6 +148,7 @@ class VisualRefSenderFunctional(nn.Module):
 
         # output is used to initialize the message producing RNN
         return image_features
+
 
 class RnnSenderReinforceVisualRef(RnnSenderReinforce):
 
@@ -164,6 +167,7 @@ class RnnSenderReinforceVisualRef(RnnSenderReinforce):
         sequence = []
         logits = []
         entropy = []
+        all_logits = []
 
         for step in range(self.max_len):
             for i, layer in enumerate(self.cells):
@@ -176,6 +180,8 @@ class RnnSenderReinforceVisualRef(RnnSenderReinforce):
                 input = h_t
 
             step_logits = F.log_softmax(self.hidden_to_output(h_t), dim=1)
+            all_logits.append(step_logits)
+
             distr = Categorical(logits=step_logits)
             entropy.append(distr.entropy())
 
@@ -198,6 +204,6 @@ class RnnSenderReinforceVisualRef(RnnSenderReinforce):
         logits = torch.cat([logits, zeros], dim=1)
         entropy = torch.cat([entropy, zeros], dim=1)
 
-        return sequence, logits, entropy
+        return sequence, logits, entropy, all_logits
 
 

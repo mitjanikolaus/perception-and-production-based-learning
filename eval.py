@@ -15,22 +15,14 @@ import egg.core as core
 from egg.core import ConsoleLogger, Callback, Interaction
 from dataset import VisualRefGameDataset
 from game import OracleSenderReceiverRnnSupervised
-from models import (
-    VisualRefSpeakerDiscriminativeOracle,
-    VisualRefListenerOracle,
-    ImageSentenceRanker,
-)
 from preprocess import (
     DATA_PATH,
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
     VOCAB_FILENAME,
 )
-from train import loss, PrintDebugEvents
-from train_image_sentence_ranking import (
-    CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING,
-)
-from utils import decode_caption, VisualRefLoggingStrategy
+from train import loss_multitask
+from utils import decode_caption
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -97,7 +89,7 @@ def main(args):
     game = OracleSenderReceiverRnnSupervised(
         sender,
         receiver,
-        loss,
+        loss_multitask,
         receiver_entropy_coeff=args.receiver_entropy_coeff,
         train_logging_strategy=logging_strategy,
         test_logging_strategy=logging_strategy,

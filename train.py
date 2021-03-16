@@ -13,7 +13,8 @@ import matplotlib.pyplot as plt
 
 import egg.core as core
 from egg.core import ConsoleLogger, Callback, Interaction, SenderReceiverRnnReinforce, LoggingStrategy
-from dataset import VisualRefGameDataset
+from dataset import VisualRefGameDataset, pad_collate_visua_ref
+from game import SenderReceiverRnnMultiTask
 from models.image_sentence_ranking.ranking_model import ImageSentenceRanker
 from models.interactive.models import VisualRefListenerOracle, VisualRefSpeakerDiscriminativeOracle, \
     VisualRefSenderFunctional, RnnSenderReinforceVisualRef
@@ -23,11 +24,8 @@ from preprocess import (
     CAPTIONS_FILENAME,
     VOCAB_FILENAME,
 )
-from train_image_sentence_ranking import (
-    CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING,
-)
 from trainers import VisualRefTrainer
-from utils import decode_caption, VisualRefLoggingStrategy
+from utils import decode_caption
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -50,19 +48,19 @@ class PrintDebugEvents(Callback):
     def print_sample_interactions(
         self, interaction_logs, show_images, num_interactions=5
     ):
-        target_image_ids, distractor_image_ids = interaction_logs.sender_input
         for z in range(num_interactions):
             message = decode_caption(interaction_logs.message[z], self.vocab)
             target_position = interaction_logs.labels[z]
             receiver_guess = torch.argmax(interaction_logs.receiver_output[z])
+            target_image_id, distractor_image_id = interaction_logs.sender_input[z]
 
             if show_images:
                 # plot the two images side-by-side
                 target_image = self.train_dataset.get_image_features(
-                    int(target_image_ids[z]), channels_first=False, normalize=False
+                    int(target_image_id), channels_first=False, normalize=False
                 )
                 distractor_image = self.train_dataset.get_image_features(
-                    int(distractor_image_ids[z]), channels_first=False, normalize=False
+                    int(distractor_image_id), channels_first=False, normalize=False
                 )
                 image = torch.cat([target_image, distractor_image], dim=1).cpu().numpy()
 
@@ -75,7 +73,7 @@ class PrintDebugEvents(Callback):
                 plt.show()
             else:
                 print(
-                    f"Target image ID: {target_image_ids[z]} | Distractor image ID: {distractor_image_ids[z]} | "
+                    f"Target image ID: {target_image_id} | Distractor image ID: {distractor_image_id} | "
                     f"Success: {target_position == receiver_guess} | Message: {message}"
                 )
 
@@ -121,7 +119,7 @@ class PrintDebugEvents(Callback):
                     )
 
 
-def loss(_sender_input, _message, _receiver_input, receiver_output, labels):
+def loss_functional(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels):
     # in the discriminative case, accuracy is computed by comparing the index with highest score in Receiver output (a distribution of unnormalized
     # probabilities over target poisitions) and the corresponding label read from input, indicating the ground-truth position of the target
     acc = (receiver_output.argmax(dim=1) == labels).detach().float()
@@ -129,10 +127,28 @@ def loss(_sender_input, _message, _receiver_input, receiver_output, labels):
     loss = F.cross_entropy(receiver_output, labels, reduction="none")
     return loss, {"acc": acc}
 
+def loss_structural(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels):
+    images, target_label, target_image_ids, distractor_image_ids, captions, sequence_lengths = _sender_input
+
+    # trim logits to max target caption length
+    sender_logits = sender_logits[:captions.size(1)]
+    sender_logits = torch.stack(sender_logits).permute(1, 2, 0)
+
+    # use NLL loss as logits are already softmaxed
+    loss = F.nll_loss(sender_logits, captions, ignore_index=0)
+
+    return loss, None
+
+
+def loss_multitask(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels, weight_structural=1.0):
+    loss_str, _ = loss_structural(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels)
+    loss_func, acc = loss_functional(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels)
+    return weight_structural * loss_str + loss_func.mean(), acc
+
 
 def main(args):
     train_dataset = VisualRefGameDataset(
-        DATA_PATH, IMAGES_FILENAME["train"], args.batch_size
+        DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], args.batch_size
     )
     train_loader = DataLoader(
         train_dataset,
@@ -140,9 +156,10 @@ def main(args):
         shuffle=True,
         num_workers=0,
         pin_memory=False,
+        collate_fn=pad_collate_visua_ref
     )
     val_dataset = VisualRefGameDataset(
-        DATA_PATH, IMAGES_FILENAME["val"], args.batch_size
+        DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], args.batch_size
     )
     val_loader = DataLoader(
         val_dataset,
@@ -150,6 +167,7 @@ def main(args):
         shuffle=True,
         num_workers=0,
         pin_memory=False,
+        collate_fn=pad_collate_visua_ref
     )
 
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
@@ -172,30 +190,30 @@ def main(args):
     joint_embeddings_size = 512
     lstm_hidden_size = 512
 
-    if args.receiver_checkpoint:
-        checkpoint_listener = torch.load(args.receiver_checkpoint, map_location=device)
-        ranking_model = ImageSentenceRanker(
-            word_embedding_size,
-            joint_embeddings_size,
-            lstm_hidden_size,
-            len(vocab),
-            fine_tune_resnet=False,
-        )
-        receiver = VisualRefListenerOracle(ranking_model)
-        receiver.load_state_dict(checkpoint_listener["model_state_dict"])
-    else:
-        checkpoint_ranking_model = torch.load(
-            CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING, map_location=device
-        )
-        ranking_model = ImageSentenceRanker(
-            word_embedding_size,
-            joint_embeddings_size,
-            lstm_hidden_size,
-            len(vocab),
-            fine_tune_resnet=False,
-        )
-        ranking_model.load_state_dict(checkpoint_ranking_model["model_state_dict"])
-        receiver = VisualRefListenerOracle(ranking_model)
+    # if args.receiver_checkpoint:
+    #     checkpoint_listener = torch.load(args.receiver_checkpoint, map_location=device)
+    #     ranking_model = ImageSentenceRanker(
+    #         word_embedding_size,
+    #         joint_embeddings_size,
+    #         lstm_hidden_size,
+    #         len(vocab),
+    #         fine_tune_resnet=False,
+    #     )
+    #     receiver = VisualRefListenerOracle(ranking_model)
+    #     receiver.load_state_dict(checkpoint_listener["model_state_dict"])
+    # else:
+    checkpoint_ranking_model = torch.load(
+        args.receiver_checkpoint, map_location=device
+    )
+    ranking_model = ImageSentenceRanker(
+        word_embedding_size,
+        joint_embeddings_size,
+        lstm_hidden_size,
+        len(vocab),
+        fine_tune_resnet=False,
+    )
+    ranking_model.load_state_dict(checkpoint_ranking_model["model_state_dict"])
+    receiver = VisualRefListenerOracle(ranking_model)
 
     if args.freeze_receiver:
         for param in receiver.parameters():
@@ -225,18 +243,10 @@ def main(args):
     # use custom LoggingStrategy that stores image IDs
     logging_strategy = VisualRefLoggingStrategy()
 
-    # game = OracleSenderReceiverRnnSupervised(
-    #     sender,
-    #     receiver,
-    #     loss,
-    #     receiver_entropy_coeff=args.receiver_entropy_coeff,
-    #     train_logging_strategy=logging_strategy,
-    #     test_logging_strategy=logging_strategy,
-    # )
-    game = SenderReceiverRnnReinforce(
+    game = SenderReceiverRnnMultiTask(
         sender,
         receiver,
-        loss,
+        loss_multitask,
         sender_entropy_coeff=args.sender_entropy_coeff,
         length_cost=args.length_cost,
         receiver_entropy_coeff=0,
@@ -285,8 +295,12 @@ class VisualRefLoggingStrategy(LoggingStrategy):
             distractor_image,
             target_image_id,
             distractor_image_id,
+            captions,
+            sequence_lengths
         ) = sender_input
-        filtered_sender_input = torch.stack((target_image_id, distractor_image_id))
+
+
+        filtered_sender_input = list(zip(target_image_id, distractor_image_id))
 
         return Interaction(
             sender_input=filtered_sender_input,
