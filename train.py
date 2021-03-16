@@ -95,6 +95,7 @@ class PrintDebugEvents(Callback):
             self.train_loss += loss.detach()
             self.train_accuracies += interaction_logs.aux["acc"].sum()
 
+            print(batch_id)
             if (batch_id % self.args.log_frequency) == (self.args.log_frequency - 1):
                 mean_loss = self.train_loss / self.args.log_frequency
                 batch_size = interaction_logs.aux["acc"].size()[0]
