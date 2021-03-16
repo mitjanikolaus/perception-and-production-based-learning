@@ -163,7 +163,7 @@ class CommunicationRnnMultiTask(nn.Module):
             sender_input, message, all_logits, receiver_input, receiver_output, labels
         )
 
-        print(f"Structural Loss: {loss_str:.3f} Functional Loss: {loss_func:.3f}")
+        # print(f"Structural Loss: {loss_str:.3f} Functional Loss: {loss_func:.3f}")
 
         optimized_loss = self.weight_structural_loss * loss_str + loss_func
 

@@ -120,6 +120,18 @@ class PrintDebugEvents(Callback):
                         show_images=self.args.print_sample_interactions_images,
                     )
 
+        else:
+            if (
+                    self.args.print_sample_interactions
+                    or self.args.print_sample_interactions_images
+            ):
+                self.print_sample_interactions(
+                    interaction_logs,
+                    show_images=self.args.print_sample_interactions_images,
+                    num_interactions=1
+                )
+
+
 
 def loss_functional(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels):
     # in the discriminative case, accuracy is computed by comparing the index with highest score in Receiver output (a distribution of unnormalized
