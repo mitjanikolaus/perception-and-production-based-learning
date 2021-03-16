@@ -131,6 +131,9 @@ def loss_functional(_sender_input, _message, sender_logits, _receiver_input, rec
 def loss_structural(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels):
     images, target_label, target_image_ids, distractor_image_ids, captions, sequence_lengths = _sender_input
 
+    # remove start of sequence tokens
+    captions = captions[:,1:]
+
     # trim logits to max target caption length
     sender_logits = sender_logits[:captions.size(1)]
     sender_logits = torch.stack(sender_logits).permute(1, 2, 0)
