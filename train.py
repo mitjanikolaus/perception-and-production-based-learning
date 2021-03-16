@@ -17,7 +17,7 @@ from dataset import VisualRefGameDataset, pad_collate_visua_ref
 from game import SenderReceiverRnnMultiTask
 from models.image_sentence_ranking.ranking_model import ImageSentenceRanker
 from models.interactive.models import VisualRefListenerOracle, VisualRefSpeakerDiscriminativeOracle, \
-    VisualRefSenderFunctional, RnnSenderReinforceVisualRef
+    VisualRefSenderFunctional, RnnSenderMultitaskVisualRef
 from preprocess import (
     DATA_PATH,
     IMAGES_FILENAME,
@@ -236,7 +236,7 @@ def main(args):
         sender = VisualRefSenderFunctional(
             joint_embeddings_size, fine_tune_resnet=False
         )
-        sender = RnnSenderReinforceVisualRef(
+        sender = RnnSenderMultitaskVisualRef(
             sender,
             vocab_size=len(vocab),
             embed_dim=args.sender_embedding,

@@ -147,13 +147,14 @@ class VisualRefSenderFunctional(nn.Module):
         image_features = self.embed(image_features)
 
         # output is used to initialize the message producing RNN
-        return image_features
+        return image_features, captions, sequence_lengths
 
 
-class RnnSenderReinforceVisualRef(RnnSenderReinforce):
+class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
 
     def forward(self, x):
-        prev_hidden = [self.agent(x)]
+        image_features, captions, sequence_lengths = self.agent(x)
+        prev_hidden = [image_features]
         prev_hidden.extend(
             [torch.zeros_like(prev_hidden[0]) for _ in range(self.num_layers - 1)]
         )
@@ -169,7 +170,8 @@ class RnnSenderReinforceVisualRef(RnnSenderReinforce):
         entropy = []
         all_logits = []
 
-        for step in range(self.max_len):
+        max_len = captions.size(1) if self.training else self.max_len
+        for step in range(max_len - 1):
             for i, layer in enumerate(self.cells):
                 if isinstance(layer, nn.LSTMCell):
                     h_t, c_t = layer(input, (prev_hidden[i], prev_c[i]))
@@ -186,7 +188,9 @@ class RnnSenderReinforceVisualRef(RnnSenderReinforce):
             entropy.append(distr.entropy())
 
             if self.training:
-                x = distr.sample()
+                # x = distr.sample()
+                # Use teacher forcing during training
+                x = captions[:, step + 1]
             else:
                 x = step_logits.argmax(dim=1)
             logits.append(distr.log_prob(x))

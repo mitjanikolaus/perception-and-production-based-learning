@@ -262,6 +262,7 @@ class VisualRefGameDataset(Dataset):
         # discard last incomplete batch
         return length - (length % self.batch_size)
 
+
 def pad_collate_visua_ref(batch):
     images = torch.stack((torch.stack([s[0][0] for s in batch]), torch.stack([s[0][1] for s in batch])))
     target_labels = torch.tensor([s[1] for s in batch], device=device)
