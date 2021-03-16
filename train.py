@@ -127,6 +127,7 @@ def loss_functional(_sender_input, _message, sender_logits, _receiver_input, rec
     loss = F.cross_entropy(receiver_output, labels, reduction="none")
     return loss, {"acc": acc}
 
+
 def loss_structural(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels):
     images, target_label, target_image_ids, distractor_image_ids, captions, sequence_lengths = _sender_input
 
@@ -143,7 +144,9 @@ def loss_structural(_sender_input, _message, sender_logits, _receiver_input, rec
 def loss_multitask(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels, weight_structural=1.0):
     loss_str, _ = loss_structural(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels)
     loss_func, acc = loss_functional(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels)
-    return weight_structural * loss_str + loss_func.mean(), acc
+    loss_func = loss_func.mean()
+    print(f"Structural Loss: {loss_str:.3f} Functional Loss: {loss_func:.3f}")
+    return weight_structural * loss_str + loss_func, acc
 
 
 def main(args):
