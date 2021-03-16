@@ -144,12 +144,12 @@ def loss_structural(_sender_input, _message, sender_logits, _receiver_input, rec
     return loss, None
 
 
-def loss_multitask(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels, weight_structural=1.0):
-    loss_str, _ = loss_structural(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels)
-    loss_func, acc = loss_functional(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels)
-    loss_func = loss_func.mean()
-    print(f"Structural Loss: {loss_str:.3f} Functional Loss: {loss_func:.3f}")
-    return weight_structural * loss_str + loss_func, acc
+# def loss_multitask(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels, weight_structural=1.0):
+#     loss_str, _ = loss_structural(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels)
+#     loss_func, acc = loss_functional(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels)
+#     loss_func = loss_func.mean()
+#     print(f"Structural Loss: {loss_str:.3f} Functional Loss: {loss_func:.3f}")
+#     return weight_structural * loss_str + loss_func, acc
 
 
 def main(args):
@@ -252,7 +252,8 @@ def main(args):
     game = SenderReceiverRnnMultiTask(
         sender,
         receiver,
-        loss_multitask,
+        loss_functional=loss_functional,
+        loss_structural=loss_structural,
         sender_entropy_coeff=args.sender_entropy_coeff,
         length_cost=args.length_cost,
         receiver_entropy_coeff=0,
