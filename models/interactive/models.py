@@ -192,7 +192,8 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
                 # Use teacher forcing during training
                 x = captions[:, step + 1]
             else:
-                x = step_logits.argmax(dim=1)
+                x = distr.sample()
+                # x = step_logits.argmax(dim=1)
             logits.append(distr.log_prob(x))
 
             input = self.embedding(x)
