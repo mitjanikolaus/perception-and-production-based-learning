@@ -31,6 +31,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 NUM_VAL_SAMPLES = 320
 
+
 class PrintDebugEvents(Callback):
     def __init__(self, train_dataset, val_dataset, args):
         super().__init__()
@@ -307,8 +308,7 @@ class VisualRefLoggingStrategy(LoggingStrategy):
             sequence_lengths
         ) = sender_input
 
-
-        filtered_sender_input = list(zip(target_image_id, distractor_image_id))
+        filtered_sender_input = torch.tensor(list(zip(target_image_id, distractor_image_id)))
 
         return Interaction(
             sender_input=filtered_sender_input,
