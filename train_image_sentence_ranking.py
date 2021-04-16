@@ -77,8 +77,8 @@ def validate_model(model, dataloader, semantic_images_loaders, vocab, args):
 
 def main(args):
     # create model checkpoint directory
-    if not os.path.exists(os.path.dirname(args.checkpoint_dir)):
-        os.makedirs(os.path.dirname(args.checkpoint_dir))
+    if not os.path.exists(args.checkpoint_dir):
+        os.makedirs(args.checkpoint_dir)
 
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
     print("Loading vocab from {}".format(vocab_path))
