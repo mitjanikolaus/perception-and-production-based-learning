@@ -11,5 +11,5 @@
 #SBATCH --error=out/train_captioning_sat.out
 
 source activate egg
-python -u train_image_captioning.py --lr 0.0001 --n_epochs 15 --model show_attend_and_tell #--fine-tune-resnet
+python -u train_image_captioning.py --lr 0.0001 --n_epochs 20 --model show_attend_and_tell #--fine-tune-resnet
 
