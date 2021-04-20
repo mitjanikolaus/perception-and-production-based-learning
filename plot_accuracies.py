@@ -1,4 +1,3 @@
-
 import argparse
 import pickle
 import pandas as pd
@@ -39,15 +38,26 @@ LOG_FREQUENCY = DEFAULT_LOG_FREQUENCY
 
 
 def main(args):
-    sns.set_context("paper", rc={"font.size": 12, "axes.titlesize": 12, "axes.labelsize": 12, "xtick.labelsize": 12,
-                                 "ytick.labelsize": 12, "legend.fontsize":12})
+    sns.set_context(
+        "paper",
+        rc={
+            "font.size": 12,
+            "axes.titlesize": 12,
+            "axes.labelsize": 12,
+            "xtick.labelsize": 12,
+            "ytick.labelsize": 12,
+            "legend.fontsize": 12,
+        },
+    )
 
     all_scores = []
     for run, scores_file in enumerate(args.scores_files):
         scores = pickle.load(open(scores_file, "rb"))
         scores = pd.DataFrame(scores)
         for column_name in scores.columns:
-            scores[column_name] = scores[column_name].rolling(args.rolling_window, min_periods=1).mean()
+            scores[column_name] = (
+                scores[column_name].rolling(args.rolling_window, min_periods=1).mean()
+            )
 
         # Delete superfluous logging entries (these mess up epoch calculation otherwise)
         epoch = TRAINING_SET_SIZE
@@ -59,11 +69,19 @@ def main(args):
         scores.drop(labels=to_delete, inplace=True)
         scores.reset_index(drop=True, inplace=True)
 
-        scores["num_samples"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * LOG_FREQUENCY))
-        scores["epoch"] = scores.index.map(lambda x: (x * DEFAULT_BATCH_SIZE * LOG_FREQUENCY) / TRAINING_SET_SIZE)
+        scores["num_samples"] = scores.index.map(
+            lambda x: (x * DEFAULT_BATCH_SIZE * LOG_FREQUENCY)
+        )
+        scores["epoch"] = scores.index.map(
+            lambda x: (x * DEFAULT_BATCH_SIZE * LOG_FREQUENCY) / TRAINING_SET_SIZE
+        )
 
-        print(f"Epoch with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['epoch'].values[0]}")
-        print(f"num_samples with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['num_samples'].values[0]}")
+        print(
+            f"Epoch with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['epoch'].values[0]}"
+        )
+        print(
+            f"num_samples with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['num_samples'].values[0]}"
+        )
         del scores["epoch"]
         del scores["val_loss"]
 
@@ -71,7 +89,9 @@ def main(args):
 
         scores.rename(columns=LEGEND, inplace=True)
         if args.group_noun_accuracies:
-            scores.insert(0, "nouns", scores[["persons", "animals", "objects"]].mean(axis=1))
+            scores.insert(
+                0, "nouns", scores[["persons", "animals", "objects"]].mean(axis=1)
+            )
             del scores["persons"]
             del scores["animals"]
             del scores["objects"]
@@ -87,7 +107,7 @@ def main(args):
 
     # Add chance level line
     plt.axhline(y=0.5, color="black", label="Chance level", linestyle="--")
-    plt.text(440000, 0.507, 'Chance level', fontsize=12, va='center', ha='center')
+    plt.text(440000, 0.507, "Chance level", fontsize=12, va="center", ha="center")
 
     plt.ylabel("Accuracy")
     plt.tight_layout()
@@ -103,15 +123,13 @@ def get_args():
         "--rolling-window", default=30, type=int,
     )
     parser.add_argument(
-        "--x-lim", default=TRAINING_SET_SIZE*15, type=int,
+        "--x-lim", default=TRAINING_SET_SIZE * 15, type=int,
     )
     parser.add_argument(
         "--y-lim", default=1.0, type=float,
     )
     parser.add_argument(
-        "--group-noun-accuracies",
-        default=False,
-        action="store_true",
+        "--group-noun-accuracies", default=False, action="store_true",
     )
 
     return parser.parse_args()

@@ -17,9 +17,7 @@ import matplotlib.pyplot as plt
 
 def main(args):
 
-    images = h5py.File(
-        os.path.join(DATA_PATH, IMAGES_FILENAME[args.split]), "r"
-    )
+    images = h5py.File(os.path.join(DATA_PATH, IMAGES_FILENAME[args.split]), "r")
 
     data = pd.read_csv(args.eval_csv)
 
@@ -40,15 +38,10 @@ def main(args):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--split",
-        default="test",
-        type=str,
-        help="dataset split to use",
+        "--split", default="test", type=str, help="dataset split to use",
     )
     parser.add_argument(
-        "--eval-csv",
-        type=str,
-        required=True,
+        "--eval-csv", type=str, required=True,
     )
 
     return parser.parse_args()

@@ -25,7 +25,6 @@ CHECKPOINT_DIR = os.path.join(pathlib.Path.home(), "data/visual_ref/checkpoints"
 CHECKPOINT_PATH_LISTENER_ORACLE = os.path.join(CHECKPOINT_DIR, "listener_oracle.pt")
 
 
-
 class VisualRefTrainer(Trainer):
     """
     Implements the training logic. Some common configuration (checkpointing frequency, path, validation frequency)

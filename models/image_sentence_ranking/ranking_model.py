@@ -60,33 +60,33 @@ def cosine_sim(images_embedded, captions_embedded):
 
 
 def accuracy_discrimination(images_embedded, captions_embedded):
-        """Calculate accuracy of model when discriminating 2 images/captions"""
-        accuracies = []
-        for i, (image_1_embedded, caption_1_embedded) in enumerate(
+    """Calculate accuracy of model when discriminating 2 images/captions"""
+    accuracies = []
+    for i, (image_1_embedded, caption_1_embedded) in enumerate(
+        zip(images_embedded, captions_embedded)
+    ):
+        for j, (image_2_embedded, caption_2_embedded) in enumerate(
             zip(images_embedded, captions_embedded)
         ):
-            for j, (image_2_embedded, caption_2_embedded) in enumerate(
-                zip(images_embedded, captions_embedded)
-            ):
-                # disregard cases where images are the same
-                if i != j:
-                    similarities = cosine_sim(
-                        torch.stack((image_1_embedded, image_2_embedded)),
-                        torch.stack((caption_1_embedded, caption_2_embedded)),
-                    )
-                    # caption_0 is more similar to image_0 than to image_1
-                    if similarities[0, 0] > similarities[0, 1]:
-                        accuracies.append(1)
-                    else:
-                        accuracies.append(0)
+            # disregard cases where images are the same
+            if i != j:
+                similarities = cosine_sim(
+                    torch.stack((image_1_embedded, image_2_embedded)),
+                    torch.stack((caption_1_embedded, caption_2_embedded)),
+                )
+                # caption_0 is more similar to image_0 than to image_1
+                if similarities[0, 0] > similarities[0, 1]:
+                    accuracies.append(1)
+                else:
+                    accuracies.append(0)
 
-                    # caption_1 is more similar to image_1 than to image_0
-                    if similarities[1, 1] > similarities[1, 0]:
-                        accuracies.append(1)
-                    else:
-                        accuracies.append(0)
+                # caption_1 is more similar to image_1 than to image_0
+                if similarities[1, 1] > similarities[1, 0]:
+                    accuracies.append(1)
+                else:
+                    accuracies.append(0)
 
-        return np.mean(accuracies)
+    return np.mean(accuracies)
 
 
 class ImageSentenceRanker(nn.Module):

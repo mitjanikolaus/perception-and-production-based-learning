@@ -13,9 +13,7 @@ from preprocess import (
 
 
 def main(args):
-    images = h5py.File(
-        os.path.join(DATA_PATH, IMAGES_FILENAME[args.split]), "r"
-    )
+    images = h5py.File(os.path.join(DATA_PATH, IMAGES_FILENAME[args.split]), "r")
     image_data = images[str(args.image_id)][()]
 
     image = torch.FloatTensor(image_data)
@@ -29,15 +27,10 @@ def main(args):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--split",
-        default="test",
-        type=str,
-        help="dataset split to use",
+        "--split", default="test", type=str, help="dataset split to use",
     )
     parser.add_argument(
-        "--image-id",
-        type=int,
-        required=True,
+        "--image-id", type=int, required=True,
     )
 
     return parser.parse_args()

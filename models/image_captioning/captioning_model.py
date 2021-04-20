@@ -14,7 +14,14 @@ class CaptioningModel(nn.Module):
 
     TEACHER_FORCING_RATIO = 1
 
-    def __init__(self, vocab, word_embedding_size, max_caption_length, pretrained_embeddings=None, fine_tune_decoder_word_embeddings=True):
+    def __init__(
+        self,
+        vocab,
+        word_embedding_size,
+        max_caption_length,
+        pretrained_embeddings=None,
+        fine_tune_decoder_word_embeddings=True,
+    ):
         super(CaptioningModel, self).__init__()
 
         self.vocab_size = len(vocab)
@@ -22,14 +29,11 @@ class CaptioningModel(nn.Module):
 
         self.max_caption_length = max_caption_length
 
-        self.word_embedding = nn.Embedding(
-            self.vocab_size, word_embedding_size
-        )
+        self.word_embedding = nn.Embedding(self.vocab_size, word_embedding_size)
 
         if pretrained_embeddings is not None:
             self.word_embedding.weight = nn.Parameter(pretrained_embeddings)
         self.set_fine_tune_embeddings(fine_tune_decoder_word_embeddings)
-
 
     def set_fine_tune_embeddings(self, fine_tune=True):
         """
@@ -103,9 +107,7 @@ class CaptioningModel(nn.Module):
             if not use_teacher_forcing and not t == 0:
                 # Find all sequences where an <end> token has been produced in the last timestep
                 ind_end_token = (
-                    torch.nonzero(prev_words == self.vocab[TOKEN_END])
-                    .view(-1)
-                    .tolist()
+                    torch.nonzero(prev_words == self.vocab[TOKEN_END]).view(-1).tolist()
                 )
 
                 # Update the decode lengths accordingly
@@ -120,7 +122,9 @@ class CaptioningModel(nn.Module):
                 break
 
             if t == 0:
-                prev_words_embedded = self.lstm_input_first_timestep(batch_size, encoder_output)
+                prev_words_embedded = self.lstm_input_first_timestep(
+                    batch_size, encoder_output
+                )
             else:
                 prev_words_embedded = self.word_embedding(prev_words)
 
@@ -147,11 +151,16 @@ class CaptioningModel(nn.Module):
         # Since we decoded starting with <start>, the targets are all words after <start>, up to <end>
         target_captions = target_captions[:, 1:]
 
-        #Trim produced captions to max target length
-        scores = scores[:, :target_captions.shape[1]]
+        # Trim produced captions to max target length
+        scores = scores[:, : target_captions.shape[1]]
 
         scores = scores.permute(0, 2, 1)
-        return F.cross_entropy(scores, target_captions, ignore_index=self.vocab[TOKEN_PADDING], reduction=reduction)
+        return F.cross_entropy(
+            scores,
+            target_captions,
+            ignore_index=self.vocab[TOKEN_PADDING],
+            reduction=reduction,
+        )
 
     def beam_search(
         self,
@@ -204,7 +213,9 @@ class CaptioningModel(nn.Module):
             prev_words = top_k_sequences[:, step]
 
             if step == 0:
-                prev_words_embedded = self.lstm_input_first_timestep(beam_size, encoder_output)
+                prev_words_embedded = self.lstm_input_first_timestep(
+                    beam_size, encoder_output
+                )
             else:
                 prev_words_embedded = self.word_embedding(prev_words)
 
@@ -335,7 +346,9 @@ class CaptioningModel(nn.Module):
             prev_words = top_k_sequences[:, step]
 
             if step == 0:
-                prev_words_embedded = self.lstm_input_first_timestep(num_samples, encoder_output)
+                prev_words_embedded = self.lstm_input_first_timestep(
+                    num_samples, encoder_output
+                )
             else:
                 prev_words_embedded = self.word_embedding(prev_words)
 

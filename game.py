@@ -66,7 +66,13 @@ class SenderReceiverRnnMultiTask(nn.Module):
 
     def forward(self, sender_input, labels, receiver_input=None):
         return self.mechanics(
-            self.sender, self.receiver, self.loss_functional, self.loss_structural, sender_input, labels, receiver_input
+            self.sender,
+            self.receiver,
+            self.loss_functional,
+            self.loss_structural,
+            sender_input,
+            labels,
+            receiver_input,
         )
 
 
@@ -110,7 +116,14 @@ class CommunicationRnnMultiTask(nn.Module):
         )
 
     def forward(
-        self, sender, receiver, loss_functional, loss_structural, sender_input, labels, receiver_input=None
+        self,
+        sender,
+        receiver,
+        loss_functional,
+        loss_structural,
+        sender_input,
+        labels,
+        receiver_input=None,
     ):
         message, log_prob_s, entropy_s, all_logits = sender(sender_input)
         message_length = find_lengths(message)
@@ -192,7 +205,6 @@ class CommunicationRnnMultiTask(nn.Module):
 
 
 class OracleSenderReceiverRnnSupervised(nn.Module):
-
     def __init__(
         self,
         sender: nn.Module,
@@ -246,9 +258,7 @@ class OracleSenderReceiverRnnSupervised(nn.Module):
     def forward(self, sender_input, labels, receiver_input=None):
         message, _, _, all_logits = self.sender(sender_input)
         message_length = find_lengths(message)
-        receiver_output, _, _ = self.receiver(
-            message, receiver_input, message_length
-        )
+        receiver_output, _, _ = self.receiver(message, receiver_input, message_length)
 
         loss, aux_info = self.loss(
             sender_input, message, all_logits, receiver_input, receiver_output, labels

@@ -21,8 +21,16 @@ from tqdm import tqdm
 import numpy as np
 
 VOCAB_FILENAME = "vocab.p"
-IMAGES_FILENAME = {"train": "images_train.hdf5", "val": "images_val.hdf5", "test": "images_test.hdf5"}
-CAPTIONS_FILENAME = {"train": "captions_train.p", "val": "captions_val.p", "test": "captions_test.p"}
+IMAGES_FILENAME = {
+    "train": "images_train.hdf5",
+    "val": "images_val.hdf5",
+    "test": "images_test.hdf5",
+}
+CAPTIONS_FILENAME = {
+    "train": "captions_train.p",
+    "val": "captions_val.p",
+    "test": "captions_test.p",
+}
 
 RANDOM_SEED = 1
 
@@ -41,6 +49,7 @@ TOKEN_END = "<eos>"
 
 VAL_SET_SIZE = 0.1
 
+
 def encode_caption(caption, vocab):
     return (
         [vocab.stoi[TOKEN_START]]
@@ -54,14 +63,12 @@ def encode_captions(captions, vocab):
 
 
 def show_image(img_data):
-    plt.imshow(img_data), plt.axis('off')
+    plt.imshow(img_data), plt.axis("off")
     plt.show()
 
 
 def preprocess_images_and_captions(
-    dataset_folder,
-    output_folder,
-    vocab_min_freq,
+    dataset_folder, output_folder, vocab_min_freq,
 ):
     images = []
     word_freq = Counter()
@@ -89,8 +96,12 @@ def preprocess_images_and_captions(
     print(np.mean(images_analysis.reshape(-1, 3), axis=0))
     print(np.std(images_analysis.reshape(-1, 3), axis=0))
 
-    captions_file_1 = os.path.join(dataset_folder, "SimpleSentences", "SimpleSentences1_10020.txt")
-    captions_file_2 = os.path.join(dataset_folder, "SimpleSentences", "SimpleSentences2_10020.txt")
+    captions_file_1 = os.path.join(
+        dataset_folder, "SimpleSentences", "SimpleSentences1_10020.txt"
+    )
+    captions_file_2 = os.path.join(
+        dataset_folder, "SimpleSentences", "SimpleSentences2_10020.txt"
+    )
 
     captions = {}
     for image_id in range(DATASET_SIZE):
@@ -128,7 +139,11 @@ def preprocess_images_and_captions(
     print(f"Most frequent words: {word_freq.most_common(1000)}")
 
     # Create vocab
-    vocab = Vocab(word_freq, specials=[TOKEN_PADDING, Vocab.UNK, TOKEN_START, TOKEN_END], min_freq=vocab_min_freq)
+    vocab = Vocab(
+        word_freq,
+        specials=[TOKEN_PADDING, Vocab.UNK, TOKEN_START, TOKEN_END],
+        min_freq=vocab_min_freq,
+    )
     vocab_path = os.path.join(output_folder, VOCAB_FILENAME)
 
     print(f"Vocab size: {len(vocab)}")
@@ -138,17 +153,32 @@ def preprocess_images_and_captions(
 
     # Discard images with not enough captions
     images = {id: image for id, image in enumerate(images)}
-    images = {id: image for id, image in images.items() if len(captions[id]) == CAPTIONS_PER_IMAGE}
-    captions = {id: captions_image for id, captions_image in captions.items() if id in images.keys()}
+    images = {
+        id: image
+        for id, image in images.items()
+        if len(captions[id]) == CAPTIONS_PER_IMAGE
+    }
+    captions = {
+        id: captions_image
+        for id, captions_image in captions.items()
+        if id in images.keys()
+    }
 
     # Encode the captions using the vocab
-    captions = {id: encode_captions(captions_image, vocab) for id, captions_image in captions.items()}
+    captions = {
+        id: encode_captions(captions_image, vocab)
+        for id, captions_image in captions.items()
+    }
 
     # Create dataset splits
     all_indices = list(images.keys())
     indices = {}
-    indices["train"], indices["test"] = train_test_split(all_indices, test_size=0.1, random_state=RANDOM_SEED)
-    indices["train"], indices["val"] = train_test_split(indices["train"], test_size=VAL_SET_SIZE, random_state=RANDOM_SEED)
+    indices["train"], indices["test"] = train_test_split(
+        all_indices, test_size=0.1, random_state=RANDOM_SEED
+    )
+    indices["train"], indices["val"] = train_test_split(
+        indices["train"], test_size=VAL_SET_SIZE, random_state=RANDOM_SEED
+    )
 
     for split in ["train", "val", "test"]:
         images_split = {i: images[i] for i in indices[split]}

@@ -79,7 +79,7 @@ class ShowAndTell(CaptioningModel):
         self.init_c = nn.Linear(visual_embeddings_size, lstm_hidden_size)
 
         self.lstm = nn.LSTMCell(
-            input_size=visual_embeddings_size+word_embedding_size,
+            input_size=visual_embeddings_size + word_embedding_size,
             hidden_size=lstm_hidden_size,
         )
         self.dropout = nn.Dropout(p=dropout)

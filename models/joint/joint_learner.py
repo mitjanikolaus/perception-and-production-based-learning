@@ -46,7 +46,9 @@ class JointLearner(CaptioningModel):
         self.init_h = nn.Linear(joint_embeddings_size, lstm_hidden_size)
         self.init_c = nn.Linear(joint_embeddings_size, lstm_hidden_size)
 
-        self.language_encoding_lstm = LanguageEncodingLSTM(word_embedding_size, lstm_hidden_size)
+        self.language_encoding_lstm = LanguageEncodingLSTM(
+            word_embedding_size, lstm_hidden_size
+        )
 
         self.language_generation_lstm = nn.LSTMCell(
             input_size=joint_embeddings_size + word_embedding_size,
@@ -127,9 +129,7 @@ class JointLearner(CaptioningModel):
             if not use_teacher_forcing and not t == 0:
                 # Find all sequences where an <end> token has been produced in the last timestep
                 ind_end_token = (
-                    torch.nonzero(prev_words == self.vocab[TOKEN_END])
-                    .view(-1)
-                    .tolist()
+                    torch.nonzero(prev_words == self.vocab[TOKEN_END]).view(-1).tolist()
                 )
 
                 # Update the decode lengths accordingly
@@ -144,7 +144,9 @@ class JointLearner(CaptioningModel):
                 break
 
             if t == 0:
-                prev_words_embedded = self.lstm_input_first_timestep(batch_size, images_embedded)
+                prev_words_embedded = self.lstm_input_first_timestep(
+                    batch_size, images_embedded
+                )
             else:
                 prev_words_embedded = self.word_embedding(prev_words)
 
@@ -164,7 +166,12 @@ class JointLearner(CaptioningModel):
             ]
 
             # Store last hidden activations of LSTM for finished sequences
-            encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state = states
+            (
+                encoder_hidden_state,
+                encoder_cell_state,
+                decoder_hidden_state,
+                decoder_cell_state,
+            ) = states
             lang_enc_hidden_activations[decode_lengths == t + 1] = encoder_hidden_state[
                 decode_lengths == t + 1
             ]
@@ -178,7 +185,12 @@ class JointLearner(CaptioningModel):
 
     def forward_step(self, encoder_output, prev_word_embeddings, states):
         """Perform a single decoding step."""
-        encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state = states
+        (
+            encoder_hidden_state,
+            encoder_cell_state,
+            decoder_hidden_state,
+            decoder_cell_state,
+        ) = states
 
         encoder_output = encoder_output.squeeze(1)
 
@@ -193,12 +205,28 @@ class JointLearner(CaptioningModel):
 
         scores = self.fc(decoder_hidden_state)
 
-        states = [encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state]
+        states = [
+            encoder_hidden_state,
+            encoder_cell_state,
+            decoder_hidden_state,
+            decoder_cell_state,
+        ]
         return scores, states, None
 
-    def loss(self, scores, target_captions, decode_lengths, alphas, images_embedded, captions_embedded, reduction="mean"):
+    def loss(
+        self,
+        scores,
+        target_captions,
+        decode_lengths,
+        alphas,
+        images_embedded,
+        captions_embedded,
+        reduction="mean",
+    ):
         # Image captioning loss
-        loss_captioning = self.loss_cross_entropy(scores, target_captions, decode_lengths, reduction)
+        loss_captioning = self.loss_cross_entropy(
+            scores, target_captions, decode_lengths, reduction
+        )
 
         # Ranking loss
         loss_ranking = self.loss_ranking(images_embedded, captions_embedded)
@@ -208,9 +236,13 @@ class JointLearner(CaptioningModel):
     def perplexity(self, images, captions, caption_lengths):
         """Return perplexities of captions given images."""
 
-        scores, decode_lengths, alphas, _, _ = self.forward(images, captions, caption_lengths)
+        scores, decode_lengths, alphas, _, _ = self.forward(
+            images, captions, caption_lengths
+        )
 
-        loss_captioning = self.loss_cross_entropy(scores, captions, decode_lengths, reduction="none")
+        loss_captioning = self.loss_cross_entropy(
+            scores, captions, decode_lengths, reduction="none"
+        )
 
         perplexities = torch.exp(loss_captioning)
 
@@ -220,14 +252,15 @@ class JointLearner(CaptioningModel):
         return perplexities
 
 
-
 class LanguageEncodingLSTM(nn.Module):
     def __init__(self, word_embeddings_size, hidden_size):
         super(LanguageEncodingLSTM, self).__init__()
         self.lstm_cell = nn.LSTMCell(word_embeddings_size, hidden_size)
 
     def forward(self, encoder_hidden_state, encoder_call_state, prev_words_embedded):
-        h_out, c_out = self.lstm_cell(prev_words_embedded, (encoder_hidden_state, encoder_call_state))
+        h_out, c_out = self.lstm_cell(
+            prev_words_embedded, (encoder_hidden_state, encoder_call_state)
+        )
         return (h_out, c_out)
 
     def init_state(self, batch_size):

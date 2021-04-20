@@ -32,7 +32,8 @@ from preprocess import (
 from utils import (
     print_caption,
     CHECKPOINT_DIR_IMAGE_CAPTIONING,
-    SEMANTICS_EVAL_FILES, DEFAULT_LOG_FREQUENCY,
+    SEMANTICS_EVAL_FILES,
+    DEFAULT_LOG_FREQUENCY,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -41,7 +42,7 @@ PRINT_SAMPLE_CAPTIONS = 1
 
 NUM_BATCHES_VALIDATION = 100
 
-WEIGH_RANKING_LOSS = 1/3
+WEIGH_RANKING_LOSS = 1 / 3
 
 
 def print_model_output(output, target_captions, image_ids, vocab, num_captions=1):
@@ -87,10 +88,21 @@ def validate_model(
         val_accuracies = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
             if args.model == "joint":
-                scores, decode_lengths, alphas, images_embedded, captions_embedded = model(
-                    images, captions, caption_lengths
+                (
+                    scores,
+                    decode_lengths,
+                    alphas,
+                    images_embedded,
+                    captions_embedded,
+                ) = model(images, captions, caption_lengths)
+                loss_captioning, loss_ranking = model.loss(
+                    scores,
+                    captions,
+                    decode_lengths,
+                    alphas,
+                    images_embedded,
+                    captions_embedded,
                 )
-                loss_captioning, loss_ranking = model.loss(scores, captions, decode_lengths, alphas, images_embedded, captions_embedded)
 
                 # TODO weigh losses
                 loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
@@ -102,7 +114,9 @@ def validate_model(
                 captioning_losses.append(loss_captioning.item())
                 ranking_losses.append(loss_ranking.item())
             else:
-                scores, decode_lengths, alphas = model(images, captions, caption_lengths)
+                scores, decode_lengths, alphas = model(
+                    images, captions, caption_lengths
+                )
                 loss = model.loss(scores, captions, decode_lengths, alphas)
 
             val_losses.append(loss.mean().item())
@@ -111,7 +125,13 @@ def validate_model(
                 break
 
     model.train()
-    return np.mean(val_losses), semantic_accuracies, np.mean(captioning_losses), np.mean(ranking_losses), np.mean(val_accuracies)
+    return (
+        np.mean(val_losses),
+        semantic_accuracies,
+        np.mean(captioning_losses),
+        np.mean(ranking_losses),
+        np.mean(val_accuracies),
+    )
 
 
 def main(args):
@@ -135,7 +155,9 @@ def main(args):
         collate_fn=CaptionDataset.pad_collate,
     )
     val_images_loader = torch.utils.data.DataLoader(
-        CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab),
+        CaptionDataset(
+            DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab
+        ),
         batch_size=args.batch_size,
         shuffle=True,
         num_workers=0,
@@ -145,7 +167,9 @@ def main(args):
 
     # TODO
     print_captions_loader = torch.utils.data.DataLoader(
-        CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab),
+        CaptionDataset(
+            DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab
+        ),
         batch_size=1,
         shuffle=True,
         num_workers=0,
@@ -221,7 +245,13 @@ def main(args):
             train_loader
         ):
             if batch_idx % args.log_frequency == 0:
-                val_loss, semantic_accuracies, captioning_loss, ranking_loss, val_acc = validate_model(
+                (
+                    val_loss,
+                    semantic_accuracies,
+                    captioning_loss,
+                    ranking_loss,
+                    val_acc,
+                ) = validate_model(
                     model,
                     val_images_loader,
                     print_captions_loader,
@@ -232,7 +262,10 @@ def main(args):
                 accuracies_over_time.append(semantic_accuracies)
                 pickle.dump(
                     accuracies_over_time,
-                    open(CHECKPOINT_DIR_IMAGE_CAPTIONING+args.model+"_accuracies.p", "wb"),
+                    open(
+                        CHECKPOINT_DIR_IMAGE_CAPTIONING + args.model + "_accuracies.p",
+                        "wb",
+                    ),
                 )
                 print(
                     f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | val loss: {val_loss:.3f} | captioning loss:"
@@ -245,21 +278,34 @@ def main(args):
                         optimizer,
                         best_val_loss,
                         epoch,
-                        CHECKPOINT_DIR_IMAGE_CAPTIONING+args.model+".pt",
+                        CHECKPOINT_DIR_IMAGE_CAPTIONING + args.model + ".pt",
                     )
 
             model.train()
 
             # Forward pass
             if args.model == "joint":
-                scores, decode_lengths, alphas, images_embedded, captions_embedded = model(
-                    images, captions, caption_lengths
+                (
+                    scores,
+                    decode_lengths,
+                    alphas,
+                    images_embedded,
+                    captions_embedded,
+                ) = model(images, captions, caption_lengths)
+                loss_captioning, loss_ranking = model.loss(
+                    scores,
+                    captions,
+                    decode_lengths,
+                    alphas,
+                    images_embedded,
+                    captions_embedded,
                 )
-                loss_captioning, loss_ranking = model.loss(scores, captions, decode_lengths, alphas, images_embedded, captions_embedded)
                 # TODO weigh losses
                 loss = loss_captioning + loss_ranking
             else:
-                scores, decode_lengths, alphas = model(images, captions, caption_lengths)
+                scores, decode_lengths, alphas = model(
+                    images, captions, caption_lengths
+                )
                 loss = model.loss(scores, captions, decode_lengths, alphas)
 
             losses.append(loss.mean().item())
@@ -304,9 +350,7 @@ def get_args():
         default=32,
         help="Input batch size for training (default: 32)",
     )
-    parser.add_argument(
-        "--lr", type=float, default=1e-4, help="Initial learning rate"
-    )
+    parser.add_argument("--lr", type=float, default=1e-4, help="Initial learning rate")
 
     return parser.parse_args()
 

@@ -15,8 +15,13 @@ from torch.utils.data import DataLoader
 
 from dataset import CaptionDataset
 from eval_semantics import get_semantics_eval_dataloader, eval_semantics_score
-from models.image_sentence_ranking.ranking_model import ImageSentenceRanker, accuracy_discrimination
-from models.image_sentence_ranking.ranking_model_grounded import ImageSentenceRankerGrounded
+from models.image_sentence_ranking.ranking_model import (
+    ImageSentenceRanker,
+    accuracy_discrimination,
+)
+from models.image_sentence_ranking.ranking_model_grounded import (
+    ImageSentenceRankerGrounded,
+)
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -91,7 +96,9 @@ def main(args):
         collate_fn=CaptionDataset.pad_collate,
     )
     val_images_loader = torch.utils.data.DataLoader(
-        CaptionDataset(DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab),
+        CaptionDataset(
+            DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab
+        ),
         batch_size=args.batch_size,
         shuffle=True,
         num_workers=0,
@@ -100,7 +107,8 @@ def main(args):
     )
 
     semantics_eval_loaders = {
-        file: get_semantics_eval_dataloader(file, vocab) for file in SEMANTICS_EVAL_FILES
+        file: get_semantics_eval_dataloader(file, vocab)
+        for file in SEMANTICS_EVAL_FILES
     }
 
     word_embedding_size = 100
@@ -136,23 +144,32 @@ def main(args):
                 "optimizer_state_dict": optimizer.state_dict(),
                 "loss": best_val_loss,
             },
-            args.checkpoint_dir+"/ranking.pt",
+            args.checkpoint_dir + "/ranking.pt",
         )
 
     best_val_loss = math.inf
     accuracies_over_time = []
     for epoch in range(args.n_epochs):
         losses = []
-        for batch_idx, (images, captions, caption_lengths, _) in enumerate(train_loader):
+        for batch_idx, (images, captions, caption_lengths, _) in enumerate(
+            train_loader
+        ):
             if batch_idx % args.log_frequency == 0:
-                val_loss, val_acc, semantic_accuracies = validate_model(model, val_images_loader, semantics_eval_loaders, vocab, args)
-                print(f"Batch {batch_idx}: train loss: {np.mean(losses)} val loss: {val_loss} val acc: {val_acc}")
+                val_loss, val_acc, semantic_accuracies = validate_model(
+                    model, val_images_loader, semantics_eval_loaders, vocab, args
+                )
+                print(
+                    f"Batch {batch_idx}: train loss: {np.mean(losses)} val loss: {val_loss} val acc: {val_acc}"
+                )
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
                     save_model(model, optimizer, best_val_loss, epoch)
                 semantic_accuracies["val_loss"] = val_loss
                 accuracies_over_time.append(semantic_accuracies)
-                pickle.dump(accuracies_over_time, open(args.checkpoint_dir+"/ranking_accuracies.p", "wb"))
+                pickle.dump(
+                    accuracies_over_time,
+                    open(args.checkpoint_dir + "/ranking_accuracies.p", "wb"),
+                )
 
             model.train()
 
@@ -182,15 +199,15 @@ def main(args):
                 loss.backward()
                 optimizer.step()
 
-        print(f"Train Epoch: {epoch}, train loss: {np.mean(losses)} best val loss: {best_val_loss}\n\n")
+        print(
+            f"Train Epoch: {epoch}, train loss: {np.mean(losses)} best val loss: {best_val_loss}\n\n"
+        )
 
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--checkpoint-dir",
-        default=CHECKPOINT_DIR_RANKING,
-        type=str,
+        "--checkpoint-dir", default=CHECKPOINT_DIR_RANKING, type=str,
     )
     parser.add_argument(
         "--fine-tune-resnet",
@@ -216,9 +233,7 @@ def get_args():
         default=32,
         help="Input batch size for training (default: 32)",
     )
-    parser.add_argument(
-        "--lr", type=float, default=1e-4, help="Initial learning rate"
-    )
+    parser.add_argument("--lr", type=float, default=1e-4, help="Initial learning rate")
     parser.add_argument(
         "--alternative-objective",
         default=False,

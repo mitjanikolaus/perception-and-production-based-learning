@@ -16,11 +16,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class LanguageModel(nn.Module):
     def __init__(
-        self,
-        word_embedding_size,
-        lstm_hidden_size,
-        vocab,
-        dropout=0.2,
+        self, word_embedding_size, lstm_hidden_size, vocab, dropout=0.2,
     ):
         super(LanguageModel, self).__init__()
 
@@ -41,7 +37,12 @@ class LanguageModel(nn.Module):
         # Since we decoded starting with <start>, the targets are all words after <start>, up to <end>
         target_captions = target_captions[:, 1:]
 
-        return F.cross_entropy(scores, target_captions, ignore_index=self.vocab[TOKEN_PADDING], reduction=reduction)
+        return F.cross_entropy(
+            scores,
+            target_captions,
+            ignore_index=self.vocab[TOKEN_PADDING],
+            reduction=reduction,
+        )
 
     def perplexity(self, captions, caption_lengths):
         """Return perplexities of captions given images."""
@@ -66,7 +67,9 @@ class LanguageModel(nn.Module):
 
         embedded = self.word_embedding(captions)
 
-        packed_input = pack_padded_sequence(embedded, decode_lengths, batch_first=True, enforce_sorted=False)
+        packed_input = pack_padded_sequence(
+            embedded, decode_lengths, batch_first=True, enforce_sorted=False
+        )
         packed_output, hidden = self.lstm(packed_input)
 
         out, lengths = pad_packed_sequence(packed_output, batch_first=True)
@@ -86,5 +89,3 @@ class LanguageEncodingLSTM(nn.Module):
     def forward(self, h, c, prev_words_embedded):
         h_out, c_out = self.lstm_cell(prev_words_embedded, (h, c))
         return h_out, c_out
-
-

@@ -8,7 +8,6 @@ from preprocess import TOKEN_START
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-
 class Encoder(nn.Module):
     def __init__(self, fine_tune_resnet=False, encoded_image_size=14):
         super(Encoder, self).__init__()
@@ -166,7 +165,9 @@ class ShowAttendAndTell(CaptioningModel):
         return scores, states, alpha
 
     def loss(self, scores, target_captions, decode_lengths, alphas, reduction="mean"):
-        loss = self.loss_cross_entropy(scores, target_captions, decode_lengths, reduction)
+        loss = self.loss_cross_entropy(
+            scores, target_captions, decode_lengths, reduction
+        )
 
         # Add doubly stochastic attention regularization
         loss += self.ALPHA_C * ((1.0 - alphas.sum(dim=1)) ** 2).mean()

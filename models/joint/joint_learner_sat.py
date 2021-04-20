@@ -13,7 +13,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class ImageEncoder(nn.Module):
     ENCODER_DIM = 2048
 
-    def __init__(self, joint_embeddings_size, fine_tune_resnet=False, encoded_image_size=14):
+    def __init__(
+        self, joint_embeddings_size, fine_tune_resnet=False, encoded_image_size=14
+    ):
         super(ImageEncoder, self).__init__()
 
         resnet = torchvision.models.resnet152(pretrained=True)
@@ -96,11 +98,11 @@ class JointLearnerSAT(CaptioningModel):
         )
         self.image_encoder = ImageEncoder(joint_embeddings_size, fine_tune_resnet)
 
-        self.language_encoding_lstm = LanguageEncodingLSTM(word_embedding_size, lstm_hidden_size)
-
-        self.attention = AttentionModule(
-            lstm_hidden_size, self.ATTENTION_DIM,
+        self.language_encoding_lstm = LanguageEncodingLSTM(
+            word_embedding_size, lstm_hidden_size
         )
+
+        self.attention = AttentionModule(lstm_hidden_size, self.ATTENTION_DIM,)
 
         # Linear layers to find initial states of LSTMs
         self.init_h = nn.Linear(joint_embeddings_size, lstm_hidden_size)
@@ -152,7 +154,6 @@ class JointLearnerSAT(CaptioningModel):
         )
         return self.word_embedding(start_tokens)
 
-
     def forward(self, images, target_captions=None, decode_lengths=None):
         """
         Forward propagation.
@@ -203,9 +204,7 @@ class JointLearnerSAT(CaptioningModel):
             if not use_teacher_forcing and not t == 0:
                 # Find all sequences where an <end> token has been produced in the last timestep
                 ind_end_token = (
-                    torch.nonzero(prev_words == self.vocab[TOKEN_END])
-                    .view(-1)
-                    .tolist()
+                    torch.nonzero(prev_words == self.vocab[TOKEN_END]).view(-1).tolist()
                 )
 
                 # Update the decode lengths accordingly
@@ -220,7 +219,9 @@ class JointLearnerSAT(CaptioningModel):
                 break
 
             if t == 0:
-                prev_words_embedded = self.lstm_input_first_timestep(batch_size, images_embedded)
+                prev_words_embedded = self.lstm_input_first_timestep(
+                    batch_size, images_embedded
+                )
             else:
                 prev_words_embedded = self.word_embedding(prev_words)
 
@@ -239,7 +240,12 @@ class JointLearnerSAT(CaptioningModel):
             ]
 
             # Store last hidden activations of LSTM for finished sequences
-            encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state = states
+            (
+                encoder_hidden_state,
+                encoder_cell_state,
+                decoder_hidden_state,
+                decoder_cell_state,
+            ) = states
             lang_enc_hidden_activations[decode_lengths == t + 1] = encoder_hidden_state[
                 decode_lengths == t + 1
             ]
@@ -256,10 +262,14 @@ class JointLearnerSAT(CaptioningModel):
 
         return scores, decode_lengths, alphas, images_embedded_mean, captions_embedded
 
-
     def forward_step(self, encoder_output, prev_word_embeddings, states):
         """Perform a single decoding step."""
-        encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state = states
+        (
+            encoder_hidden_state,
+            encoder_cell_state,
+            decoder_hidden_state,
+            decoder_cell_state,
+        ) = states
 
         attention_weighted_encoding, alpha = self.attention(
             encoder_output, decoder_hidden_state
@@ -290,12 +300,28 @@ class JointLearnerSAT(CaptioningModel):
             )
         )
 
-        states = [encoder_hidden_state, encoder_cell_state, decoder_hidden_state, decoder_cell_state]
+        states = [
+            encoder_hidden_state,
+            encoder_cell_state,
+            decoder_hidden_state,
+            decoder_cell_state,
+        ]
         return scores, states, alpha
 
-    def loss(self, scores, target_captions, decode_lengths, alphas, images_embedded, captions_embedded, reduction="mean"):
+    def loss(
+        self,
+        scores,
+        target_captions,
+        decode_lengths,
+        alphas,
+        images_embedded,
+        captions_embedded,
+        reduction="mean",
+    ):
         # Image captioning loss
-        loss_captioning = self.loss_cross_entropy(scores, target_captions, decode_lengths, reduction)
+        loss_captioning = self.loss_cross_entropy(
+            scores, target_captions, decode_lengths, reduction
+        )
 
         # Add doubly stochastic attention regularization
         loss_captioning += self.ALPHA_C * ((1.0 - alphas.sum(dim=1)) ** 2).mean()

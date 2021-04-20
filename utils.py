@@ -50,4 +50,3 @@ def decode_caption(caption, vocab, join=True):
 def print_caption(caption, vocab):
     caption = decode_caption(caption, vocab)
     print(caption)
-

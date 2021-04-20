@@ -26,6 +26,7 @@ from utils import decode_caption
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
 def main(args):
     train_dataset = VisualRefGameDataset(
         DATA_PATH, IMAGES_FILENAME["train"], args.batch_size
@@ -70,7 +71,9 @@ def main(args):
     word_embedding_size = 100
     joint_embeddings_size = 512
     lstm_hidden_size = 512
-    checkpoint_ranking_model = torch.load(CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING, map_location=device)
+    checkpoint_ranking_model = torch.load(
+        CHECKPOINT_PATH_IMAGE_SENTENCE_RANKING, map_location=device
+    )
     ranking_model = ImageSentenceRanker(
         word_embedding_size,
         joint_embeddings_size,
@@ -80,7 +83,9 @@ def main(args):
     )
     ranking_model.load_state_dict(checkpoint_ranking_model["model_state_dict"])
 
-    sender = VisualRefSpeakerDiscriminativeOracle(DATA_PATH, CAPTIONS_FILENAME, args.max_len, vocab)
+    sender = VisualRefSpeakerDiscriminativeOracle(
+        DATA_PATH, CAPTIONS_FILENAME, args.max_len, vocab
+    )
     receiver = VisualRefListenerOracle(ranking_model)
 
     # use LoggingStrategy that stores image IDs

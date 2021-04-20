@@ -193,7 +193,6 @@ def main(args):
         )
 
 
-
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -214,9 +213,7 @@ def get_args():
         default=32,
         help="Input batch size for training (default: 32)",
     )
-    parser.add_argument(
-        "--lr", type=float, default=1e-4, help="Initial learning rate"
-    )
+    parser.add_argument("--lr", type=float, default=1e-4, help="Initial learning rate")
 
     return parser.parse_args()
 

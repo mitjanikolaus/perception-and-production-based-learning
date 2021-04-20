@@ -14,7 +14,12 @@ import numpy as np
 from torchvision import transforms
 
 
-from preprocess import MEAN_ABSTRACT_SCENES, STD_ABSTRACT_SCENES, encode_caption, show_image
+from preprocess import (
+    MEAN_ABSTRACT_SCENES,
+    STD_ABSTRACT_SCENES,
+    encode_caption,
+    show_image,
+)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -40,9 +45,7 @@ class CaptionDataset(Dataset):
         :param normalize: PyTorch normalization transformation
         :param features_scale_factor: Additional scale factor, applied before normalization
         """
-        self.images = h5py.File(
-            os.path.join(data_folder, features_filename), "r"
-        )
+        self.images = h5py.File(os.path.join(data_folder, features_filename), "r")
 
         self.features_scale_factor = features_scale_factor
 
@@ -51,7 +54,9 @@ class CaptionDataset(Dataset):
             self.captions = pickle.load(file)
 
         # Set pytorch transformation pipeline
-        self.normalize = transforms.Normalize(mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES)
+        self.normalize = transforms.Normalize(
+            mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES
+        )
 
         self.image_ids = [int(i) for i in list(self.images.keys())]
 
@@ -81,9 +86,7 @@ class CaptionDataset(Dataset):
 
         caption = self.captions[image_id][caption_id]
 
-        caption = torch.LongTensor(
-            caption
-        )
+        caption = torch.LongTensor(caption)
 
         return image, caption, image_id
 
@@ -98,7 +101,12 @@ class CaptionDataset(Dataset):
         sequence_lengths = torch.tensor([len(c) for c in captions])
         padded_captions = pad_sequence(captions, batch_first=True)
 
-        return images.to(device), padded_captions.to(device), sequence_lengths.to(device), image_ids
+        return (
+            images.to(device),
+            padded_captions.to(device),
+            sequence_lengths.to(device),
+            image_ids,
+        )
 
 
 class SemanticsEvalDataset(Dataset):
@@ -121,14 +129,14 @@ class SemanticsEvalDataset(Dataset):
         :param data_indices: dataset split, indices of images that should be included
         :param features_scale_factor: Additional scale factor, applied before normalization
         """
-        self.images = h5py.File(
-            os.path.join(data_folder, features_filename), "r"
-        )
+        self.images = h5py.File(os.path.join(data_folder, features_filename), "r")
 
         self.features_scale_factor = features_scale_factor
 
         # Set pytorch transformation pipeline
-        self.normalize = transforms.Normalize(mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES)
+        self.normalize = transforms.Normalize(
+            mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES
+        )
 
         self.vocab = vocab
 
@@ -184,7 +192,7 @@ class VisualRefGameDataset(Dataset):
         captions_filename,
         batch_size,
         features_scale_factor=1 / 255.0,
-        max_samples = None,
+        max_samples=None,
     ):
         """
         :param data_folder: folder where data files are stored
@@ -192,14 +200,14 @@ class VisualRefGameDataset(Dataset):
         :param data_indices: dataset split, indices of images that should be included
         :param features_scale_factor: Additional scale factor, applied before normalization
         """
-        self.images = h5py.File(
-            os.path.join(data_folder, features_filename), "r"
-        )
+        self.images = h5py.File(os.path.join(data_folder, features_filename), "r")
 
         self.features_scale_factor = features_scale_factor
 
         # Set pytorch transformation pipeline
-        self.normalize = transforms.Normalize(mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES)
+        self.normalize = transforms.Normalize(
+            mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES
+        )
 
         # Load captions
         with open(os.path.join(data_folder, captions_filename), "rb") as file:
@@ -264,7 +272,9 @@ class VisualRefGameDataset(Dataset):
 
 
 def pad_collate_visua_ref(batch):
-    images = torch.stack((torch.stack([s[0][0] for s in batch]), torch.stack([s[0][1] for s in batch])))
+    images = torch.stack(
+        (torch.stack([s[0][0] for s in batch]), torch.stack([s[0][1] for s in batch]))
+    )
     target_labels = torch.tensor([s[1] for s in batch], device=device)
     target_image_ids = torch.tensor([s[2] for s in batch], device=device)
     distractor_image_ids = torch.tensor([s[3] for s in batch], device=device)
@@ -273,8 +283,14 @@ def pad_collate_visua_ref(batch):
     sequence_lengths = torch.tensor([len(c) for c in captions], device=device)
     padded_captions = pad_sequence(captions, batch_first=True)
 
-    sender_inputs = images, target_labels, target_image_ids, distractor_image_ids, padded_captions, sequence_lengths
+    sender_inputs = (
+        images,
+        target_labels,
+        target_image_ids,
+        distractor_image_ids,
+        padded_captions,
+        sequence_lengths,
+    )
     receiver_inputs = images
 
     return sender_inputs, target_labels, receiver_inputs
-

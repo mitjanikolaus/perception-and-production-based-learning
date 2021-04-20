@@ -12,12 +12,22 @@ from torch.nn import functional as F
 import matplotlib.pyplot as plt
 
 import egg.core as core
-from egg.core import ConsoleLogger, Callback, Interaction, SenderReceiverRnnReinforce, LoggingStrategy
+from egg.core import (
+    ConsoleLogger,
+    Callback,
+    Interaction,
+    SenderReceiverRnnReinforce,
+    LoggingStrategy,
+)
 from dataset import VisualRefGameDataset, pad_collate_visua_ref
 from game import SenderReceiverRnnMultiTask
 from models.image_sentence_ranking.ranking_model import ImageSentenceRanker
-from models.interactive.models import VisualRefListenerOracle, VisualRefSpeakerDiscriminativeOracle, \
-    VisualRefSenderFunctional, RnnSenderMultitaskVisualRef
+from models.interactive.models import (
+    VisualRefListenerOracle,
+    VisualRefSpeakerDiscriminativeOracle,
+    VisualRefSenderFunctional,
+    RnnSenderMultitaskVisualRef,
+)
 from preprocess import (
     DATA_PATH,
     IMAGES_FILENAME,
@@ -122,18 +132,19 @@ class PrintDebugEvents(Callback):
 
         else:
             if (
-                    self.args.print_sample_interactions
-                    or self.args.print_sample_interactions_images
+                self.args.print_sample_interactions
+                or self.args.print_sample_interactions_images
             ):
                 self.print_sample_interactions(
                     interaction_logs,
                     show_images=self.args.print_sample_interactions_images,
-                    num_interactions=1
+                    num_interactions=1,
                 )
 
 
-
-def loss_functional(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels):
+def loss_functional(
+    _sender_input, _message, sender_logits, _receiver_input, receiver_output, labels
+):
     # in the discriminative case, accuracy is computed by comparing the index with highest score in Receiver output (a distribution of unnormalized
     # probabilities over target poisitions) and the corresponding label read from input, indicating the ground-truth position of the target
     acc = (receiver_output.argmax(dim=1) == labels).detach().float()
@@ -142,14 +153,23 @@ def loss_functional(_sender_input, _message, sender_logits, _receiver_input, rec
     return loss, {"acc": acc}
 
 
-def loss_structural(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels):
-    images, target_label, target_image_ids, distractor_image_ids, captions, sequence_lengths = _sender_input
+def loss_structural(
+    _sender_input, _message, sender_logits, _receiver_input, receiver_output, labels
+):
+    (
+        images,
+        target_label,
+        target_image_ids,
+        distractor_image_ids,
+        captions,
+        sequence_lengths,
+    ) = _sender_input
 
     # remove start of sequence tokens
-    captions = captions[:,1:]
+    captions = captions[:, 1:]
 
     # trim logits to max target caption length
-    sender_logits = sender_logits[:captions.size(1)]
+    sender_logits = sender_logits[: captions.size(1)]
     sender_logits = torch.stack(sender_logits).permute(1, 2, 0)
 
     # use NLL loss as logits are already softmaxed
@@ -176,10 +196,14 @@ def main(args):
         shuffle=True,
         num_workers=0,
         pin_memory=False,
-        collate_fn=pad_collate_visua_ref
+        collate_fn=pad_collate_visua_ref,
     )
     val_dataset = VisualRefGameDataset(
-        DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], args.batch_size, max_samples=NUM_VAL_SAMPLES
+        DATA_PATH,
+        IMAGES_FILENAME["val"],
+        CAPTIONS_FILENAME["val"],
+        args.batch_size,
+        max_samples=NUM_VAL_SAMPLES,
     )
     val_loader = DataLoader(
         val_dataset,
@@ -187,7 +211,7 @@ def main(args):
         shuffle=True,
         num_workers=0,
         pin_memory=False,
-        collate_fn=pad_collate_visua_ref
+        collate_fn=pad_collate_visua_ref,
     )
 
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
@@ -222,9 +246,7 @@ def main(args):
     #     receiver = VisualRefListenerOracle(ranking_model)
     #     receiver.load_state_dict(checkpoint_listener["model_state_dict"])
     # else:
-    checkpoint_ranking_model = torch.load(
-        args.receiver_checkpoint, map_location=device
-    )
+    checkpoint_ranking_model = torch.load(args.receiver_checkpoint, map_location=device)
     ranking_model = ImageSentenceRanker(
         word_embedding_size,
         joint_embeddings_size,
@@ -298,17 +320,18 @@ def main(args):
 
     core.close()
 
+
 @dataclass
 class VisualRefLoggingStrategy(LoggingStrategy):
     def filtered_interaction(
-            self,
-            sender_input: Optional[torch.Tensor],
-            receiver_input: Optional[torch.Tensor],
-            labels: Optional[torch.Tensor],
-            message: Optional[torch.Tensor],
-            receiver_output: Optional[torch.Tensor],
-            message_length: Optional[torch.Tensor],
-            aux: Dict[str, torch.Tensor],
+        self,
+        sender_input: Optional[torch.Tensor],
+        receiver_input: Optional[torch.Tensor],
+        labels: Optional[torch.Tensor],
+        message: Optional[torch.Tensor],
+        receiver_output: Optional[torch.Tensor],
+        message_length: Optional[torch.Tensor],
+        aux: Dict[str, torch.Tensor],
     ):
         # Store only image IDs but not data
         (
@@ -317,10 +340,12 @@ class VisualRefLoggingStrategy(LoggingStrategy):
             target_image_id,
             distractor_image_id,
             captions,
-            sequence_lengths
+            sequence_lengths,
         ) = sender_input
 
-        filtered_sender_input = torch.tensor(list(zip(target_image_id, distractor_image_id)))
+        filtered_sender_input = torch.tensor(
+            list(zip(target_image_id, distractor_image_id))
+        )
 
         return Interaction(
             sender_input=filtered_sender_input,

@@ -11,28 +11,67 @@ from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
     VOCAB_FILENAME,
-    DATA_PATH, show_image,
+    DATA_PATH,
+    show_image,
 )
 from utils import decode_caption
 
-META_DATA_PATH = os.path.expanduser("~/data/abstract_scenes/AbstractScenes_v1.1/VisualFeatures/10K_instance_occurence_58.txt")
-META_DATA_DICT_PATH = os.path.expanduser("~/data/abstract_scenes/AbstractScenes_v1.1/VisualFeatures/10K_instance_occurence_58_names.txt")
+META_DATA_PATH = os.path.expanduser(
+    "~/data/abstract_scenes/AbstractScenes_v1.1/VisualFeatures/10K_instance_occurence_58.txt"
+)
+META_DATA_DICT_PATH = os.path.expanduser(
+    "~/data/abstract_scenes/AbstractScenes_v1.1/VisualFeatures/10K_instance_occurence_58_names.txt"
+)
 META_DATA_DICT = pd.read_csv(META_DATA_DICT_PATH, sep="\t", index_col=0, names=["id"]).T
 
-META_DATA_ADJECTIVES_PATH = os.path.expanduser("~/data/abstract_scenes/AbstractScenes_v1.1/VisualFeatures/10K_person_24.txt")
+META_DATA_ADJECTIVES_PATH = os.path.expanduser(
+    "~/data/abstract_scenes/AbstractScenes_v1.1/VisualFeatures/10K_person_24.txt"
+)
 # This is a fixed version (the original one from the dataset is not correct)
 META_DATA_ADJECTIVES_DICT_PATH = os.path.expanduser("data/10K_person_24_names.txt")
-META_DATA_ADJECTIVES_DICT = pd.read_csv(META_DATA_ADJECTIVES_DICT_PATH, sep="\t", index_col=0, names=["id"]).T
+META_DATA_ADJECTIVES_DICT = pd.read_csv(
+    META_DATA_ADJECTIVES_DICT_PATH, sep="\t", index_col=0, names=["id"]
+).T
 
 OBJECTS_ANIMALS = ["dog", "cat", "snake", "bear", "duck", "owl"]
 TUPLES_ANIMALS = list(itertools.combinations(OBJECTS_ANIMALS, 2))
 
-OBJECTS_INANIMATE = ["ball", "hat", "tree", "table", "sandbox", "slide", "sunglasses", "pie", "pizza", "hamburger", "balloons", "frisbee"]
+OBJECTS_INANIMATE = [
+    "ball",
+    "hat",
+    "tree",
+    "table",
+    "sandbox",
+    "slide",
+    "sunglasses",
+    "pie",
+    "pizza",
+    "hamburger",
+    "balloons",
+    "frisbee",
+]
 TUPLES_INANIMATE = list(itertools.combinations(OBJECTS_INANIMATE, 2))
 
-VERBS = [("sitting", "standing"), ("sitting", "running"), ("eating", "playing"), ("eating", "kicking"), ("throwing", "eating"), ("throwing", "kicking"), ("sitting", "kicking"), ("jumping", "sitting")]
+VERBS = [
+    ("sitting", "standing"),
+    ("sitting", "running"),
+    ("eating", "playing"),
+    ("eating", "kicking"),
+    ("throwing", "eating"),
+    ("throwing", "kicking"),
+    ("sitting", "kicking"),
+    ("jumping", "sitting"),
+]
 
-ADJECTIVES = [("happy", "sad"), ("happy", "angry"), ("happy", "upset"), ("happy", "scared"), ("happy", "mad"), ("happy", "afraid"), ("happy", "surprised")]
+ADJECTIVES = [
+    ("happy", "sad"),
+    ("happy", "angry"),
+    ("happy", "upset"),
+    ("happy", "scared"),
+    ("happy", "mad"),
+    ("happy", "afraid"),
+    ("happy", "surprised"),
+]
 
 ADJECTIVES_NEGATIVE = ["angry", "mad", "sad", "upset", "scared", "afraid", "surprised"]
 
@@ -56,11 +95,26 @@ VOCAB_TO_OBJECT_NAMES = {
     "snake": ["Snake"],
     "owl": ["Owl"],
     "duck": ["Duck"],
-    "ball": ["Baseball", "BeachBall", "Basketball", "SoccerBall", "TennisBall", "Football"],
+    "ball": [
+        "Baseball",
+        "BeachBall",
+        "Basketball",
+        "SoccerBall",
+        "TennisBall",
+        "Football",
+    ],
     "basketball": ["Basketball"],
     "football": ["Football"],
     "frisbee": ["Frisbee"],
-    "hat": ["ChefHat", "PirateHat", "WizardHat", "VikingHat", "BaseballCap", "WinterCap", "Bennie"],
+    "hat": [
+        "ChefHat",
+        "PirateHat",
+        "WizardHat",
+        "VikingHat",
+        "BaseballCap",
+        "WinterCap",
+        "Bennie",
+    ],
     "tree": ["PineTree", "OakTree", "AppleTree"],
     "table": ["Table"],
     "sandbox": ["Sandbox"],
@@ -78,9 +132,9 @@ def contains_actor_with_attribute(meta_data_adjectives, img_id, actor, attribute
     attribute_names = VOCAB_TO_FACE_EXPRESSION[attribute]
     for attribute_name in attribute_names:
         if actor == "jenny":
-            attribute_name = "Girl_"+attribute_name
+            attribute_name = "Girl_" + attribute_name
         else:
-            attribute_name = "Boy_"+attribute_name
+            attribute_name = "Boy_" + attribute_name
         index = META_DATA_ADJECTIVES_DICT[attribute_name].values[0]
         if int(meta[index]) == 1:
             return True
@@ -103,8 +157,13 @@ def contains_instance(meta_data, img_id, instance_name):
 def get_image_ids_single_actor(image_ids, meta_data):
     ids = []
     for img_id in image_ids:
-        if (contains_instance(meta_data, img_id, "mike") and not contains_instance(meta_data, img_id, "jenny")) or (
-                contains_instance(meta_data, img_id, "jenny") and not contains_instance(meta_data, img_id, "mike")):
+        if (
+            contains_instance(meta_data, img_id, "mike")
+            and not contains_instance(meta_data, img_id, "jenny")
+        ) or (
+            contains_instance(meta_data, img_id, "jenny")
+            and not contains_instance(meta_data, img_id, "mike")
+        ):
             ids.append(img_id)
     return ids
 
@@ -112,7 +171,9 @@ def get_image_ids_single_actor(image_ids, meta_data):
 def get_image_ids_two_actors(image_ids, meta_data):
     ids = []
     for img_id in image_ids:
-        if (contains_instance(meta_data, img_id, "mike") and contains_instance(meta_data, img_id, "jenny")):
+        if contains_instance(meta_data, img_id, "mike") and contains_instance(
+            meta_data, img_id, "jenny"
+        ):
             ids.append(img_id)
     return ids
 
@@ -142,7 +203,9 @@ def find_minimal_pairs(image_ids, meta_data, images, captions, vocab):
 
             for img_id_distractor in image_ids:
                 for distractor_caption in captions[img_id_distractor]:
-                    distractor_caption = decode_caption(distractor_caption, vocab, join=False)
+                    distractor_caption = decode_caption(
+                        distractor_caption, vocab, join=False
+                    )
 
                     if target_caption != distractor_caption:
                         for word_1 in target_caption:
@@ -174,18 +237,29 @@ def generate_eval_set_persons(image_ids, meta_data, images, captions, vocab):
             if actor in target_caption:
                 for img_id_distractor in image_ids:
                     for distractor_caption in captions[img_id_distractor]:
-                        distractor_caption = decode_caption(distractor_caption, vocab, join=False)
+                        distractor_caption = decode_caption(
+                            distractor_caption, vocab, join=False
+                        )
                         if distractor in distractor_caption:
-                            replaced = [word if word != distractor else actor for word in distractor_caption]
+                            replaced = [
+                                word if word != distractor else actor
+                                for word in distractor_caption
+                            ]
                             if replaced == target_caption:
                                 # print(target_caption)
                                 # print(distractor_caption)
                                 target_sentence = " ".join(target_caption)
                                 distractor_sentence = " ".join(distractor_caption)
-                                sample_1 = {"img_id": img_id, "target_sentence": target_sentence,
-                                                "distractor_sentence": distractor_sentence}
-                                sample_2 = {"img_id": img_id_distractor, "target_sentence": distractor_sentence,
-                                                "distractor_sentence": target_sentence}
+                                sample_1 = {
+                                    "img_id": img_id,
+                                    "target_sentence": target_sentence,
+                                    "distractor_sentence": distractor_sentence,
+                                }
+                                sample_2 = {
+                                    "img_id": img_id_distractor,
+                                    "target_sentence": distractor_sentence,
+                                    "distractor_sentence": target_sentence,
+                                }
                                 if sample_1 not in samples and sample_2 not in samples:
                                     samples.append(sample_1)
                                     samples.append(sample_2)
@@ -206,25 +280,38 @@ def generate_eval_set_semantic_roles(image_ids, meta_data, images, captions, voc
             if actor in target_caption and distractor in target_caption:
                 # Cut off sentence after object
                 if target_caption.index(actor) < target_caption.index(distractor):
-                    target_caption = target_caption[:target_caption.index(distractor) + 1]
+                    target_caption = target_caption[
+                        : target_caption.index(distractor) + 1
+                    ]
                 else:
-                    target_caption = target_caption[:target_caption.index(actor) + 1]
+                    target_caption = target_caption[: target_caption.index(actor) + 1]
 
                 if "and" not in target_caption:
                     for img_id_distractor in image_ids:
                         for distractor_caption in captions[img_id_distractor]:
-                            distractor_caption = decode_caption(distractor_caption, vocab, join=False)
+                            distractor_caption = decode_caption(
+                                distractor_caption, vocab, join=False
+                            )
 
                             replacements = {"jenny": "mike", "mike": "jenny"}
-                            replaced = [replacements.get(word, word) for word in distractor_caption]
+                            replaced = [
+                                replacements.get(word, word)
+                                for word in distractor_caption
+                            ]
 
                             if replaced == target_caption:
                                 target_sentence = " ".join(target_caption)
                                 distractor_sentence = " ".join(distractor_caption)
-                                sample_1 = {"img_id": img_id, "target_sentence": target_sentence,
-                                            "distractor_sentence": distractor_sentence}
-                                sample_2 = {"img_id": img_id_distractor, "target_sentence": distractor_sentence,
-                                            "distractor_sentence": target_sentence}
+                                sample_1 = {
+                                    "img_id": img_id,
+                                    "target_sentence": target_sentence,
+                                    "distractor_sentence": distractor_sentence,
+                                }
+                                sample_2 = {
+                                    "img_id": img_id_distractor,
+                                    "target_sentence": distractor_sentence,
+                                    "distractor_sentence": target_sentence,
+                                }
                                 if sample_1 not in samples and sample_2 not in samples:
                                     samples.append(sample_1)
                                     samples.append(sample_2)
@@ -236,17 +323,20 @@ def generate_eval_set_semantic_roles(image_ids, meta_data, images, captions, voc
                                     show_image(images[str(img_id)])
                                     show_image(images[str(img_id_distractor)])
 
-
     data = pd.DataFrame(samples)
     data = data.drop_duplicates()
     return data
 
 
-def generate_eval_set_objects(image_ids, meta_data, images, captions, vocab, target_tuples):
+def generate_eval_set_objects(
+    image_ids, meta_data, images, captions, vocab, target_tuples
+):
     samples = []
 
     for target_tuple in target_tuples:
-        image_ids_one_object = get_image_ids_one_object(image_ids, meta_data, target_tuple)
+        image_ids_one_object = get_image_ids_one_object(
+            image_ids, meta_data, target_tuple
+        )
         for img_id in image_ids_one_object:
             for target_caption in captions[img_id]:
                 target_caption = decode_caption(target_caption, vocab, join=False)
@@ -254,23 +344,39 @@ def generate_eval_set_objects(image_ids, meta_data, images, captions, vocab, tar
                     if target in target_caption:
                         for img_id_distractor in image_ids_one_object:
                             for distractor_caption in captions[img_id_distractor]:
-                                distractor_caption = decode_caption(distractor_caption, vocab, join=False)
+                                distractor_caption = decode_caption(
+                                    distractor_caption, vocab, join=False
+                                )
                                 for distractor in target_tuple:
                                     if distractor != target:
                                         if distractor in distractor_caption:
-                                            replaced = [word if word != distractor else target for word in
-                                                        distractor_caption]
+                                            replaced = [
+                                                word if word != distractor else target
+                                                for word in distractor_caption
+                                            ]
                                             if replaced == target_caption:
                                                 # print(target_caption)
                                                 # print(distractor_caption)
-                                                target_sentence = " ".join(target_caption)
-                                                distractor_sentence = " ".join(distractor_caption)
-                                                sample_1 = {"img_id": img_id, "target_sentence": target_sentence,
-                                                            "distractor_sentence": distractor_sentence}
-                                                sample_2 = {"img_id": img_id_distractor,
-                                                            "target_sentence": distractor_sentence,
-                                                            "distractor_sentence": target_sentence}
-                                                if sample_1 not in samples and sample_2 not in samples:
+                                                target_sentence = " ".join(
+                                                    target_caption
+                                                )
+                                                distractor_sentence = " ".join(
+                                                    distractor_caption
+                                                )
+                                                sample_1 = {
+                                                    "img_id": img_id,
+                                                    "target_sentence": target_sentence,
+                                                    "distractor_sentence": distractor_sentence,
+                                                }
+                                                sample_2 = {
+                                                    "img_id": img_id_distractor,
+                                                    "target_sentence": distractor_sentence,
+                                                    "distractor_sentence": target_sentence,
+                                                }
+                                                if (
+                                                    sample_1 not in samples
+                                                    and sample_2 not in samples
+                                                ):
                                                     samples.append(sample_1)
                                                     samples.append(sample_2)
 
@@ -280,7 +386,9 @@ def generate_eval_set_objects(image_ids, meta_data, images, captions, vocab, tar
     return data
 
 
-def generate_eval_set_adjectives_hard(image_ids, meta_data_adjectives, images, captions, vocab, target_tuples):
+def generate_eval_set_adjectives_hard(
+    image_ids, meta_data_adjectives, images, captions, vocab, target_tuples
+):
     samples = []
 
     for target_tuple in target_tuples:
@@ -290,18 +398,31 @@ def generate_eval_set_adjectives_hard(image_ids, meta_data_adjectives, images, c
                 for target in target_tuple:
                     if target in target_caption:
                         # Cut off sentence after verb/adjective
-                        target_caption = target_caption[:target_caption.index(target) + 1]
+                        target_caption = target_caption[
+                            : target_caption.index(target) + 1
+                        ]
                         if ("jenny" in target_caption) or ("mike" in target_caption):
                             for img_id_distractor in image_ids:
                                 for distractor_caption in captions[img_id_distractor]:
-                                    distractor_caption = decode_caption(distractor_caption, vocab, join=False)
+                                    distractor_caption = decode_caption(
+                                        distractor_caption, vocab, join=False
+                                    )
                                     for distractor in target_tuple:
                                         if distractor != target:
                                             if distractor in distractor_caption:
                                                 # Cut off sentence after verb/adjective
-                                                distractor_caption = distractor_caption[:distractor_caption.index(distractor) + 1]
-                                                replaced = [word if word != distractor else target for word in
-                                                            distractor_caption]
+                                                distractor_caption = distractor_caption[
+                                                    : distractor_caption.index(
+                                                        distractor
+                                                    )
+                                                    + 1
+                                                ]
+                                                replaced = [
+                                                    word
+                                                    if word != distractor
+                                                    else target
+                                                    for word in distractor_caption
+                                                ]
                                                 if replaced == target_caption:
                                                     # filter for cases where other actor has different mood
                                                     if "jenny" in target_caption:
@@ -313,61 +434,111 @@ def generate_eval_set_adjectives_hard(image_ids, meta_data_adjectives, images, c
                                                     # show_image(images[str(img_id)])
                                                     # show_image(images[str(img_id_distractor)])
                                                     if target == "happy":
-                                                        if contains_actor_with_attribute(meta_data_adjectives, img_id, actor_distractor, target):
+                                                        if contains_actor_with_attribute(
+                                                            meta_data_adjectives,
+                                                            img_id,
+                                                            actor_distractor,
+                                                            target,
+                                                        ):
                                                             continue
                                                         contains_actor = False
-                                                        for adjective in ADJECTIVES_NEGATIVE:
-                                                            if contains_actor_with_attribute(meta_data_adjectives,
-                                                                                             img_id_distractor, actor_distractor,
-                                                                                             adjective):
+                                                        for (
+                                                            adjective
+                                                        ) in ADJECTIVES_NEGATIVE:
+                                                            if contains_actor_with_attribute(
+                                                                meta_data_adjectives,
+                                                                img_id_distractor,
+                                                                actor_distractor,
+                                                                adjective,
+                                                            ):
                                                                 contains_actor = True
                                                         if contains_actor:
                                                             continue
-                                                        if not contains_actor_with_attribute(meta_data_adjectives,
-                                                                                             img_id, actor_target,
-                                                                                             target):
+                                                        if not contains_actor_with_attribute(
+                                                            meta_data_adjectives,
+                                                            img_id,
+                                                            actor_target,
+                                                            target,
+                                                        ):
                                                             continue
 
                                                         contains_actor = False
-                                                        for adjective in ADJECTIVES_NEGATIVE:
-                                                            if contains_actor_with_attribute(meta_data_adjectives,
-                                                                                                 img_id_distractor, actor_target,
-                                                                                                 adjective):
+                                                        for (
+                                                            adjective
+                                                        ) in ADJECTIVES_NEGATIVE:
+                                                            if contains_actor_with_attribute(
+                                                                meta_data_adjectives,
+                                                                img_id_distractor,
+                                                                actor_target,
+                                                                adjective,
+                                                            ):
                                                                 contains_actor = True
                                                         if not contains_actor:
                                                             continue
                                                     else:
                                                         contains_actor = False
-                                                        for adjective in ADJECTIVES_NEGATIVE:
-                                                            if contains_actor_with_attribute(meta_data_adjectives, img_id, actor_distractor, adjective):
+                                                        for (
+                                                            adjective
+                                                        ) in ADJECTIVES_NEGATIVE:
+                                                            if contains_actor_with_attribute(
+                                                                meta_data_adjectives,
+                                                                img_id,
+                                                                actor_distractor,
+                                                                adjective,
+                                                            ):
                                                                 contains_actor = True
                                                         if contains_actor:
                                                             continue
-                                                        if contains_actor_with_attribute(meta_data_adjectives, img_id_distractor, actor_distractor, distractor):
+                                                        if contains_actor_with_attribute(
+                                                            meta_data_adjectives,
+                                                            img_id_distractor,
+                                                            actor_distractor,
+                                                            distractor,
+                                                        ):
                                                             continue
 
                                                         contains_actor = False
-                                                        for adjective in ADJECTIVES_NEGATIVE:
-                                                            if contains_actor_with_attribute(meta_data_adjectives,
-                                                                                                 img_id, actor_target,
-                                                                                                 adjective):
+                                                        for (
+                                                            adjective
+                                                        ) in ADJECTIVES_NEGATIVE:
+                                                            if contains_actor_with_attribute(
+                                                                meta_data_adjectives,
+                                                                img_id,
+                                                                actor_target,
+                                                                adjective,
+                                                            ):
                                                                 contains_actor = True
                                                         if not contains_actor:
                                                             continue
 
-                                                        if not contains_actor_with_attribute(meta_data_adjectives,
-                                                                                             img_id_distractor,
-                                                                                             actor_target, distractor):
+                                                        if not contains_actor_with_attribute(
+                                                            meta_data_adjectives,
+                                                            img_id_distractor,
+                                                            actor_target,
+                                                            distractor,
+                                                        ):
                                                             continue
 
-                                                    target_sentence = " ".join(target_caption)
-                                                    distractor_sentence = " ".join(distractor_caption)
-                                                    sample_1 = {"img_id": img_id, "target_sentence": target_sentence,
-                                                                "distractor_sentence": distractor_sentence}
-                                                    sample_2 = {"img_id": img_id_distractor,
-                                                                "target_sentence": distractor_sentence,
-                                                                "distractor_sentence": target_sentence}
-                                                    if sample_1 not in samples and sample_2 not in samples:
+                                                    target_sentence = " ".join(
+                                                        target_caption
+                                                    )
+                                                    distractor_sentence = " ".join(
+                                                        distractor_caption
+                                                    )
+                                                    sample_1 = {
+                                                        "img_id": img_id,
+                                                        "target_sentence": target_sentence,
+                                                        "distractor_sentence": distractor_sentence,
+                                                    }
+                                                    sample_2 = {
+                                                        "img_id": img_id_distractor,
+                                                        "target_sentence": distractor_sentence,
+                                                        "distractor_sentence": target_sentence,
+                                                    }
+                                                    if (
+                                                        sample_1 not in samples
+                                                        and sample_2 not in samples
+                                                    ):
                                                         samples.append(sample_1)
                                                         samples.append(sample_2)
                                                         # print(target_caption)
@@ -379,7 +550,9 @@ def generate_eval_set_adjectives_hard(image_ids, meta_data_adjectives, images, c
     return data
 
 
-def generate_eval_set_verbs_or_adjectives(image_ids, meta_data, images, captions, vocab, target_tuples):
+def generate_eval_set_verbs_or_adjectives(
+    image_ids, meta_data, images, captions, vocab, target_tuples
+):
     samples = []
 
     for target_tuple in target_tuples:
@@ -389,27 +562,52 @@ def generate_eval_set_verbs_or_adjectives(image_ids, meta_data, images, captions
                 for target in target_tuple:
                     if target in target_caption:
                         # Cut off sentence after verb/adjective
-                        target_caption = target_caption[:target_caption.index(target) + 1]
+                        target_caption = target_caption[
+                            : target_caption.index(target) + 1
+                        ]
                         if ("jenny" in target_caption) or ("mike" in target_caption):
                             for img_id_distractor in image_ids:
                                 for distractor_caption in captions[img_id_distractor]:
-                                    distractor_caption = decode_caption(distractor_caption, vocab, join=False)
+                                    distractor_caption = decode_caption(
+                                        distractor_caption, vocab, join=False
+                                    )
                                     for distractor in target_tuple:
                                         if distractor != target:
                                             if distractor in distractor_caption:
                                                 # Cut off sentence after verb/adjective
-                                                distractor_caption = distractor_caption[:distractor_caption.index(distractor) + 1]
-                                                replaced = [word if word != distractor else target for word in
-                                                            distractor_caption]
+                                                distractor_caption = distractor_caption[
+                                                    : distractor_caption.index(
+                                                        distractor
+                                                    )
+                                                    + 1
+                                                ]
+                                                replaced = [
+                                                    word
+                                                    if word != distractor
+                                                    else target
+                                                    for word in distractor_caption
+                                                ]
                                                 if replaced == target_caption:
-                                                    target_sentence = " ".join(target_caption)
-                                                    distractor_sentence = " ".join(distractor_caption)
-                                                    sample_1 = {"img_id": img_id, "target_sentence": target_sentence,
-                                                                "distractor_sentence": distractor_sentence}
-                                                    sample_2 = {"img_id": img_id_distractor,
-                                                                "target_sentence": distractor_sentence,
-                                                                "distractor_sentence": target_sentence}
-                                                    if sample_1 not in samples and sample_2 not in samples:
+                                                    target_sentence = " ".join(
+                                                        target_caption
+                                                    )
+                                                    distractor_sentence = " ".join(
+                                                        distractor_caption
+                                                    )
+                                                    sample_1 = {
+                                                        "img_id": img_id,
+                                                        "target_sentence": target_sentence,
+                                                        "distractor_sentence": distractor_sentence,
+                                                    }
+                                                    sample_2 = {
+                                                        "img_id": img_id_distractor,
+                                                        "target_sentence": distractor_sentence,
+                                                        "distractor_sentence": target_sentence,
+                                                    }
+                                                    if (
+                                                        sample_1 not in samples
+                                                        and sample_2 not in samples
+                                                    ):
                                                         samples.append(sample_1)
                                                         samples.append(sample_2)
                                                         # print(img_id)
@@ -441,9 +639,7 @@ def main(args):
     with open(vocab_path, "rb") as file:
         vocab = pickle.load(file)
 
-    images = h5py.File(
-        os.path.join(DATA_PATH, IMAGES_FILENAME["test"]), "r"
-    )
+    images = h5py.File(os.path.join(DATA_PATH, IMAGES_FILENAME["test"]), "r")
 
     # Load captions
     with open(os.path.join(DATA_PATH, CAPTIONS_FILENAME["test"]), "rb") as file:
@@ -470,7 +666,9 @@ def main(args):
     #                                                    vocab, VERBS)
     # data_verbs.to_csv("data/semantics_eval_verb_noun_binding.csv", index=False)
 
-    data_adj = generate_eval_set_verbs_or_adjectives(image_ids_single_actor.copy(), meta_data, images, captions, vocab, ADJECTIVES)
+    data_adj = generate_eval_set_verbs_or_adjectives(
+        image_ids_single_actor.copy(), meta_data, images, captions, vocab, ADJECTIVES
+    )
     data_adj.to_csv("data/semantics_eval_adjectives.csv", index=False)
     #
     # data_adj = generate_eval_set_adjectives_hard(image_ids_two_actors.copy(), meta_data_adjectives, images, captions, vocab,

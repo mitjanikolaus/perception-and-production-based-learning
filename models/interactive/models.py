@@ -18,6 +18,7 @@ from utils import SPECIAL_CHARACTERS
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
 class VisualRefSpeakerDiscriminativeOracle(nn.Module):
     def __init__(self, data_folder, captions_filename, max_sequence_length, vocab):
         super(VisualRefSpeakerDiscriminativeOracle, self).__init__()
@@ -47,7 +48,7 @@ class VisualRefSpeakerDiscriminativeOracle(nn.Module):
         for i, tensor in enumerate(messages):
             length = tensor.size(0)
             # use index notation to prevent duplicate references to the tensor
-            out_tensor[i, :length, ...] = tensor[:self.max_sequence_length]
+            out_tensor[i, :length, ...] = tensor[: self.max_sequence_length]
 
         return out_tensor
 
@@ -66,12 +67,16 @@ class VisualRefSpeakerDiscriminativeOracle(nn.Module):
             captions = self.captions_val
 
         output_captions = []
-        for target_image_id, distractor_image_id in zip(target_image_ids, distractor_image_ids):
+        for target_image_id, distractor_image_id in zip(
+            target_image_ids, distractor_image_ids
+        ):
             overlap_scores = []
             for target_caption in captions[int(target_image_id)]:
                 target_caption_tokens = get_relevant_tokens(target_caption)
 
-                distractor_captions = [t for caption in captions[int(distractor_image_id)] for t in caption]
+                distractor_captions = [
+                    t for caption in captions[int(distractor_image_id)] for t in caption
+                ]
                 distractor_captions_tokens = get_relevant_tokens(distractor_captions)
 
                 overlap = len(target_caption_tokens & distractor_captions_tokens)
@@ -86,7 +91,9 @@ class VisualRefSpeakerDiscriminativeOracle(nn.Module):
             caption.append(0)
 
         # Transform lists to tensors
-        output_captions = [torch.tensor(caption, device=device) for caption in output_captions]
+        output_captions = [
+            torch.tensor(caption, device=device) for caption in output_captions
+        ]
 
         # Pad all captions in batch to equal length
         output_captions = self.pad_messages(output_captions)
@@ -107,18 +114,24 @@ class VisualRefListenerOracle(nn.Module):
 
         images_1, images_2 = receiver_input[0], receiver_input[1]
 
-        images_1_embedded, messages_embedded = self.ranking_model(images_1, messages, message_lengths)
-        images_2_embedded, messages_embedded = self.ranking_model(images_2, messages, message_lengths)
+        images_1_embedded, messages_embedded = self.ranking_model(
+            images_1, messages, message_lengths
+        )
+        images_2_embedded, messages_embedded = self.ranking_model(
+            images_2, messages, message_lengths
+        )
 
         stacked_images = torch.stack([images_1_embedded, images_2_embedded], dim=1)
 
-        similarities = torch.matmul(stacked_images, torch.unsqueeze(messages_embedded, dim=-1))
+        similarities = torch.matmul(
+            stacked_images, torch.unsqueeze(messages_embedded, dim=-1)
+        )
 
         logits = torch.zeros(batch_size).to(device)
         entropy = logits
 
         # out: scores, logits, entropy
-        return similarities.view(batch_size, -1),  logits, entropy
+        return similarities.view(batch_size, -1), logits, entropy
 
 
 class VisualRefSenderFunctional(nn.Module):
@@ -137,7 +150,14 @@ class VisualRefSenderFunctional(nn.Module):
         self.embed = nn.Linear(resnet.fc.in_features, visual_embedding_size)
 
     def forward(self, input):
-        images, target_label, target_image_ids, distractor_image_ids, captions, sequence_lengths = input
+        (
+            images,
+            target_label,
+            target_image_ids,
+            distractor_image_ids,
+            captions,
+            sequence_lengths,
+        ) = input
 
         # TODO: verify
         images_target = images[target_label, range(images.size(1))]
@@ -151,7 +171,6 @@ class VisualRefSenderFunctional(nn.Module):
 
 
 class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
-
     def forward(self, x):
         image_features, captions, sequence_lengths = self.agent(x)
         prev_hidden = [image_features]
@@ -210,5 +229,3 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
         entropy = torch.cat([entropy, zeros], dim=1)
 
         return sequence, logits, entropy, all_logits
-
-

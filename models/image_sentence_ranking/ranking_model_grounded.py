@@ -5,8 +5,12 @@ from torchvision.models import resnet50
 
 import numpy as np
 
-from models.image_sentence_ranking.ranking_model import l2_norm, ImageEmbedding, cosine_sim, \
-    ImageSentenceRanker
+from models.image_sentence_ranking.ranking_model import (
+    l2_norm,
+    ImageEmbedding,
+    cosine_sim,
+    ImageSentenceRanker,
+)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -48,7 +52,7 @@ class ContrastiveLossAlternative(nn.Module):
             # cost_im = cost_im.max(0)[0]
 
         # Sum up caption retrieval and image retrieval loss
-        sum_of_losses = cost_s.sum() #+ cost_im.sum()
+        sum_of_losses = cost_s.sum()  # + cost_im.sum()
 
         # Normalize loss by batch size
         normalized_loss = sum_of_losses / images_embedded.size(0)
@@ -65,7 +69,13 @@ class ImageSentenceRankerGrounded(ImageSentenceRanker):
         vocab_size,
         fine_tune_resnet=False,
     ):
-        super(ImageSentenceRankerGrounded, self).__init__(word_embedding_size, joint_embeddings_size, lstm_hidden_size, vocab_size, fine_tune_resnet)
+        super(ImageSentenceRankerGrounded, self).__init__(
+            word_embedding_size,
+            joint_embeddings_size,
+            lstm_hidden_size,
+            vocab_size,
+            fine_tune_resnet,
+        )
 
         self.language_encoding_lstm = LanguageEncodingLSTM(
             word_embedding_size, joint_embeddings_size, lstm_hidden_size,
@@ -73,13 +83,14 @@ class ImageSentenceRankerGrounded(ImageSentenceRanker):
 
         self.loss = ContrastiveLossAlternative()
 
-
     def forward(self, encoder_output, captions, caption_lengths):
         """
         Forward propagation for the ranking task.
         """
         images_embedded = self.image_embedding(encoder_output)
-        captions_embedded = self.embed_captions_grounded(captions, caption_lengths, images_embedded)
+        captions_embedded = self.embed_captions_grounded(
+            captions, caption_lengths, images_embedded
+        )
 
         return images_embedded, captions_embedded
 
@@ -112,7 +123,9 @@ class ImageSentenceRankerGrounded(ImageSentenceRanker):
 class LanguageEncodingLSTM(nn.Module):
     def __init__(self, word_embeddings_size, joint_embeddings_size, hidden_size):
         super(LanguageEncodingLSTM, self).__init__()
-        self.lstm_cell = nn.LSTMCell(word_embeddings_size+joint_embeddings_size, hidden_size)
+        self.lstm_cell = nn.LSTMCell(
+            word_embeddings_size + joint_embeddings_size, hidden_size
+        )
 
     def forward(self, h, c, prev_words_embedded, images_embedded):
         lstm_input = torch.cat((images_embedded, prev_words_embedded), dim=1)
@@ -124,4 +137,3 @@ class LanguageEncodingLSTM(nn.Module):
         h = torch.zeros((batch_size, self.lstm_cell.hidden_size), device=device)
         c = torch.zeros((batch_size, self.lstm_cell.hidden_size), device=device)
         return [h, c]
-
