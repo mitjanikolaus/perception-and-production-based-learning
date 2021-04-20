@@ -171,7 +171,11 @@ class VisualRefSenderFunctional(nn.Module):
 
 
 class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
-    def forward(self, x):
+
+    def forward(self, x, teacher_forcing=True):
+        if self.eval():
+            teacher_forcing = False
+            
         image_features, captions, sequence_lengths = self.agent(x)
         prev_hidden = [image_features]
         prev_hidden.extend(
@@ -206,12 +210,10 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
             distr = Categorical(logits=step_logits)
             entropy.append(distr.entropy())
 
-            if self.training:
-                # x = distr.sample()
-                # Use teacher forcing during training
+            if teacher_forcing:
                 x = captions[:, step + 1]
             else:
-                x = distr.sample()
+                x = distr.sample() # Sample from the distribution if not using teacher forcing
                 # x = step_logits.argmax(dim=1)
             logits.append(distr.log_prob(x))
 

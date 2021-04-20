@@ -125,7 +125,8 @@ class CommunicationRnnMultiTask(nn.Module):
         labels,
         receiver_input=None,
     ):
-        message, log_prob_s, entropy_s, all_logits = sender(sender_input)
+        # Forward pass without teacher forcing for RL loss
+        message, log_prob_s, entropy_s, all_logits = sender(sender_input, teacher_forcing=False)
         message_length = find_lengths(message)
         receiver_output, log_prob_r, entropy_r = receiver(
             message, receiver_input, message_length
@@ -172,6 +173,7 @@ class CommunicationRnnMultiTask(nn.Module):
 
         loss_func = loss.mean()
 
+        # TODO: structural loss should calculated using a separate forward pass with teacher forcing
         loss_str, _ = loss_structural(
             sender_input, message, all_logits, receiver_input, receiver_output, labels
         )
