@@ -17,6 +17,7 @@ from models.image_sentence_ranking.ranking_model import ImageSentenceRanker, cos
 from models.image_sentence_ranking.ranking_model_grounded import (
     ImageSentenceRankerGrounded,
 )
+from models.interactive.models import RnnSenderMultitaskVisualRef
 from models.joint.joint_learner import JointLearner
 from models.joint.joint_learner_sat import JointLearnerSAT
 from models.language_modeling.language_model import LanguageModel
@@ -27,7 +28,7 @@ from preprocess import (
     MAX_CAPTION_LEN,
     DATA_PATH,
 )
-from utils import decode_caption, CHECKPOINT_DIR_IMAGE_CAPTIONING, SEMANTICS_EVAL_FILES
+from utils import decode_caption, SEMANTICS_EVAL_FILES
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -68,7 +69,11 @@ def eval_semantics_score(model, dataloader, vocab, verbose=False):
                 print(f"Target    : {decode_caption(target_caption[0], vocab)}")
                 print(f"Distractor: {decode_caption(distractor_caption[0], vocab)}")
 
-            if isinstance(model, ShowAttendAndTell) or isinstance(model, ShowAndTell):
+            if (
+                isinstance(model, ShowAttendAndTell)
+                or isinstance(model, ShowAndTell)
+                or isinstance(model, RnnSenderMultitaskVisualRef)
+            ):
                 perplexities = model.perplexity(images, captions, caption_lengths)
 
                 if verbose:

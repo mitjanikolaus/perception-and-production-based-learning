@@ -1,7 +1,11 @@
 import math
 import os
-import pathlib
 from typing import List, Optional
+import matplotlib.pyplot as plt
+import pandas as pd
+
+from eval_semantics import eval_semantics_score
+from utils import CHECKPOINT_NAME_SENDER, CHECKPOINT_NAME_RECEIVER, decode_caption
 
 try:
     # requires python >= 3.7
@@ -20,10 +24,6 @@ from torch.utils.data import DataLoader
 
 from egg.core import Trainer, Callback, Interaction, move_to, get_opts
 
-CHECKPOINT_DIR = os.path.join(pathlib.Path.home(), "data/visual_ref/checkpoints")
-
-CHECKPOINT_PATH_LISTENER_ORACLE = os.path.join(CHECKPOINT_DIR, "listener_oracle.pt")
-
 
 class VisualRefTrainer(Trainer):
     """
@@ -35,12 +35,17 @@ class VisualRefTrainer(Trainer):
         self,
         game: torch.nn.Module,
         optimizer: torch.optim.Optimizer,
+        out_checkpoints_dir: str,
         train_data: DataLoader,
+        semantics_eval_loaders,
+        vocab,
         validation_data: Optional[DataLoader] = None,
         device: torch.device = None,
         callbacks: Optional[List[Callback]] = None,
         grad_norm: float = None,
         aggregate_interaction_logs: bool = True,
+        print_sample_interactions: bool = False,
+        print_sample_interactions_images: bool = False,
     ):
         super(VisualRefTrainer, self).__init__(
             game,
@@ -54,9 +59,19 @@ class VisualRefTrainer(Trainer):
         )
         common_opts = get_opts()
         self.eval_frequency = common_opts.eval_frequency
-        self.sender = common_opts.sender
 
         self.best_val_loss = math.inf
+
+        self.out_checkpoints_dir = out_checkpoints_dir
+
+        self.semantics_eval_loaders = semantics_eval_loaders
+
+        self.accuracies_over_time = []
+
+        self.vocab = vocab
+
+        self.print_sample_interactions = print_sample_interactions
+        self.print_sample_interactions_images = print_sample_interactions_images
 
     def save_models(self):
         torch.save(
@@ -65,7 +80,7 @@ class VisualRefTrainer(Trainer):
                 "optimizer_state_dict": self.optimizer.state_dict(),
                 "loss": self.best_val_loss,
             },
-            CHECKPOINT_PATH_LISTENER_ORACLE,
+            os.path.join(self.out_checkpoints_dir, CHECKPOINT_NAME_RECEIVER),
         )
         torch.save(
             {
@@ -73,8 +88,38 @@ class VisualRefTrainer(Trainer):
                 "optimizer_state_dict": self.optimizer.state_dict(),
                 "loss": self.best_val_loss,
             },
-            os.path.join(CHECKPOINT_DIR, f"speaker_{self.sender}.pt"),
+            os.path.join(self.out_checkpoints_dir, CHECKPOINT_NAME_SENDER),
         )
+
+    def print_interactions(self, interaction_logs, show_images, num_interactions=5):
+        for z in range(num_interactions):
+            message = decode_caption(interaction_logs.message[z], self.vocab)
+            target_position = interaction_logs.labels[z]
+            receiver_guess = torch.argmax(interaction_logs.receiver_output[z])
+            target_image_id, distractor_image_id = interaction_logs.sender_input[z]
+
+            if show_images:
+                # plot the two images side-by-side
+                target_image = self.train_dataset.get_image_features(
+                    int(target_image_id), channels_first=False, normalize=False
+                )
+                distractor_image = self.train_dataset.get_image_features(
+                    int(distractor_image_id), channels_first=False, normalize=False
+                )
+                image = torch.cat([target_image, distractor_image], dim=1).cpu().numpy()
+
+                plt.title(
+                    f"Left: Target, Right: Distractor"
+                    f"\nReceiver guess correct: {target_position == receiver_guess}"
+                    f"\nMessage: {message}"
+                )
+                plt.imshow(image)
+                plt.show()
+            else:
+                print(
+                    f"Target image ID: {target_image_id} | Distractor image ID: {distractor_image_id} | "
+                    f"Success: {target_position == receiver_guess} | Message: {message}"
+                )
 
     def train_epoch(self):
         mean_loss = 0
@@ -134,17 +179,43 @@ class VisualRefTrainer(Trainer):
 
             if batch_id % self.eval_frequency == self.eval_frequency - 1:
                 val_loss, val_interactions = self.eval()
+                val_acc = val_interactions.aux["acc"].mean().item()
                 print(
                     f"Batch {batch_id+1} | Val loss: {val_loss:.3f} "
-                    f"| Val acc: {val_interactions.aux['acc'].mean():.3f}\n"
+                    f"| Val acc: {val_acc:.3f}\n"
+                )
+                accuracies = {"batch_id": batch_id + 1, "val_loss": val_loss, "val_acc": val_acc}
+
+                for name, semantic_images_loader in self.semantics_eval_loaders.items():
+                    acc = eval_semantics_score(
+                        self.game.sender, semantic_images_loader, self.vocab
+                    )
+                    print(f"Accuracy for {name}: {acc:.3f}")
+                    accuracies[name] = acc
+
+                self.accuracies_over_time.append(accuracies)
+                pd.DataFrame(self.accuracies_over_time).to_csv(
+                    os.path.join(
+                        self.out_checkpoints_dir,
+                        CHECKPOINT_NAME_SENDER.replace(".pt", "_accuracies.csv"),
+                    )
                 )
 
                 if val_loss < self.best_val_loss:
                     self.best_val_loss = val_loss
                     self.save_models()
 
+                if (
+                    self.print_sample_interactions
+                    or self.print_sample_interactions_images
+                ):
+                    self.print_interactions(
+                        val_interactions,
+                        show_images=self.print_sample_interactions_images,
+                    )
+
                 self.game.train()
 
         mean_loss /= n_batches
         full_interaction = Interaction.from_iterable(interactions)
-        return mean_loss.item(), full_interaction
+        return mean_loss, full_interaction

@@ -1,10 +1,6 @@
-from __future__ import print_function
-
 import argparse
 import math
 import pickle
-import sys
-from pathlib import Path
 import os
 
 import numpy as np
@@ -15,12 +11,12 @@ import torch.utils.data
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 
-from dataset import CaptionDataset, SemanticsEvalDataset
+from dataset import CaptionDataset
 from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.image_sentence_ranking.ranking_model import accuracy_discrimination
-from models.joint.joint_learner import JointLearner
+from models.interactive.models import ImageEncoder, RnnSenderMultitaskVisualRef, loss_cross_entropy
 from models.joint.joint_learner_sat import JointLearnerSAT
 from preprocess import (
     IMAGES_FILENAME,
@@ -33,7 +29,7 @@ from utils import (
     print_caption,
     CHECKPOINT_DIR_IMAGE_CAPTIONING,
     SEMANTICS_EVAL_FILES,
-    DEFAULT_LOG_FREQUENCY,
+    DEFAULT_LOG_FREQUENCY, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -62,7 +58,7 @@ def print_captions(captions, target_captions, image_ids, vocab, num_captions=1):
 def print_sample_model_output(model, dataloader, vocab, num_captions=1):
     images, target_captions, caption_lengths, image_ids = next(iter(dataloader))
 
-    captions, _, _ = model.decode_nucleus_sampling(images, 1, top_p=0.9)
+    captions, _, _ = model.decode(images, 1)
 
     print_captions(captions, target_captions, image_ids, vocab, num_captions)
 
@@ -113,6 +109,12 @@ def validate_model(
 
                 captioning_losses.append(loss_captioning.item())
                 ranking_losses.append(loss_ranking.item())
+            elif args.model == "interactive":
+                scores, decode_lengths, _ = model(
+                    images, captions, caption_lengths
+                )
+                loss = loss_cross_entropy(scores, captions)
+
             else:
                 scores, decode_lengths, alphas = model(
                     images, captions, caption_lengths
@@ -136,8 +138,8 @@ def validate_model(
 
 def main(args):
     # create model checkpoint directory
-    if not os.path.exists(os.path.dirname(CHECKPOINT_DIR_IMAGE_CAPTIONING)):
-        os.makedirs(os.path.dirname(CHECKPOINT_DIR_IMAGE_CAPTIONING))
+    if not os.path.exists(CHECKPOINT_DIR_IMAGE_CAPTIONING):
+        os.makedirs(CHECKPOINT_DIR_IMAGE_CAPTIONING)
 
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
     print("Loading vocab from {}".format(vocab_path))
@@ -182,13 +184,27 @@ def main(args):
         for file in SEMANTICS_EVAL_FILES
     }
 
-    word_embedding_size = 128
-    visual_embedding_size = 512
+    word_embedding_size = DEFAULT_WORD_EMBEDDINGS_SIZE
+    visual_embedding_size = DEFAULT_LSTM_HIDDEN_SIZE
     joint_embeddings_size = visual_embedding_size
-    lstm_hidden_size = 512
+    lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
     dropout = 0.2
 
-    if args.model == "show_attend_and_tell":
+    if args.model == "interactive":
+        encoder = ImageEncoder(
+            joint_embeddings_size, fine_tune_resnet=False
+        )
+        model = RnnSenderMultitaskVisualRef(
+            encoder,
+            vocab_size=len(vocab),
+            vocab=vocab,
+            embed_dim=word_embedding_size,
+            hidden_size=lstm_hidden_size,
+            cell="lstm",
+            max_len=MAX_CAPTION_LEN,
+        )
+
+    elif args.model == "show_attend_and_tell":
         model = ShowAttendAndTell(
             word_embedding_size,
             lstm_hidden_size,
@@ -302,6 +318,11 @@ def main(args):
                 )
                 # TODO weigh losses
                 loss = loss_captioning + loss_ranking
+            elif args.model == "interactive":
+                scores, _, _ = model(
+                    images, captions, caption_lengths
+                )
+                loss = loss_cross_entropy(scores, captions)
             else:
                 scores, decode_lengths, alphas = model(
                     images, captions, caption_lengths
@@ -324,7 +345,7 @@ def get_args():
     parser.add_argument(
         "--model",
         default="show_attend_and_tell",
-        choices=["show_and_tell", "show_attend_and_tell", "joint"],
+        choices=["show_and_tell", "show_attend_and_tell", "joint", "interactive"],
     )
     parser.add_argument(
         "--fine-tune-resnet",

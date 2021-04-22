@@ -310,7 +310,7 @@ class CaptioningModel(nn.Module):
             ]
         return sorted_sequences, sorted_alphas, beam
 
-    def decode_nucleus_sampling(self, images, num_samples, top_p, print_beam=False):
+    def decode(self, images, num_samples, top_p=0.9, print_beam=False):
         """Generate and return the top k sequences using nucleus sampling."""
         encoder_output = self.image_encoder(images)
 

@@ -7,6 +7,7 @@ from torch import nn
 from egg.core import LoggingStrategy, find_lengths
 from egg.core.baselines import Baseline, MeanBaseline
 from egg.core.reinforce_wrappers import _verify_batch_sizes
+from utils import sequence, entropy
 
 
 class SenderReceiverRnnMultiTask(nn.Module):
@@ -125,15 +126,28 @@ class CommunicationRnnMultiTask(nn.Module):
         labels,
         receiver_input=None,
     ):
+        (
+            images,
+            target_label,
+            target_image_ids,
+            distractor_image_ids,
+            captions,
+            sequence_lengths,
+        ) = sender_input
+        images_target = images[target_label, range(images.size(1))]
+
         # Forward pass without teacher forcing for RL loss
-        message, log_prob_s, entropy_s, all_logits = sender(sender_input, teacher_forcing=False)
-        message_length = find_lengths(message)
+        scores, message_lengths, entropy_old = sender(images_target, captions, sequence_lengths, use_teacher_forcing=False)
+        message = sequence(scores)
+        entropy_s = entropy(scores)
+
+
         receiver_output, log_prob_r, entropy_r = receiver(
-            message, receiver_input, message_length
+            message, receiver_input, message_lengths
         )
 
         loss, aux_info = loss_functional(
-            sender_input, message, all_logits, receiver_input, receiver_output, labels
+            sender_input, message, scores, receiver_input, receiver_output, labels
         )
 
         # TODO: regularization
@@ -175,7 +189,7 @@ class CommunicationRnnMultiTask(nn.Module):
 
         # TODO: structural loss should calculated using a separate forward pass with teacher forcing
         loss_str, _ = loss_structural(
-            sender_input, message, all_logits, receiver_input, receiver_output, labels
+            sender_input, message, scores, receiver_input, receiver_output, labels
         )
 
         # print(f"Structural Loss: {loss_str:.3f} Functional Loss: {loss_func:.3f}")
@@ -188,7 +202,7 @@ class CommunicationRnnMultiTask(nn.Module):
 
         aux_info["sender_entropy"] = entropy_s.detach()
         aux_info["receiver_entropy"] = entropy_r.detach()
-        aux_info["length"] = message_length.float()  # will be averaged
+        aux_info["length"] = message_lengths.float()  # will be averaged
 
         logging_strategy = (
             self.train_logging_strategy if self.training else self.test_logging_strategy
@@ -199,7 +213,7 @@ class CommunicationRnnMultiTask(nn.Module):
             receiver_input=receiver_input,
             message=message.detach(),
             receiver_output=receiver_output.detach(),
-            message_length=message_length,
+            message_length=message_lengths,
             aux=aux_info,
         )
 
@@ -258,7 +272,7 @@ class OracleSenderReceiverRnnSupervised(nn.Module):
         )
 
     def forward(self, sender_input, labels, receiver_input=None):
-        message, _, _, all_logits = self.sender(sender_input)
+        all_logits, _, message  = self.sender(sender_input)
         message_length = find_lengths(message)
         receiver_output, _, _ = self.receiver(message, receiver_input, message_length)
 

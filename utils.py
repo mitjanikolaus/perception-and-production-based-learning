@@ -1,10 +1,16 @@
 import os
 from pathlib import Path
 
+import torch
+from torch.distributions import Categorical
+
 from preprocess import TOKEN_START, TOKEN_END, TOKEN_PADDING
 
 DEFAULT_LOG_FREQUENCY = 100
 DEFAULT_BATCH_SIZE = 32
+
+DEFAULT_WORD_EMBEDDINGS_SIZE = 100
+DEFAULT_LSTM_HIDDEN_SIZE = 512
 
 SPECIAL_CHARACTERS = [TOKEN_START, TOKEN_END, TOKEN_PADDING]
 
@@ -23,6 +29,9 @@ SEMANTIC_ACCURACIES_PATH_LANGUAGE_MODEL = os.path.join(
     Path.home(), "data/visual_ref/checkpoints/lm/semantic_accuracies_lm.p"
 )
 
+CHECKPOINT_NAME_SENDER = "sender.pt"
+CHECKPOINT_NAME_RECEIVER = "receiver.pt"
+
 SEMANTICS_EVAL_FILES = [
     "data/semantics_eval_persons.csv",
     "data/semantics_eval_animals.csv",
@@ -33,6 +42,18 @@ SEMANTICS_EVAL_FILES = [
     "data/semantics_eval_verb_noun_binding_filtered.csv",
     "data/semantics_eval_semantic_roles_filtered.csv",
 ]
+
+
+def sequence(scores):
+    """Get the most likely sequence given scores."""
+    return scores.argmax(dim=2)
+
+
+def entropy(scores):
+    """Get the entropies for each sample and each timestep from scores."""
+    return torch.stack([
+        Categorical(logits=x_i).entropy() for i, x_i in enumerate(torch.unbind(scores, dim=1), 0)
+    ], dim=1).T
 
 
 def decode_caption(caption, vocab, join=True):

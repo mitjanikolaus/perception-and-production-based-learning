@@ -13,8 +13,8 @@ import torch.nn.functional as F
 import numpy as np
 
 from egg.core import RnnSenderReinforce
-from preprocess import TOKEN_START, TOKEN_END
-from utils import SPECIAL_CHARACTERS
+from preprocess import TOKEN_START, TOKEN_END, TOKEN_PADDING
+from utils import SPECIAL_CHARACTERS, sequence
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -134,9 +134,9 @@ class VisualRefListenerOracle(nn.Module):
         return similarities.view(batch_size, -1), logits, entropy
 
 
-class VisualRefSenderFunctional(nn.Module):
+class ImageEncoder(nn.Module):
     def __init__(self, visual_embedding_size, fine_tune_resnet=False):
-        super(VisualRefSenderFunctional, self).__init__()
+        super(ImageEncoder, self).__init__()
 
         resnet = resnet50(pretrained=True)
 
@@ -150,33 +150,47 @@ class VisualRefSenderFunctional(nn.Module):
         self.embed = nn.Linear(resnet.fc.in_features, visual_embedding_size)
 
     def forward(self, input):
-        (
-            images,
-            target_label,
-            target_image_ids,
-            distractor_image_ids,
-            captions,
-            sequence_lengths,
-        ) = input
-
-        # TODO: verify
-        images_target = images[target_label, range(images.size(1))]
-
-        image_features = self.resnet(images_target)
+        image_features = self.resnet(input)
         image_features = image_features.view(image_features.size(0), -1)
         image_features = self.embed(image_features)
 
-        # output is used to initialize the message producing RNN
-        return image_features, captions, sequence_lengths
+        return image_features
 
 
 class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
+    def __init__(
+            self,
+            agent,
+            vocab,
+            vocab_size,
+            embed_dim,
+            hidden_size,
+            max_len,
+            num_layers=1,
+            cell="rnn",
+    ):
+        super(RnnSenderMultitaskVisualRef, self).__init__(agent, vocab_size, embed_dim, hidden_size, max_len, num_layers, cell)
 
-    def forward(self, x, teacher_forcing=True):
-        if self.eval():
-            teacher_forcing = False
-            
-        image_features, captions, sequence_lengths = self.agent(x)
+        self.vocab = vocab
+
+    def forward(self, images_target, captions=None, decode_lengths=None, use_teacher_forcing=True, decode_sampling=False):
+        if captions is None:
+            use_teacher_forcing = False
+
+        batch_size = images_target.size(0)
+
+        if use_teacher_forcing:
+            # Do not decode at last timestep (after EOS token)
+            decode_lengths = decode_lengths - 1
+        else:
+            decode_lengths = torch.full(
+                (batch_size,),
+                self.max_len - 1,
+                dtype=torch.int64,
+                device=device,
+            )
+
+        image_features = self.agent(images_target)
         prev_hidden = [image_features]
         prev_hidden.extend(
             [torch.zeros_like(prev_hidden[0]) for _ in range(self.num_layers - 1)]
@@ -188,13 +202,25 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
 
         input = torch.stack([self.sos_embedding] * prev_hidden[0].size(0))
 
-        sequence = []
-        logits = []
-        entropy = []
-        all_logits = []
+        scores = []
 
-        max_len = captions.size(1) if self.training else self.max_len
-        for step in range(max_len - 1):
+        for step in range(max(decode_lengths)):
+            if not use_teacher_forcing and not step == 0:
+                # Find all sequences where an <end> token has been produced in the last timestep
+                ind_end_token = (
+                    torch.nonzero(x == self.vocab[TOKEN_END]).view(-1).tolist()
+                )
+
+                # Update the decode lengths accordingly
+                decode_lengths[ind_end_token] = torch.min(
+                    decode_lengths[ind_end_token],
+                    torch.full_like(decode_lengths[ind_end_token], step, device=device),
+                )
+                # Check if all sequences are finished:
+                indices_incomplete_sequences = torch.nonzero(decode_lengths > step).view(-1)
+                if len(indices_incomplete_sequences) == 0:
+                    break
+
             for i, layer in enumerate(self.cells):
                 if isinstance(layer, nn.LSTMCell):
                     h_t, c_t = layer(input, (prev_hidden[i], prev_c[i]))
@@ -204,30 +230,66 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
                 prev_hidden[i] = h_t
                 input = h_t
 
-            step_logits = F.log_softmax(self.hidden_to_output(h_t), dim=1)
-            all_logits.append(step_logits)
+            scores_step = F.log_softmax(self.hidden_to_output(h_t), dim=1)
+            scores.append(scores_step)
 
-            distr = Categorical(logits=step_logits)
-            entropy.append(distr.entropy())
-
-            if teacher_forcing:
+            if use_teacher_forcing:
                 x = captions[:, step + 1]
             else:
-                x = distr.sample() # Sample from the distribution if not using teacher forcing
-                # x = step_logits.argmax(dim=1)
-            logits.append(distr.log_prob(x))
+                if decode_sampling:
+                    distr = Categorical(logits=scores_step)
+                    x = distr.sample()
+                else:
+                    x = scores_step.argmax(dim=1)
 
             input = self.embedding(x)
-            sequence.append(x)
 
-        sequence = torch.stack(sequence).permute(1, 0)
-        logits = torch.stack(logits).permute(1, 0)
-        entropy = torch.stack(entropy).permute(1, 0)
+        scores = torch.stack(scores).permute(1, 0, 2)
 
-        zeros = torch.zeros((sequence.size(0), 1)).to(sequence.device)
+        return scores, decode_lengths, None
 
-        sequence = torch.cat([sequence, zeros.long()], dim=1)
-        logits = torch.cat([logits, zeros], dim=1)
-        entropy = torch.cat([entropy, zeros], dim=1)
+    def decode(self, x, num_samples):
+        batch_size = x.shape[0]
+        if batch_size != 1:
+            raise RuntimeError("Decoding with batch size greater 1 not implemented.")
 
-        return sequence, logits, entropy, all_logits
+        # Repeat input to obtain multiple samples
+        x = x.repeat(num_samples, 1, 1, 1)
+        scores, sequence_lengths, extra = self.forward(x, use_teacher_forcing=False, decode_sampling=True)
+
+        return sequence(scores), sequence_lengths, extra
+
+    def perplexity(self, images, captions, caption_lengths):
+        """Return perplexities of captions given images."""
+
+        scores, _, _ = self.forward(images, captions, caption_lengths)
+
+        # Do not reduce among samples in batch
+        loss = loss_cross_entropy(scores, captions, reduction="none")
+
+        perplexities = torch.exp(loss)
+
+        # sum up cross entropies of all words
+        perplexities = perplexities.sum(dim=1)
+
+        return perplexities
+
+
+def loss_cross_entropy(scores, target_captions, reduction="mean", ignore_index=0):
+    # Since we decoded starting with <start>, the targets are all words after <start>, up to <end>
+    target_captions = target_captions[:, 1:]
+
+    # Trim produced captions to max target length
+    scores = scores[:, : target_captions.shape[1]]
+
+    if scores.shape[1] < target_captions.shape[1]:
+        # Model didn't produce sequences as long as gold, so we cut the gold captions to be able to calculate the loss
+        target_captions = target_captions[:, :scores.shape[1]]
+
+    scores = scores.permute(0, 2, 1)
+    return F.cross_entropy(
+        scores,
+        target_captions,
+        ignore_index=ignore_index,
+        reduction=reduction,
+    )

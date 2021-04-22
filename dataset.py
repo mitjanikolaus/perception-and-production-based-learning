@@ -271,7 +271,7 @@ class VisualRefGameDataset(Dataset):
         return length - (length % self.batch_size)
 
 
-def pad_collate_visua_ref(batch):
+def pad_collate_visual_ref(batch):
     images = torch.stack(
         (torch.stack([s[0][0] for s in batch]), torch.stack([s[0][1] for s in batch]))
     )

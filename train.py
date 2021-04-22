@@ -1,5 +1,6 @@
 import argparse
 import os
+import pathlib
 import pickle
 from typing import Optional, Dict
 
@@ -9,8 +10,6 @@ from torch.utils.data import DataLoader
 
 from torch.nn import functional as F
 
-import matplotlib.pyplot as plt
-
 import egg.core as core
 from egg.core import (
     ConsoleLogger,
@@ -19,14 +18,15 @@ from egg.core import (
     SenderReceiverRnnReinforce,
     LoggingStrategy,
 )
-from dataset import VisualRefGameDataset, pad_collate_visua_ref
+from dataset import VisualRefGameDataset, pad_collate_visual_ref
+from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
 from game import SenderReceiverRnnMultiTask
 from models.image_sentence_ranking.ranking_model import ImageSentenceRanker
 from models.interactive.models import (
     VisualRefListenerOracle,
     VisualRefSpeakerDiscriminativeOracle,
-    VisualRefSenderFunctional,
-    RnnSenderMultitaskVisualRef,
+    ImageEncoder,
+    RnnSenderMultitaskVisualRef, loss_cross_entropy,
 )
 from preprocess import (
     DATA_PATH,
@@ -35,20 +35,19 @@ from preprocess import (
     VOCAB_FILENAME,
 )
 from trainers import VisualRefTrainer
-from utils import decode_caption
+from utils import decode_caption, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE, SEMANTICS_EVAL_FILES, \
+    CHECKPOINT_NAME_SENDER
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-NUM_VAL_SAMPLES = 320
+MAX_NUM_VAL_SAMPLES = 3200
 
 
 class PrintDebugEvents(Callback):
-    def __init__(self, train_dataset, val_dataset, args):
+    def __init__(self, vocab, train_dataset, val_dataset, args):
         super().__init__()
 
-        vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
-        with open(vocab_path, "rb") as file:
-            self.vocab = pickle.load(file)
+        self.vocab = vocab
 
         self.train_loss = 0
         self.train_accuracies = 0
@@ -56,38 +55,6 @@ class PrintDebugEvents(Callback):
 
         self.train_dataset = train_dataset
         self.val_dataset = val_dataset
-
-    def print_sample_interactions(
-        self, interaction_logs, show_images, num_interactions=5
-    ):
-        for z in range(num_interactions):
-            message = decode_caption(interaction_logs.message[z], self.vocab)
-            target_position = interaction_logs.labels[z]
-            receiver_guess = torch.argmax(interaction_logs.receiver_output[z])
-            target_image_id, distractor_image_id = interaction_logs.sender_input[z]
-
-            if show_images:
-                # plot the two images side-by-side
-                target_image = self.train_dataset.get_image_features(
-                    int(target_image_id), channels_first=False, normalize=False
-                )
-                distractor_image = self.train_dataset.get_image_features(
-                    int(distractor_image_id), channels_first=False, normalize=False
-                )
-                image = torch.cat([target_image, distractor_image], dim=1).cpu().numpy()
-
-                plt.title(
-                    f"Left: Target, Right: Distractor"
-                    f"\nReceiver guess correct: {target_position == receiver_guess}"
-                    f"\nMessage: {message}"
-                )
-                plt.imshow(image)
-                plt.show()
-            else:
-                print(
-                    f"Target image ID: {target_image_id} | Distractor image ID: {distractor_image_id} | "
-                    f"Success: {target_position == receiver_guess} | Message: {message}"
-                )
 
     def on_test_end(self, _loss, interaction_logs: Interaction, epoch: int):
         pass
@@ -121,29 +88,9 @@ class PrintDebugEvents(Callback):
                 self.train_loss = 0
                 self.train_accuracies = 0
 
-                if (
-                    self.args.print_sample_interactions
-                    or self.args.print_sample_interactions_images
-                ):
-                    self.print_sample_interactions(
-                        interaction_logs,
-                        show_images=self.args.print_sample_interactions_images,
-                    )
-
-        else:
-            if (
-                self.args.print_sample_interactions
-                or self.args.print_sample_interactions_images
-            ):
-                self.print_sample_interactions(
-                    interaction_logs,
-                    show_images=self.args.print_sample_interactions_images,
-                    num_interactions=1,
-                )
-
 
 def loss_functional(
-    _sender_input, _message, sender_logits, _receiver_input, receiver_output, labels
+    sender_input, message, sender_logits, receiver_input, receiver_output, labels
 ):
     # in the discriminative case, accuracy is computed by comparing the index with highest score in Receiver output (a distribution of unnormalized
     # probabilities over target poisitions) and the corresponding label read from input, indicating the ground-truth position of the target
@@ -154,7 +101,7 @@ def loss_functional(
 
 
 def loss_structural(
-    _sender_input, _message, sender_logits, _receiver_input, receiver_output, labels
+    sender_input, message, sender_logits, receiver_input, receiver_output, labels
 ):
     (
         images,
@@ -163,17 +110,9 @@ def loss_structural(
         distractor_image_ids,
         captions,
         sequence_lengths,
-    ) = _sender_input
+    ) = sender_input
 
-    # remove start of sequence tokens
-    captions = captions[:, 1:]
-
-    # trim logits to max target caption length
-    sender_logits = sender_logits[: captions.size(1)]
-    sender_logits = torch.stack(sender_logits).permute(1, 2, 0)
-
-    # use NLL loss as logits are already softmaxed
-    loss = F.nll_loss(sender_logits, captions, ignore_index=0)
+    loss = loss_cross_entropy(sender_logits, captions)
 
     return loss, None
 
@@ -187,6 +126,10 @@ def loss_structural(
 
 
 def main(args):
+    # create model checkpoint directory
+    if not os.path.exists(args.out_checkpoints_dir):
+        os.makedirs(args.out_checkpoints_dir)
+
     train_dataset = VisualRefGameDataset(
         DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], args.batch_size
     )
@@ -196,14 +139,14 @@ def main(args):
         shuffle=True,
         num_workers=0,
         pin_memory=False,
-        collate_fn=pad_collate_visua_ref,
+        collate_fn=pad_collate_visual_ref,
     )
     val_dataset = VisualRefGameDataset(
         DATA_PATH,
         IMAGES_FILENAME["val"],
         CAPTIONS_FILENAME["val"],
         args.batch_size,
-        max_samples=NUM_VAL_SAMPLES,
+        max_samples=MAX_NUM_VAL_SAMPLES,
     )
     val_loader = DataLoader(
         val_dataset,
@@ -211,7 +154,7 @@ def main(args):
         shuffle=True,
         num_workers=0,
         pin_memory=False,
-        collate_fn=pad_collate_visua_ref,
+        collate_fn=pad_collate_visual_ref,
     )
 
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
@@ -219,18 +162,22 @@ def main(args):
     with open(vocab_path, "rb") as file:
         vocab = pickle.load(file)
 
-    # TODO
-    # TODO: embedding size for speaker is 1024 in paper
-    args.sender_hidden = 512  # TODO
-    args.sender_embedding = 512  # ???
-    args.receiver_embedding = 100  # ???
-    args.receiver_hidden = 512  # ???
+    semantics_eval_loaders = {
+        file: get_semantics_eval_dataloader(file, vocab)
+        for file in SEMANTICS_EVAL_FILES
+    }
+
+    word_embedding_size = DEFAULT_WORD_EMBEDDINGS_SIZE
+
+    args.sender_hidden = DEFAULT_LSTM_HIDDEN_SIZE
+    args.sender_embedding = word_embedding_size
+    args.receiver_embedding = word_embedding_size  # ???
+    args.receiver_hidden = DEFAULT_LSTM_HIDDEN_SIZE  # ???
     args.sender_cell = "lstm"
     args.receiver_cell = "lstm"
     args.max_len = 25
     args.random_seed = 1
 
-    word_embedding_size = 100
     joint_embeddings_size = 512
     lstm_hidden_size = 512
 
@@ -267,17 +214,22 @@ def main(args):
         )
 
     elif args.sender == "functional":
-        sender = VisualRefSenderFunctional(
+        encoder = ImageEncoder(
             joint_embeddings_size, fine_tune_resnet=False
         )
         sender = RnnSenderMultitaskVisualRef(
-            sender,
+            encoder,
             vocab_size=len(vocab),
+            vocab=vocab,
             embed_dim=args.sender_embedding,
             hidden_size=args.sender_hidden,
             cell=args.sender_cell,
             max_len=args.max_len,
         )
+
+        if args.sender_checkpoint:
+            sender_checkpoint = torch.load(args.sender_checkpoint)
+            sender.load_state_dict(sender_checkpoint['model_state_dict'])
 
     else:
         raise ValueError(f"Unknown sender model type: {args.sender}")
@@ -297,18 +249,22 @@ def main(args):
         test_logging_strategy=logging_strategy,
     )
 
-    callbacks = [ConsoleLogger(print_train_loss=True, as_json=False)]
-    # core.PrintValidationEvents(n_epochs=1)
-    callbacks.append(PrintDebugEvents(train_dataset, val_dataset, args))
+    callbacks = [ConsoleLogger(print_train_loss=True, as_json=False),
+                 PrintDebugEvents(vocab, train_dataset, val_dataset, args)]
 
     optimizer = core.build_optimizer(game.parameters())
 
     trainer = VisualRefTrainer(
         game=game,
         optimizer=optimizer,
+        out_checkpoints_dir=args.out_checkpoints_dir,
         train_data=train_loader,
+        semantics_eval_loaders=semantics_eval_loaders,
+        vocab=vocab,
         validation_data=val_loader,
         callbacks=callbacks,
+        print_sample_interactions=args.print_sample_interactions,
+        print_sample_interactions_images=args.print_sample_interactions_images,
     )
 
     print("Starting training with args: ")
@@ -404,9 +360,26 @@ def get_args():
         help="penalty applied to Sender for each symbol produced",
     )
     parser.add_argument(
+        "--sender-checkpoint",
+        type=str,
+        help="Checkpoint to load the sender model from",
+    )
+    parser.add_argument(
         "--receiver-checkpoint",
         type=str,
         help="Checkpoint to load the receiver model from",
+    )
+    parser.add_argument(
+        "--out-checkpoints-dir",
+        type=str,
+        default=os.path.join(pathlib.Path.home(), "data/visual_ref/checkpoints/interactive"),
+        help="Directory to which checkpoints should be saved to",
+    )
+    parser.add_argument(
+        "--max-val-samples",
+        default=MAX_NUM_VAL_SAMPLES,
+        type=int,
+        help="Maximum number of samples for validation",
     )
     parser.add_argument(
         "--freeze-receiver",
