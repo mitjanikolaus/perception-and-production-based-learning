@@ -168,6 +168,8 @@ def main(args):
                     save_model(model, optimizer, best_val_loss, epoch)
                 accuracies["val_loss"] = val_loss
                 accuracies["batch_id"] = batch_idx
+                accuracies["epoch"] = epoch
+
                 accuracies_over_time.append(accuracies)
                 pd.DataFrame(accuracies_over_time).to_csv(
                     args.checkpoint_dir + "/ranking_accuracies.csv",
