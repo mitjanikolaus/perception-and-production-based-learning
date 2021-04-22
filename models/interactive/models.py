@@ -156,6 +156,7 @@ class ImageEncoder(nn.Module):
 
         return image_features
 
+CELL_TYPES = {"rnn": nn.RNNCell, "gru": nn.GRUCell, "lstm": nn.LSTMCell}
 
 class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
     def __init__(
@@ -172,6 +173,17 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
         super(RnnSenderMultitaskVisualRef, self).__init__(agent, vocab_size, embed_dim, hidden_size, max_len, num_layers, cell)
 
         self.vocab = vocab
+
+        cell_type = CELL_TYPES[cell]
+        # Expand input dimension of RNN/LSTM cells so that we can feed image input at every timestep
+        self.cells = nn.ModuleList(
+            [
+                cell_type(input_size=embed_dim+hidden_size, hidden_size=hidden_size)
+                if i == 0
+                else cell_type(input_size=hidden_size+hidden_size, hidden_size=hidden_size)
+                for i in range(self.num_layers)
+            ]
+        )
 
     def forward(self, images_target, captions=None, decode_lengths=None, use_teacher_forcing=True, decode_sampling=False):
         if captions is None:
@@ -223,7 +235,9 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
 
             for i, layer in enumerate(self.cells):
                 if isinstance(layer, nn.LSTMCell):
-                    h_t, c_t = layer(input, (prev_hidden[i], prev_c[i]))
+                    # TODO: give image input at every LSTM layer?
+                    lstm_input = torch.cat((image_features, input), dim=1)
+                    h_t, c_t = layer(lstm_input, (prev_hidden[i], prev_c[i]))
                     prev_c[i] = c_t
                 else:
                     h_t = layer(input, prev_hidden[i])
