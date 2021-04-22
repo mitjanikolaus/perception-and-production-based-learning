@@ -52,8 +52,7 @@ def main(args):
 
     all_scores = []
     for run, scores_file in enumerate(args.scores_files):
-        scores = pickle.load(open(scores_file, "rb"))
-        scores = pd.DataFrame(scores)
+        scores = pd.read_csv(scores_file)
         for column_name in scores.columns:
             scores[column_name] = (
                 scores[column_name].rolling(args.rolling_window, min_periods=1).mean()

@@ -7,6 +7,8 @@ import os
 
 import numpy as np
 
+import pandas as pd
+
 import torch
 import torch.distributions
 import torch.utils.data
@@ -155,7 +157,7 @@ def main(args):
             train_loader
         ):
             if batch_idx % args.log_frequency == 0:
-                val_loss, val_acc, semantic_accuracies = validate_model(
+                val_loss, val_acc, accuracies = validate_model(
                     model, val_images_loader, semantics_eval_loaders, vocab, args
                 )
                 print(
@@ -164,11 +166,11 @@ def main(args):
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
                     save_model(model, optimizer, best_val_loss, epoch)
-                semantic_accuracies["val_loss"] = val_loss
-                accuracies_over_time.append(semantic_accuracies)
-                pickle.dump(
-                    accuracies_over_time,
-                    open(args.checkpoint_dir + "/ranking_accuracies.p", "wb"),
+                accuracies["val_loss"] = val_loss
+                accuracies["batch_id"] = batch_idx
+                accuracies_over_time.append(accuracies)
+                pd.DataFrame(accuracies_over_time).to_csv(
+                    args.checkpoint_dir + "/ranking_accuracies.csv",
                 )
 
             model.train()

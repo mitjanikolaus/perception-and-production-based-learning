@@ -5,6 +5,8 @@ import os
 
 import numpy as np
 
+import pandas as pd
+
 import torch
 import torch.distributions
 import torch.utils.data
@@ -263,7 +265,7 @@ def main(args):
             if batch_idx % args.log_frequency == 0:
                 (
                     val_loss,
-                    semantic_accuracies,
+                    accuracies,
                     captioning_loss,
                     ranking_loss,
                     val_acc,
@@ -274,12 +276,17 @@ def main(args):
                     semantics_eval_loaders,
                     vocab,
                 )
-                semantic_accuracies["val_loss"] = val_loss
-                accuracies_over_time.append(semantic_accuracies)
+                accuracies["val_loss"] = val_loss
+                accuracies["batch_id"] = batch_idx
+                accuracies_over_time.append(accuracies)
+                pd.DataFrame(accuracies_over_time).to_csv(
+                    CHECKPOINT_DIR_IMAGE_CAPTIONING + args.model + "_accuracies.csv",
+                )
+
                 pickle.dump(
                     accuracies_over_time,
                     open(
-                        CHECKPOINT_DIR_IMAGE_CAPTIONING + args.model + "_accuracies.p",
+
                         "wb",
                     ),
                 )
