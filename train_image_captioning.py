@@ -282,14 +282,6 @@ def main(args):
                 pd.DataFrame(accuracies_over_time).to_csv(
                     CHECKPOINT_DIR_IMAGE_CAPTIONING + args.model + "_accuracies.csv",
                 )
-
-                pickle.dump(
-                    accuracies_over_time,
-                    open(
-
-                        "wb",
-                    ),
-                )
                 print(
                     f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | val loss: {val_loss:.3f} | captioning loss:"
                     f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f}"
