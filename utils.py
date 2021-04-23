@@ -6,6 +6,8 @@ from torch.distributions import Categorical
 
 from preprocess import TOKEN_START, TOKEN_END, TOKEN_PADDING
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 DEFAULT_LOG_FREQUENCY = 100
 DEFAULT_BATCH_SIZE = 32
 
@@ -49,7 +51,7 @@ def sequences(scores, pad_to_length=None):
     seq = scores.argmax(dim=2)
     if pad_to_length:
         seq = torch.stack(
-            [torch.cat([s, torch.zeros(pad_to_length - len(s), dtype=torch.long)]) for s in seq]
+            [torch.cat([s, torch.zeros(pad_to_length - len(s), dtype=torch.long, device=device)]) for s in seq]
         )
     return seq
 
