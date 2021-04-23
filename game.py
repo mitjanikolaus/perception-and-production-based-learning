@@ -137,13 +137,20 @@ class CommunicationRnnMultiTask(nn.Module):
         images_target = images[target_label, range(images.size(1))]
 
         # Forward pass without teacher forcing for RL loss
-        scores, message_lengths, entropy_old = sender(
-            images_target,
-            captions,
-            sequence_lengths,
-            use_teacher_forcing=False,
-            decode_sampling=True,
-        )
+        if self.training:
+            scores, message_lengths, entropy_old = sender(
+                images_target,
+                captions,
+                sequence_lengths,
+                use_teacher_forcing=False,
+                decode_sampling=False,
+            )
+        else:
+            scores, message_lengths, entropy_old = sender(
+                images_target,
+                use_teacher_forcing=False,
+                decode_sampling=True,
+            )
         message = sequences(scores, pad_to_length=sender.max_len)
         entropy_s = entropy(scores)
 
