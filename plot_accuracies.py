@@ -46,12 +46,12 @@ def main(args):
     for run, scores_file in enumerate(args.scores_files):
         scores = pd.read_csv(scores_file)
         for column_name in scores.columns:
-            if not column_name == "epoch" or column_name == "batch_id":
+            if not (column_name == "epoch" or column_name == "batch_id"):
                 scores[column_name] = (
                     scores[column_name].rolling(args.rolling_window, min_periods=1).mean()
                 )
 
-        scores["num_samples"] = scores.aggregate(lambda x: (x["epoch"] + 1) * x["batch_id"] * DEFAULT_BATCH_SIZE, axis=1)
+        scores["num_samples"] = scores.aggregate(lambda x: x["epoch"] * TRAINING_SET_SIZE + x["batch_id"] * DEFAULT_BATCH_SIZE, axis=1)
 
         print(
             f"Epoch with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['epoch'].values[0]}"
@@ -97,7 +97,7 @@ def get_args():
         "--rolling-window", default=30, type=int,
     )
     parser.add_argument(
-        "--x-lim", default=TRAINING_SET_SIZE * 15, type=int,
+        "--x-lim", default=TRAINING_SET_SIZE * 20, type=int,
     )
     parser.add_argument(
         "--y-lim", default=1.0, type=float,
