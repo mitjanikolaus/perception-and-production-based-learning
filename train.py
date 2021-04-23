@@ -146,7 +146,7 @@ def main(args):
         IMAGES_FILENAME["val"],
         CAPTIONS_FILENAME["val"],
         args.batch_size,
-        max_samples=MAX_NUM_VAL_SAMPLES,
+        max_samples=args.max_val_samples,
     )
     val_loader = DataLoader(
         val_dataset,
