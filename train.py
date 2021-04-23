@@ -389,7 +389,7 @@ def get_args():
         help="Freeze receiver weights",
     )
     parser.add_argument(
-        "--weight-structural_loss",
+        "--weight-structural-loss",
         default=1.0,
         type=float,
         help="Structural loss weight (if 1, then it's equal to functional loss)",
