@@ -7,7 +7,7 @@ from torch import nn
 from egg.core import LoggingStrategy, find_lengths
 from egg.core.baselines import Baseline, MeanBaseline
 from egg.core.reinforce_wrappers import _verify_batch_sizes
-from utils import sequence, entropy
+from utils import sequences, entropy
 
 
 class SenderReceiverRnnMultiTask(nn.Module):
@@ -144,7 +144,7 @@ class CommunicationRnnMultiTask(nn.Module):
             use_teacher_forcing=False,
             decode_sampling=True,
         )
-        message = sequence(scores)
+        message = sequences(scores, pad_to_length=sender.max_len)
         entropy_s = entropy(scores)
 
         receiver_output, log_prob_r, entropy_r = receiver(

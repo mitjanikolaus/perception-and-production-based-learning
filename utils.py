@@ -44,16 +44,25 @@ SEMANTICS_EVAL_FILES = [
 ]
 
 
-def sequence(scores):
+def sequences(scores, pad_to_length=None):
     """Get the most likely sequence given scores."""
-    return scores.argmax(dim=2)
+    seq = scores.argmax(dim=2)
+    if pad_to_length:
+        seq = torch.stack(
+            [torch.cat([s, torch.zeros(pad_to_length - len(s), dtype=torch.long)]) for s in seq]
+        )
+    return seq
 
 
 def entropy(scores):
     """Get the entropies for each sample and each timestep from scores."""
-    return torch.stack([
-        Categorical(logits=x_i).entropy() for i, x_i in enumerate(torch.unbind(scores, dim=1), 0)
-    ], dim=1).T
+    return torch.stack(
+        [
+            Categorical(logits=x_i).entropy()
+            for i, x_i in enumerate(torch.unbind(scores, dim=1), 0)
+        ],
+        dim=1,
+    ).T
 
 
 def decode_caption(caption, vocab, join=True):

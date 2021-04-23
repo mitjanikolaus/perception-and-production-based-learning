@@ -14,7 +14,7 @@ import numpy as np
 
 from egg.core import RnnSenderReinforce
 from preprocess import TOKEN_START, TOKEN_END, TOKEN_PADDING
-from utils import SPECIAL_CHARACTERS, sequence
+from utils import SPECIAL_CHARACTERS, sequences
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -271,7 +271,7 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
         x = x.repeat(num_samples, 1, 1, 1)
         scores, sequence_lengths, extra = self.forward(x, use_teacher_forcing=False, decode_sampling=True)
 
-        return sequence(scores), sequence_lengths, extra
+        return sequences(scores), sequence_lengths, extra
 
     def perplexity(self, images, captions, caption_lengths):
         """Return perplexities of captions given images."""
