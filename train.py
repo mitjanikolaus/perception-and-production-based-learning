@@ -247,6 +247,7 @@ def main(args):
         receiver_entropy_coeff=0,
         train_logging_strategy=logging_strategy,
         test_logging_strategy=logging_strategy,
+        weight_structural_loss=args.weight_structural_loss
     )
 
     callbacks = [ConsoleLogger(print_train_loss=True, as_json=False),
@@ -386,6 +387,12 @@ def get_args():
         default=False,
         action="store_true",
         help="Freeze receiver weights",
+    )
+    parser.add_argument(
+        "--weight-structural_loss",
+        default=1.0,
+        type=float,
+        help="Structural loss weight (if 1, then it's equal to functional loss)",
     )
 
     # initialize the egg lib
