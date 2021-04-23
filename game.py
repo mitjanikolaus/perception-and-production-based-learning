@@ -137,10 +137,15 @@ class CommunicationRnnMultiTask(nn.Module):
         images_target = images[target_label, range(images.size(1))]
 
         # Forward pass without teacher forcing for RL loss
-        scores, message_lengths, entropy_old = sender(images_target, captions, sequence_lengths, use_teacher_forcing=False)
+        scores, message_lengths, entropy_old = sender(
+            images_target,
+            captions,
+            sequence_lengths,
+            use_teacher_forcing=False,
+            decode_sampling=True,
+        )
         message = sequence(scores)
         entropy_s = entropy(scores)
-
 
         receiver_output, log_prob_r, entropy_r = receiver(
             message, receiver_input, message_lengths
@@ -272,7 +277,7 @@ class OracleSenderReceiverRnnSupervised(nn.Module):
         )
 
     def forward(self, sender_input, labels, receiver_input=None):
-        all_logits, _, message  = self.sender(sender_input)
+        all_logits, _, message = self.sender(sender_input)
         message_length = find_lengths(message)
         receiver_output, _, _ = self.receiver(message, receiver_input, message_length)
 
