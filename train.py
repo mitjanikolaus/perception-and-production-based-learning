@@ -228,7 +228,7 @@ def main(args):
         )
 
         if args.sender_checkpoint:
-            sender_checkpoint = torch.load(args.sender_checkpoint)
+            sender_checkpoint = torch.load(args.sender_checkpoint, map_location=device)
             sender.load_state_dict(sender_checkpoint['model_state_dict'])
 
     else:
