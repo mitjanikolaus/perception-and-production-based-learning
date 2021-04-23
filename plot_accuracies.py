@@ -51,11 +51,14 @@ def main(args):
                     scores[column_name].rolling(args.rolling_window, min_periods=1).mean()
                 )
 
-        scores["num_samples"] = scores.aggregate(lambda x: x["epoch"] * TRAINING_SET_SIZE + x["batch_id"] * DEFAULT_BATCH_SIZE, axis=1)
+        if "epoch" in scores.columns:
+            scores["num_samples"] = scores.aggregate(lambda x: x["epoch"] * TRAINING_SET_SIZE + x["batch_id"] * DEFAULT_BATCH_SIZE, axis=1)
+            print(
+                f"Epoch with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['epoch'].values[0]}"
+            )
+        else:
+            scores["num_samples"] = scores.aggregate(lambda x: x["batch_id"] * DEFAULT_BATCH_SIZE, axis=1)
 
-        print(
-            f"Epoch with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['epoch'].values[0]}"
-        )
         print(
             f"num_samples with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['num_samples'].values[0]}"
         )
