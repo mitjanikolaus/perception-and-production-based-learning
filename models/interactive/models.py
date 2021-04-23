@@ -186,7 +186,7 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
         )
 
     def forward(self, images_target, captions=None, decode_lengths=None, use_teacher_forcing=True, decode_sampling=False):
-        if captions is None:
+        if captions is None or not self.training:
             use_teacher_forcing = False
 
         batch_size = images_target.size(0)

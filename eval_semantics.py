@@ -32,7 +32,7 @@ from utils import decode_caption, SEMANTICS_EVAL_FILES
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-EVAL_MAX_SAMPLES = 500
+EVAL_MAX_SAMPLES = 5
 
 
 def get_semantics_eval_dataloader(eval_file, vocab):

@@ -129,6 +129,42 @@ class VisualRefTrainer(Trainer):
         self.optimizer.zero_grad()
 
         for batch_id, batch in enumerate(self.train_data):
+            if batch_id % self.eval_frequency == 0:
+                val_loss, val_interactions = self.eval()
+                val_acc = val_interactions.aux["acc"].mean().item()
+                print(
+                    f"Batch {batch_id} | Val loss: {val_loss:.3f} | Val acc: {val_acc:.3f}\n"
+                )
+                accuracies = {"batch_id": batch_id, "val_loss": val_loss, "val_acc": val_acc}
+
+                for name, semantic_images_loader in self.semantics_eval_loaders.items():
+                    acc = eval_semantics_score(
+                        self.game.sender, semantic_images_loader, self.vocab
+                    )
+                    print(f"Accuracy for {name}: {acc:.3f}")
+                    accuracies[name] = acc
+
+                self.accuracies_over_time.append(accuracies)
+                pd.DataFrame(self.accuracies_over_time).to_csv(
+                    os.path.join(
+                        self.out_checkpoints_dir,
+                        CHECKPOINT_NAME_SENDER.replace(".pt", "_accuracies.csv"),
+                    )
+                )
+
+                if val_loss < self.best_val_loss:
+                    self.best_val_loss = val_loss
+                    self.save_models()
+
+                if (
+                        self.print_sample_interactions
+                        or self.print_sample_interactions_images
+                ):
+                    self.print_interactions(
+                        val_interactions,
+                        show_images=self.print_sample_interactions_images,
+                    )
+
             self.game.train()
 
             batch = move_to(batch, self.device)
@@ -177,44 +213,6 @@ class VisualRefTrainer(Trainer):
 
             interactions.append(interaction)
 
-            if batch_id % self.eval_frequency == self.eval_frequency - 1:
-                val_loss, val_interactions = self.eval()
-                val_acc = val_interactions.aux["acc"].mean().item()
-                print(
-                    f"Batch {batch_id+1} | Val loss: {val_loss:.3f} "
-                    f"| Val acc: {val_acc:.3f}\n"
-                )
-                accuracies = {"batch_id": batch_id + 1, "val_loss": val_loss, "val_acc": val_acc}
-
-                for name, semantic_images_loader in self.semantics_eval_loaders.items():
-                    acc = eval_semantics_score(
-                        self.game.sender, semantic_images_loader, self.vocab
-                    )
-                    print(f"Accuracy for {name}: {acc:.3f}")
-                    accuracies[name] = acc
-
-                self.accuracies_over_time.append(accuracies)
-                pd.DataFrame(self.accuracies_over_time).to_csv(
-                    os.path.join(
-                        self.out_checkpoints_dir,
-                        CHECKPOINT_NAME_SENDER.replace(".pt", "_accuracies.csv"),
-                    )
-                )
-
-                if val_loss < self.best_val_loss:
-                    self.best_val_loss = val_loss
-                    self.save_models()
-
-                if (
-                    self.print_sample_interactions
-                    or self.print_sample_interactions_images
-                ):
-                    self.print_interactions(
-                        val_interactions,
-                        show_images=self.print_sample_interactions_images,
-                    )
-
-                self.game.train()
 
         mean_loss /= n_batches
         full_interaction = Interaction.from_iterable(interactions)
