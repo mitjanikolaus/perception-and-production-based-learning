@@ -143,7 +143,8 @@ class VisualRefTrainer(Trainer):
             for callback in self.callbacks:
                 callback.on_batch_end(interaction, optimized_loss, batch_id)
 
-            interactions.append(interaction)
+            # TODO: not storing all interactions for now..
+            # interactions.append(interaction)
 
         mean_loss /= n_batches
         full_interaction = Interaction.from_iterable(interactions)
