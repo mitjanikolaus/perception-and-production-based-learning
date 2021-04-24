@@ -87,7 +87,7 @@ class VisualRefTrainer(Trainer):
         self.optimizer.zero_grad()
 
         for batch_id, batch in enumerate(self.train_data):
-            if (batch_id + 1) % self.eval_frequency == 0:
+            if batch_id % self.eval_frequency == 0:
                 val_loss, val_interactions = self.eval()
 
                 if val_loss < self.best_val_loss:

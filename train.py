@@ -117,7 +117,7 @@ class PrintDebugEvents(Callback):
             "val_loss_struct": loss_struct,
         }
         print(
-            f"EVAL Batch {batch_id + 1}: loss: {loss:.3f} loss_func: {loss_func:.3f} loss_struct: {loss_struct:.3f} "
+            f"EVAL Batch {batch_id}: loss: {loss:.3f} loss_func: {loss_func:.3f} loss_struct: {loss_struct:.3f} "
             f"accuracy: {val_acc:.3f}"
         )
 

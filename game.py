@@ -192,7 +192,7 @@ class CommunicationRnnMultiTask(nn.Module):
         # optimized_loss += loss.mean()
 
         loss_func = loss.mean()
-        loss = loss_func
+        loss = loss_func.clone()
 
         if self.weight_structural_loss > 0:
             # Forward pass _with_ teacher forcing for structural loss
@@ -204,10 +204,10 @@ class CommunicationRnnMultiTask(nn.Module):
                 decode_sampling=False,
             )
 
-            loss_str, _ = loss_structural(captions, scores_struct)
-            aux_info["loss_structural"] = loss_str.reshape(1).detach()
+            loss_struct, _ = loss_structural(captions, scores_struct)
+            aux_info["loss_structural"] = loss_struct.reshape(1).detach()
 
-            loss += self.weight_structural_loss * loss_str
+            loss += self.weight_structural_loss * loss_struct
 
         # if self.training:
         #     self.baselines["loss"].update(loss)
