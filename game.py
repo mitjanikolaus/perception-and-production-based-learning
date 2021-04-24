@@ -138,18 +138,12 @@ class CommunicationRnnMultiTask(nn.Module):
 
         # Forward pass without teacher forcing for RL loss
         if self.training:
-            scores, message_lengths, entropy_old = sender(
-                images_target,
-                captions,
-                sequence_lengths,
-                use_teacher_forcing=False,
-                decode_sampling=False,
+            scores, message_lengths, _ = sender(
+                images_target, use_teacher_forcing=False, decode_sampling=False,
             )
         else:
-            scores, message_lengths, entropy_old = sender(
-                images_target,
-                use_teacher_forcing=False,
-                decode_sampling=True,
+            scores, message_lengths, _ = sender(
+                images_target, use_teacher_forcing=False, decode_sampling=True,
             )
         message = sequences(scores, pad_to_length=sender.max_len)
         entropy_s = entropy(scores)
@@ -201,11 +195,16 @@ class CommunicationRnnMultiTask(nn.Module):
         loss = loss_func
 
         if self.weight_structural_loss > 0:
-
-            # TODO: structural loss should calculated using a separate forward pass with teacher forcing
-            loss_str, _ = loss_structural(
-                sender_input, message, scores, receiver_input, receiver_output, labels
+            # Forward pass _with_ teacher forcing for structural loss
+            scores_struct, _, _ = sender(
+                images_target,
+                captions,
+                sequence_lengths,
+                use_teacher_forcing=True,
+                decode_sampling=False,
             )
+
+            loss_str, _ = loss_structural(captions, scores_struct)
             aux_info["loss_structural"] = loss_str.reshape(1).detach()
 
             loss += self.weight_structural_loss * loss_str

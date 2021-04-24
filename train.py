@@ -46,7 +46,8 @@ from utils import (
     DEFAULT_WORD_EMBEDDINGS_SIZE,
     DEFAULT_LSTM_HIDDEN_SIZE,
     SEMANTICS_EVAL_FILES,
-    CHECKPOINT_NAME_SENDER, DEFAULT_MAX_NUM_VAL_SAMPLES,
+    CHECKPOINT_NAME_SENDER,
+    DEFAULT_MAX_NUM_VAL_SAMPLES,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -112,7 +113,9 @@ class PrintDebugEvents(Callback):
 
         if self.args.eval_semantics:
             for name, semantic_images_loader in self.semantics_eval_loaders.items():
-                acc = eval_semantics_score(self.sender, semantic_images_loader, self.vocab)
+                acc = eval_semantics_score(
+                    self.sender, semantic_images_loader, self.vocab
+                )
                 print(f"Accuracy for {name}: {acc:.3f}")
                 accuracies[name] = acc
 
@@ -178,17 +181,8 @@ def loss_functional(
 
 
 def loss_structural(
-    sender_input, message, sender_logits, receiver_input, receiver_output, labels
+    captions, sender_logits,
 ):
-    (
-        images,
-        target_label,
-        target_image_ids,
-        distractor_image_ids,
-        captions,
-        sequence_lengths,
-    ) = sender_input
-
     loss = loss_cross_entropy(sender_logits, captions)
 
     return loss, None
@@ -326,8 +320,9 @@ def main(args):
     )
 
     callbacks = [
-        ConsoleLogger(print_train_loss=True, as_json=False),
-        PrintDebugEvents(vocab, train_dataset, val_dataset, semantics_eval_loaders, sender, args),
+        PrintDebugEvents(
+            vocab, train_dataset, val_dataset, semantics_eval_loaders, sender, args
+        ),
     ]
 
     optimizer = core.build_optimizer(game.parameters())
