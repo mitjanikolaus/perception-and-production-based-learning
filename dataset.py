@@ -220,7 +220,7 @@ class VisualRefGameDataset(Dataset):
                 self.sample_image_ids.append((i, j))
 
         if max_samples:
-            self.sample_image_ids = self.sample_image_ids[:max_samples]
+            self.sample_image_ids = random.sample(self.sample_image_ids, max_samples)
 
         self.batch_size = batch_size
 

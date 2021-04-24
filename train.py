@@ -2,6 +2,7 @@ import argparse
 import os
 import pathlib
 import pickle
+import random
 from typing import Optional, Dict
 
 import torch
@@ -10,14 +11,18 @@ from torch.utils.data import DataLoader
 
 from torch.nn import functional as F
 
+import matplotlib.pyplot as plt
+
 import egg.core as core
 from egg.core import (
     ConsoleLogger,
     Callback,
     Interaction,
-    SenderReceiverRnnReinforce,
     LoggingStrategy,
 )
+
+import pandas as pd
+
 from dataset import VisualRefGameDataset, pad_collate_visual_ref
 from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
 from game import SenderReceiverRnnMultiTask
@@ -26,7 +31,8 @@ from models.interactive.models import (
     VisualRefListenerOracle,
     VisualRefSpeakerDiscriminativeOracle,
     ImageEncoder,
-    RnnSenderMultitaskVisualRef, loss_cross_entropy,
+    RnnSenderMultitaskVisualRef,
+    loss_cross_entropy,
 )
 from preprocess import (
     DATA_PATH,
@@ -35,58 +41,129 @@ from preprocess import (
     VOCAB_FILENAME,
 )
 from trainers import VisualRefTrainer
-from utils import decode_caption, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE, SEMANTICS_EVAL_FILES, \
-    CHECKPOINT_NAME_SENDER
+from utils import (
+    decode_caption,
+    DEFAULT_WORD_EMBEDDINGS_SIZE,
+    DEFAULT_LSTM_HIDDEN_SIZE,
+    SEMANTICS_EVAL_FILES,
+    CHECKPOINT_NAME_SENDER, DEFAULT_MAX_NUM_VAL_SAMPLES,
+)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-MAX_NUM_VAL_SAMPLES = 3200
-
 
 class PrintDebugEvents(Callback):
-    def __init__(self, vocab, train_dataset, val_dataset, args):
+    def __init__(
+        self, vocab, train_dataset, val_dataset, semantics_eval_loaders, sender, args
+    ):
         super().__init__()
 
         self.vocab = vocab
 
         self.train_loss = 0
         self.train_accuracies = 0
+        self.train_func_loss = 0
+        self.train_struct_loss = 0
         self.args = args
 
         self.train_dataset = train_dataset
         self.val_dataset = val_dataset
 
-    def on_test_end(self, _loss, interaction_logs: Interaction, epoch: int):
-        pass
+        self.sender = sender
+        self.semantics_eval_loaders = semantics_eval_loaders
 
-    def on_batch_end(
-        self,
-        interaction_logs: Interaction,
-        loss: float,
-        batch_id: int,
-        is_training: bool = True,
-    ):
-        if is_training:
-            if batch_id == 0:
-                self.train_loss = 0
-                self.train_accuracies = 0
+        self.accuracies_over_time = []
 
-            self.train_loss += loss.detach()
-            self.train_accuracies += interaction_logs.aux["acc"].sum()
+    def print_interactions(self, interaction_logs, show_images, num_interactions=5):
+        for _ in range(num_interactions):
+            z = random.randint(0, interaction_logs.size)
+            message = decode_caption(interaction_logs.message[z], self.vocab)
+            target_position = interaction_logs.labels[z]
+            receiver_guess = torch.argmax(interaction_logs.receiver_output[z])
+            target_image_id, distractor_image_id = interaction_logs.sender_input[z]
 
-            if (batch_id % self.args.log_frequency) == (self.args.log_frequency - 1):
-                mean_loss = self.train_loss / self.args.log_frequency
-                batch_size = interaction_logs.aux["acc"].size()[0]
-                mean_acc = self.train_accuracies / (
-                    self.args.log_frequency * batch_size
+            if show_images:
+                # plot the two images side-by-side
+                target_image = self.train_dataset.get_image_features(
+                    int(target_image_id), channels_first=False, normalize=False
                 )
+                distractor_image = self.train_dataset.get_image_features(
+                    int(distractor_image_id), channels_first=False, normalize=False
+                )
+                image = torch.cat([target_image, distractor_image], dim=1).cpu().numpy()
 
+                plt.title(
+                    f"Left: Target, Right: Distractor"
+                    f"\nReceiver guess correct: {target_position == receiver_guess}"
+                    f"\nMessage: {message}"
+                )
+                plt.imshow(image)
+                plt.show()
+            else:
                 print(
-                    f"Batch {batch_id + 1}: loss: {mean_loss:.3f} accuracy: {mean_acc:.3f}"
+                    f"Target image ID: {target_image_id} | Distractor image ID: {distractor_image_id} | "
+                    f"Success: {target_position == receiver_guess} | Message: {message}"
                 )
 
-                self.train_loss = 0
-                self.train_accuracies = 0
+    def on_test_end(self, loss, interaction_logs: Interaction, batch_id: int):
+        val_acc = interaction_logs.aux["acc"].mean().item()
+        print(f"Batch {batch_id} | Val loss: {loss:.3f} | Val acc: {val_acc:.3f}\n")
+        accuracies = {"batch_id": batch_id, "val_loss": loss, "val_acc": val_acc}
+
+        if self.args.eval_semantics:
+            for name, semantic_images_loader in self.semantics_eval_loaders.items():
+                acc = eval_semantics_score(self.sender, semantic_images_loader, self.vocab)
+                print(f"Accuracy for {name}: {acc:.3f}")
+                accuracies[name] = acc
+
+        self.accuracies_over_time.append(accuracies)
+        pd.DataFrame(self.accuracies_over_time).to_csv(
+            os.path.join(
+                args.out_checkpoints_dir,
+                CHECKPOINT_NAME_SENDER.replace(".pt", "_accuracies.csv"),
+            )
+        )
+
+        if args.print_sample_interactions or args.print_sample_interactions_images:
+            self.print_interactions(
+                interaction_logs, show_images=args.print_sample_interactions_images,
+            )
+
+
+def on_batch_end(
+    self,
+    interaction_logs: Interaction,
+    loss: torch.Tensor,
+    batch_id: int,
+    is_training: bool = True,
+):
+    if is_training:
+        if batch_id == 0:
+            self.train_loss = 0
+            self.train_accuracies = 0
+            self.train_func_loss = 0
+            self.train_struct_loss = 0
+
+        self.train_loss += loss.detach()
+        self.train_accuracies += interaction_logs.aux["acc"].sum()
+        self.train_func_loss += interaction_logs.aux["loss_functional"]
+        if "loss_structural" in interaction_logs.aux:
+            self.train_struct_loss += interaction_logs.aux["loss_structural"]
+
+        if (batch_id % self.args.log_frequency) == (self.args.log_frequency - 1):
+            loss = self.train_loss / self.args.log_frequency
+            batch_size = interaction_logs.aux["acc"].size()[0]
+            mean_acc = self.train_accuracies / (self.args.log_frequency * batch_size)
+            loss_struct = self.train_func_loss / self.args.log_frequency
+            loss_func = self.train_struct_loss / self.args.log_frequency
+
+            print(
+                f"Batch {batch_id + 1}: loss: {loss:.3f} loss_func: {loss_func:.3f} loss_struct: {loss_struct} "
+                f"accuracy: {mean_acc:.3f}"
+            )
+
+            self.train_loss = 0
+            self.train_accuracies = 0
 
 
 def loss_functional(
@@ -178,8 +255,8 @@ def main(args):
     args.max_len = 25
     args.random_seed = 1
 
-    joint_embeddings_size = 512
-    lstm_hidden_size = 512
+    joint_embeddings_size = DEFAULT_LSTM_HIDDEN_SIZE
+    lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
 
     # if args.receiver_checkpoint:
     #     checkpoint_listener = torch.load(args.receiver_checkpoint, map_location=device)
@@ -214,9 +291,7 @@ def main(args):
         )
 
     elif args.sender == "functional":
-        encoder = ImageEncoder(
-            joint_embeddings_size, fine_tune_resnet=False
-        )
+        encoder = ImageEncoder(joint_embeddings_size, fine_tune_resnet=False)
         sender = RnnSenderMultitaskVisualRef(
             encoder,
             vocab_size=len(vocab),
@@ -229,7 +304,7 @@ def main(args):
 
         if args.sender_checkpoint:
             sender_checkpoint = torch.load(args.sender_checkpoint, map_location=device)
-            sender.load_state_dict(sender_checkpoint['model_state_dict'])
+            sender.load_state_dict(sender_checkpoint["model_state_dict"])
 
     else:
         raise ValueError(f"Unknown sender model type: {args.sender}")
@@ -247,11 +322,13 @@ def main(args):
         receiver_entropy_coeff=0,
         train_logging_strategy=logging_strategy,
         test_logging_strategy=logging_strategy,
-        weight_structural_loss=args.weight_structural_loss
+        weight_structural_loss=args.weight_structural_loss,
     )
 
-    callbacks = [ConsoleLogger(print_train_loss=True, as_json=False),
-                 PrintDebugEvents(vocab, train_dataset, val_dataset, args)]
+    callbacks = [
+        ConsoleLogger(print_train_loss=True, as_json=False),
+        PrintDebugEvents(vocab, train_dataset, val_dataset, semantics_eval_loaders, sender, args),
+    ]
 
     optimizer = core.build_optimizer(game.parameters())
 
@@ -260,12 +337,9 @@ def main(args):
         optimizer=optimizer,
         out_checkpoints_dir=args.out_checkpoints_dir,
         train_data=train_loader,
-        semantics_eval_loaders=semantics_eval_loaders,
         vocab=vocab,
         validation_data=val_loader,
         callbacks=callbacks,
-        print_sample_interactions=args.print_sample_interactions,
-        print_sample_interactions_images=args.print_sample_interactions_images,
     )
 
     print("Starting training with args: ")
@@ -373,12 +447,14 @@ def get_args():
     parser.add_argument(
         "--out-checkpoints-dir",
         type=str,
-        default=os.path.join(pathlib.Path.home(), "data/visual_ref/checkpoints/interactive"),
+        default=os.path.join(
+            pathlib.Path.home(), "data/visual_ref/checkpoints/interactive"
+        ),
         help="Directory to which checkpoints should be saved to",
     )
     parser.add_argument(
         "--max-val-samples",
-        default=MAX_NUM_VAL_SAMPLES,
+        default=DEFAULT_MAX_NUM_VAL_SAMPLES,
         type=int,
         help="Maximum number of samples for validation",
     )
@@ -387,6 +463,12 @@ def get_args():
         default=False,
         action="store_true",
         help="Freeze receiver weights",
+    )
+    parser.add_argument(
+        "--eval-semantics",
+        default=False,
+        action="store_true",
+        help="Eval semantics of model using 2AFC",
     )
     parser.add_argument(
         "--weight-structural-loss",

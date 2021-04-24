@@ -1,8 +1,6 @@
 import math
 import os
 from typing import List, Optional
-import matplotlib.pyplot as plt
-import pandas as pd
 
 from eval_semantics import eval_semantics_score
 from utils import CHECKPOINT_NAME_SENDER, CHECKPOINT_NAME_RECEIVER, decode_caption
@@ -37,15 +35,12 @@ class VisualRefTrainer(Trainer):
         optimizer: torch.optim.Optimizer,
         out_checkpoints_dir: str,
         train_data: DataLoader,
-        semantics_eval_loaders,
         vocab,
         validation_data: Optional[DataLoader] = None,
         device: torch.device = None,
         callbacks: Optional[List[Callback]] = None,
         grad_norm: float = None,
         aggregate_interaction_logs: bool = True,
-        print_sample_interactions: bool = False,
-        print_sample_interactions_images: bool = False,
     ):
         super(VisualRefTrainer, self).__init__(
             game,
@@ -64,14 +59,7 @@ class VisualRefTrainer(Trainer):
 
         self.out_checkpoints_dir = out_checkpoints_dir
 
-        self.semantics_eval_loaders = semantics_eval_loaders
-
-        self.accuracies_over_time = []
-
         self.vocab = vocab
-
-        self.print_sample_interactions = print_sample_interactions
-        self.print_sample_interactions_images = print_sample_interactions_images
 
     def save_models(self):
         torch.save(
@@ -91,36 +79,6 @@ class VisualRefTrainer(Trainer):
             os.path.join(self.out_checkpoints_dir, CHECKPOINT_NAME_SENDER),
         )
 
-    def print_interactions(self, interaction_logs, show_images, num_interactions=5):
-        for z in range(num_interactions):
-            message = decode_caption(interaction_logs.message[z], self.vocab)
-            target_position = interaction_logs.labels[z]
-            receiver_guess = torch.argmax(interaction_logs.receiver_output[z])
-            target_image_id, distractor_image_id = interaction_logs.sender_input[z]
-
-            if show_images:
-                # plot the two images side-by-side
-                target_image = self.train_dataset.get_image_features(
-                    int(target_image_id), channels_first=False, normalize=False
-                )
-                distractor_image = self.train_dataset.get_image_features(
-                    int(distractor_image_id), channels_first=False, normalize=False
-                )
-                image = torch.cat([target_image, distractor_image], dim=1).cpu().numpy()
-
-                plt.title(
-                    f"Left: Target, Right: Distractor"
-                    f"\nReceiver guess correct: {target_position == receiver_guess}"
-                    f"\nMessage: {message}"
-                )
-                plt.imshow(image)
-                plt.show()
-            else:
-                print(
-                    f"Target image ID: {target_image_id} | Distractor image ID: {distractor_image_id} | "
-                    f"Success: {target_position == receiver_guess} | Message: {message}"
-                )
-
     def train_epoch(self):
         mean_loss = 0
         n_batches = 0
@@ -131,39 +89,13 @@ class VisualRefTrainer(Trainer):
         for batch_id, batch in enumerate(self.train_data):
             if batch_id % self.eval_frequency == 0:
                 val_loss, val_interactions = self.eval()
-                val_acc = val_interactions.aux["acc"].mean().item()
-                print(
-                    f"Batch {batch_id} | Val loss: {val_loss:.3f} | Val acc: {val_acc:.3f}\n"
-                )
-                accuracies = {"batch_id": batch_id, "val_loss": val_loss, "val_acc": val_acc}
-
-                for name, semantic_images_loader in self.semantics_eval_loaders.items():
-                    acc = eval_semantics_score(
-                        self.game.sender, semantic_images_loader, self.vocab
-                    )
-                    print(f"Accuracy for {name}: {acc:.3f}")
-                    accuracies[name] = acc
-
-                self.accuracies_over_time.append(accuracies)
-                pd.DataFrame(self.accuracies_over_time).to_csv(
-                    os.path.join(
-                        self.out_checkpoints_dir,
-                        CHECKPOINT_NAME_SENDER.replace(".pt", "_accuracies.csv"),
-                    )
-                )
 
                 if val_loss < self.best_val_loss:
                     self.best_val_loss = val_loss
                     self.save_models()
 
-                if (
-                        self.print_sample_interactions
-                        or self.print_sample_interactions_images
-                ):
-                    self.print_interactions(
-                        val_interactions,
-                        show_images=self.print_sample_interactions_images,
-                    )
+                for callback in self.callbacks:
+                    callback.on_test_end(val_loss, val_interactions, batch_id)
 
             self.game.train()
 
@@ -212,7 +144,6 @@ class VisualRefTrainer(Trainer):
                 callback.on_batch_end(interaction, optimized_loss, batch_id)
 
             interactions.append(interaction)
-
 
         mean_loss /= n_batches
         full_interaction = Interaction.from_iterable(interactions)

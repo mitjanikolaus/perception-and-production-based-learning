@@ -198,15 +198,17 @@ class CommunicationRnnMultiTask(nn.Module):
         # optimized_loss += loss.mean()
 
         loss_func = loss.mean()
+        loss = loss_func
 
-        # TODO: structural loss should calculated using a separate forward pass with teacher forcing
-        loss_str, _ = loss_structural(
-            sender_input, message, scores, receiver_input, receiver_output, labels
-        )
+        if self.weight_structural_loss > 0:
 
-        # print(f"Structural Loss: {loss_str:.3f} Functional Loss: {loss_func:.3f}")
+            # TODO: structural loss should calculated using a separate forward pass with teacher forcing
+            loss_str, _ = loss_structural(
+                sender_input, message, scores, receiver_input, receiver_output, labels
+            )
+            aux_info["loss_structural"] = loss_str.reshape(1).detach()
 
-        optimized_loss = self.weight_structural_loss * loss_str + loss_func
+            loss += self.weight_structural_loss * loss_str
 
         # if self.training:
         #     self.baselines["loss"].update(loss)
@@ -214,6 +216,7 @@ class CommunicationRnnMultiTask(nn.Module):
 
         aux_info["sender_entropy"] = entropy_s.detach()
         aux_info["receiver_entropy"] = entropy_r.detach()
+        aux_info["loss_functional"] = loss_func.reshape(1).detach()
         aux_info["length"] = message_lengths.float()  # will be averaged
 
         logging_strategy = (
@@ -229,7 +232,7 @@ class CommunicationRnnMultiTask(nn.Module):
             aux=aux_info,
         )
 
-        return optimized_loss, interaction
+        return loss, interaction
 
 
 class OracleSenderReceiverRnnSupervised(nn.Module):
