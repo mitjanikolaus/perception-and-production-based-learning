@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 
 import egg.core as core
 from egg.core import (
-    ConsoleLogger,
     Callback,
     Interaction,
     LoggingStrategy,
@@ -77,7 +76,7 @@ class PrintDebugEvents(Callback):
 
     def print_interactions(self, interaction_logs, show_images, num_interactions=5):
         for _ in range(num_interactions):
-            z = random.randint(0, interaction_logs.size)
+            z = random.randint(0, interaction_logs.size-1)
             message = decode_caption(interaction_logs.message[z], self.vocab)
             target_position = interaction_logs.labels[z]
             receiver_guess = torch.argmax(interaction_logs.receiver_output[z])
@@ -108,8 +107,19 @@ class PrintDebugEvents(Callback):
 
     def on_test_end(self, loss, interaction_logs: Interaction, batch_id: int):
         val_acc = interaction_logs.aux["acc"].mean().item()
-        print(f"Batch {batch_id} | Val loss: {loss:.3f} | Val acc: {val_acc:.3f}\n")
-        accuracies = {"batch_id": batch_id, "val_loss": loss, "val_acc": val_acc}
+        loss_func = interaction_logs.aux["loss_functional"].mean().item()
+        loss_struct = interaction_logs.aux["loss_structural"].mean().item()
+        accuracies = {
+            "batch_id": batch_id,
+            "val_loss": loss,
+            "val_acc": val_acc,
+            "val_loss_func": loss_func,
+            "val_loss_struct": loss_struct,
+        }
+        print(
+            f"EVAL Batch {batch_id + 1}: loss: {loss:.3f} loss_func: {loss_func:.3f} loss_struct: {loss_struct:.3f} "
+            f"accuracy: {val_acc:.3f}"
+        )
 
         if self.args.eval_semantics:
             for name, semantic_images_loader in self.semantics_eval_loaders.items():
@@ -132,41 +142,38 @@ class PrintDebugEvents(Callback):
                 interaction_logs, show_images=args.print_sample_interactions_images,
             )
 
+    def on_batch_end(
+        self, interaction_logs: Interaction, loss: float, batch_id: int, is_training: bool = True
+    ):
+        if is_training:
+            if batch_id == 0:
+                self.train_loss = 0
+                self.train_accuracies = 0
+                self.train_func_loss = 0
+                self.train_struct_loss = 0
 
-def on_batch_end(
-    self,
-    interaction_logs: Interaction,
-    loss: torch.Tensor,
-    batch_id: int,
-    is_training: bool = True,
-):
-    if is_training:
-        if batch_id == 0:
-            self.train_loss = 0
-            self.train_accuracies = 0
-            self.train_func_loss = 0
-            self.train_struct_loss = 0
+            self.train_loss += loss
+            self.train_accuracies += interaction_logs.aux["acc"].sum()
+            self.train_func_loss += interaction_logs.aux["loss_functional"].item()
+            if "loss_structural" in interaction_logs.aux:
+                self.train_struct_loss += interaction_logs.aux["loss_structural"].item()
 
-        self.train_loss += loss.detach()
-        self.train_accuracies += interaction_logs.aux["acc"].sum()
-        self.train_func_loss += interaction_logs.aux["loss_functional"]
-        if "loss_structural" in interaction_logs.aux:
-            self.train_struct_loss += interaction_logs.aux["loss_structural"]
+            if (batch_id + 1) % self.args.log_frequency == 0:
+                loss = self.train_loss / self.args.log_frequency
+                batch_size = interaction_logs.aux["acc"].size()[0]
+                mean_acc = self.train_accuracies / (self.args.log_frequency * batch_size)
+                loss_struct = self.train_func_loss / self.args.log_frequency
+                loss_func = self.train_struct_loss / self.args.log_frequency
 
-        if (batch_id % self.args.log_frequency) == (self.args.log_frequency - 1):
-            loss = self.train_loss / self.args.log_frequency
-            batch_size = interaction_logs.aux["acc"].size()[0]
-            mean_acc = self.train_accuracies / (self.args.log_frequency * batch_size)
-            loss_struct = self.train_func_loss / self.args.log_frequency
-            loss_func = self.train_struct_loss / self.args.log_frequency
+                print(
+                    f"Batch {batch_id + 1}: loss: {loss:.3f} loss_func: {loss_func:.3f} loss_struct: {loss_struct:.3f} "
+                    f"accuracy: {mean_acc:.3f}"
+                )
 
-            print(
-                f"Batch {batch_id + 1}: loss: {loss:.3f} loss_func: {loss_func:.3f} loss_struct: {loss_struct} "
-                f"accuracy: {mean_acc:.3f}"
-            )
-
-            self.train_loss = 0
-            self.train_accuracies = 0
+                self.train_loss = 0
+                self.train_accuracies = 0
+                self.train_func_loss = 0
+                self.train_struct_loss = 0
 
 
 def loss_functional(
