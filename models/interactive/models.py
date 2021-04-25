@@ -215,7 +215,9 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
 
         input = torch.stack([self.sos_embedding] * prev_hidden[0].size(0))
 
-        scores = []
+        sequence = []
+        logits = []
+        entropy = []
 
         for step in range(max(decode_lengths)):
             if not use_teacher_forcing and not step == 0:
@@ -229,10 +231,11 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
                     decode_lengths[ind_end_token],
                     torch.full_like(decode_lengths[ind_end_token], step, device=device),
                 )
-                # Check if all sequences are finished:
-                indices_incomplete_sequences = torch.nonzero(decode_lengths > step).view(-1)
-                if len(indices_incomplete_sequences) == 0:
-                    break
+                # TODO do not break because we want all messages to be same length..
+                # # Check if all sequences are finished:
+                # indices_incomplete_sequences = torch.nonzero(decode_lengths > step).view(-1)
+                # if len(indices_incomplete_sequences) == 0:
+                #     break
 
             for i, layer in enumerate(self.cells):
                 if isinstance(layer, nn.LSTMCell):
@@ -245,23 +248,35 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
                 prev_hidden[i] = h_t
                 input = h_t
 
-            scores_step = F.log_softmax(self.hidden_to_output(h_t), dim=1)
-            scores.append(scores_step)
+            step_logits = F.log_softmax(self.hidden_to_output(h_t), dim=1)
+
+            distr = Categorical(logits=step_logits)
+            entropy.append(distr.entropy())
+
+            if decode_sampling:
+                x = distr.sample()
+            else:
+                x = step_logits.argmax(dim=1)
+            logits.append(distr.log_prob(x))
+            sequence.append(x)
 
             if use_teacher_forcing:
-                x = captions[:, step + 1]
+                x_gold = captions[:, step + 1]
+                input = self.embedding(x_gold)
             else:
-                if decode_sampling:
-                    distr = Categorical(logits=scores_step)
-                    x = distr.sample()
-                else:
-                    x = scores_step.argmax(dim=1)
+                input = self.embedding(x)
 
-            input = self.embedding(x)
+        sequence = torch.stack(sequence).permute(1, 0)
+        logits = torch.stack(logits).permute(1, 0)
+        entropy = torch.stack(entropy).permute(1, 0)
 
-        scores = torch.stack(scores).permute(1, 0, 2)
+        zeros = torch.zeros((sequence.size(0), 1)).to(sequence.device)
 
-        return scores, decode_lengths, None
+        sequence = torch.cat([sequence, zeros.long()], dim=1)
+        logits = torch.cat([logits, zeros], dim=1)
+        entropy = torch.cat([entropy, zeros], dim=1)
+
+        return sequence, logits, entropy
 
     def decode(self, x, num_samples):
         batch_size = x.shape[0]

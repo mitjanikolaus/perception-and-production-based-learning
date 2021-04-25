@@ -138,63 +138,62 @@ class CommunicationRnnMultiTask(nn.Module):
 
         # Forward pass without teacher forcing for RL loss
         if self.training:
-            scores, message_lengths, _ = sender(
-                images_target, use_teacher_forcing=False, decode_sampling=False,
-            )
-        else:
-            scores, message_lengths, _ = sender(
+            messages, log_prob_s, entropy_s = sender(
                 images_target, use_teacher_forcing=False, decode_sampling=True,
             )
-        message = sequences(scores, pad_to_length=sender.max_len)
-        entropy_s = entropy(scores)
+        else:
+            messages, log_prob_s, entropy_s = sender(
+                images_target, use_teacher_forcing=False, decode_sampling=True,
+            )
+        message_lengths = find_lengths(messages)
 
         receiver_output, log_prob_r, entropy_r = receiver(
-            message, receiver_input, message_lengths
+            messages, receiver_input, message_lengths
         )
 
-        loss, aux_info = loss_functional(
-            sender_input, message, scores, receiver_input, receiver_output, labels
+        loss_func, aux_info = loss_functional(
+            sender_input, messages, log_prob_s, receiver_input, receiver_output, labels
         )
 
-        # TODO: regularization
-        # the entropy of the outputs of S before and including the eos symbol - as we don't care about what's after
-        # effective_entropy_s = torch.zeros_like(entropy_r)
-        #
-        # # the log prob of the choices made by S before and including the eos symbol - again, we don't
-        # # care about the rest
-        # effective_log_prob_s = torch.zeros_like(log_prob_r)
-        #
-        # for i in range(message.size(1)):
-        #     not_eosed = (i < message_length).float()
-        #     effective_entropy_s += entropy_s[:, i] * not_eosed
-        #     effective_log_prob_s += log_prob_s[:, i] * not_eosed
-        # effective_entropy_s = effective_entropy_s / message_length.float()
-        #
-        # weighted_entropy = (
-        #     effective_entropy_s.mean() * self.sender_entropy_coeff
-        #     + entropy_r.mean() * self.receiver_entropy_coeff
-        # )
-        #
-        # log_prob = effective_log_prob_s + log_prob_r
-        #
-        # length_loss = message_length.float() * self.length_cost
-        #
-        # policy_length_loss = (
-        #     (length_loss - self.baselines["length"].predict(length_loss))
-        #     * effective_log_prob_s
-        # ).mean()
-        # policy_loss = (
-        #     (loss.detach() - self.baselines["loss"].predict(loss.detach())) * log_prob
-        # ).mean()
-        #
-        # optimized_loss = policy_length_loss + policy_loss - weighted_entropy
-        # # if the receiver is deterministic/differentiable, we apply the actual loss
-        # optimized_loss += loss.mean()
-
-        loss_func = loss.mean()
+        loss_func = loss_func.mean()
         aux_info["loss_functional"] = loss_func.clone().reshape(1).detach()
 
         loss = loss_func
+
+        # TODO: understand regularization
+        # the entropy of the outputs of S before and including the eos symbol - as we don't care about what's after
+        effective_entropy_s = torch.zeros_like(entropy_r)
+        #
+        # # the log prob of the choices made by S before and including the eos symbol - again, we don't
+        # # care about the rest
+        effective_log_prob_s = torch.zeros_like(log_prob_r)
+        #
+        for i in range(messages.size(1)):
+            not_eosed = (i < message_lengths).float()
+            effective_entropy_s += entropy_s[:, i] * not_eosed
+            effective_log_prob_s += log_prob_s[:, i] * not_eosed
+        effective_entropy_s = effective_entropy_s / message_lengths.float()
+
+        weighted_entropy = (
+            effective_entropy_s.mean() * self.sender_entropy_coeff
+            + entropy_r.mean() * self.receiver_entropy_coeff
+        )
+
+        log_prob = effective_log_prob_s + log_prob_r
+
+        length_loss = message_lengths.float() * self.length_cost
+
+        policy_length_loss = (
+            (length_loss - self.baselines["length"].predict(length_loss))
+            * effective_log_prob_s
+        ).mean()
+        policy_loss = (
+            (loss.detach() - self.baselines["loss"].predict(loss.detach())) * log_prob
+        ).mean()
+        #
+        optimized_loss = policy_length_loss + policy_loss - weighted_entropy
+        # # if the receiver is deterministic/differentiable, we apply the actual loss
+        optimized_loss += loss.mean()
 
         if self.weight_structural_loss > 0:
             # Forward pass _with_ teacher forcing for structural loss
@@ -209,11 +208,11 @@ class CommunicationRnnMultiTask(nn.Module):
             loss_struct, _ = loss_structural(captions, scores_struct)
             aux_info["loss_structural"] = loss_struct.reshape(1).detach()
 
-            loss += self.weight_structural_loss * loss_struct
+            optimized_loss += self.weight_structural_loss * loss_struct
 
-        # if self.training:
-        #     self.baselines["loss"].update(loss)
-        #     self.baselines["length"].update(length_loss)
+        if self.training:
+            self.baselines["loss"].update(loss)
+            self.baselines["length"].update(length_loss)
 
         aux_info["sender_entropy"] = entropy_s.detach()
         aux_info["receiver_entropy"] = entropy_r.detach()
@@ -226,13 +225,13 @@ class CommunicationRnnMultiTask(nn.Module):
             sender_input=sender_input,
             labels=labels,
             receiver_input=receiver_input,
-            message=message.detach(),
+            message=messages.detach(),
             receiver_output=receiver_output.detach(),
             message_length=message_lengths,
             aux=aux_info,
         )
 
-        return loss, interaction
+        return optimized_loss, interaction
 
 
 class OracleSenderReceiverRnnSupervised(nn.Module):
