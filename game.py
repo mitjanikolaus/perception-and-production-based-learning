@@ -192,7 +192,9 @@ class CommunicationRnnMultiTask(nn.Module):
         # optimized_loss += loss.mean()
 
         loss_func = loss.mean()
-        loss = loss_func.clone()
+        aux_info["loss_functional"] = loss_func.clone().reshape(1).detach()
+
+        loss = loss_func
 
         if self.weight_structural_loss > 0:
             # Forward pass _with_ teacher forcing for structural loss
@@ -215,7 +217,6 @@ class CommunicationRnnMultiTask(nn.Module):
 
         aux_info["sender_entropy"] = entropy_s.detach()
         aux_info["receiver_entropy"] = entropy_r.detach()
-        aux_info["loss_functional"] = loss_func.reshape(1).detach()
         aux_info["length"] = message_lengths.float()  # will be averaged
 
         logging_strategy = (
