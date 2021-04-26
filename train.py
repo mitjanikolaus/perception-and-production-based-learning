@@ -434,9 +434,9 @@ def get_args():
     )
     parser.add_argument(
         "--sender-entropy-coeff",
-        default=0.1,
+        default=0,
         type=float,
-        help="Sender entropy coefficient",
+        help="Sender entropy regularization coefficient",
     )
     parser.add_argument(
         "--length-cost",
