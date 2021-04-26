@@ -215,7 +215,11 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
 
         input = torch.stack([self.sos_embedding] * prev_hidden[0].size(0))
 
-        sequence = []
+        #TODO: do the same for logits and entropy, reduce computational overhead!
+        sequences = torch.zeros(
+            (batch_size, max(decode_lengths)), device=device, dtype=torch.long
+        )
+
         logits = []
         entropy = []
 
@@ -231,11 +235,11 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
                     decode_lengths[ind_end_token],
                     torch.full_like(decode_lengths[ind_end_token], step, device=device),
                 )
-                # TODO do not break because we want all messages to be same length..
-                # # Check if all sequences are finished:
-                # indices_incomplete_sequences = torch.nonzero(decode_lengths > step).view(-1)
-                # if len(indices_incomplete_sequences) == 0:
-                #     break
+            # # Check if all sequences are finished:
+            indices_incomplete_sequences = torch.nonzero(decode_lengths > step).view(-1)
+            # TODO do not break because we want all messages to be same length for logging..
+            # if len(indices_incomplete_sequences) == 0:
+            #     break
 
             for i, layer in enumerate(self.cells):
                 if isinstance(layer, nn.LSTMCell):
@@ -258,7 +262,8 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
             else:
                 x = step_logits.argmax(dim=1)
             logits.append(distr.log_prob(x))
-            sequence.append(x)
+
+            sequences[indices_incomplete_sequences, step] = x[indices_incomplete_sequences]
 
             if use_teacher_forcing:
                 x_gold = captions[:, step + 1]
@@ -266,17 +271,16 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
             else:
                 input = self.embedding(x)
 
-        sequence = torch.stack(sequence).permute(1, 0)
         logits = torch.stack(logits).permute(1, 0)
         entropy = torch.stack(entropy).permute(1, 0)
 
-        zeros = torch.zeros((sequence.size(0), 1)).to(sequence.device)
+        zeros = torch.zeros((sequences.size(0), 1)).to(sequences.device)
 
-        sequence = torch.cat([sequence, zeros.long()], dim=1)
+        sequences = torch.cat([sequences, zeros.long()], dim=1)
         logits = torch.cat([logits, zeros], dim=1)
         entropy = torch.cat([entropy, zeros], dim=1)
 
-        return sequence, logits, entropy
+        return sequences, logits, entropy
 
     def decode(self, x, num_samples):
         batch_size = x.shape[0]
