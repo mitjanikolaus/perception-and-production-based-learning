@@ -170,8 +170,8 @@ class PrintDebugEvents(Callback):
                 mean_acc = self.train_accuracies / (
                     self.args.log_frequency * batch_size
                 )
-                loss_struct = self.train_func_loss / self.args.log_frequency
-                loss_func = self.train_struct_loss / self.args.log_frequency
+                loss_func = self.train_func_loss / self.args.log_frequency
+                loss_struct = self.train_struct_loss / self.args.log_frequency
 
                 print(
                     f"Batch {batch_id + 1}: loss: {loss:.3f} loss_func: {loss_func:.3f} loss_struct: {loss_struct:.3f} "
