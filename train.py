@@ -76,7 +76,7 @@ class PrintDebugEvents(Callback):
 
     def print_interactions(self, interaction_logs, show_images, num_interactions=5):
         for _ in range(num_interactions):
-            z = random.randint(0, interaction_logs.size-1)
+            z = random.randint(0, interaction_logs.size - 1)
             message = decode_caption(interaction_logs.message[z], self.vocab)
             target_position = interaction_logs.labels[z]
             receiver_guess = torch.argmax(interaction_logs.receiver_output[z])
@@ -145,7 +145,11 @@ class PrintDebugEvents(Callback):
             )
 
     def on_batch_end(
-        self, interaction_logs: Interaction, loss: float, batch_id: int, is_training: bool = True
+        self,
+        interaction_logs: Interaction,
+        loss: float,
+        batch_id: int,
+        is_training: bool = True,
     ):
         if is_training:
             if batch_id == 0:
@@ -163,7 +167,9 @@ class PrintDebugEvents(Callback):
             if (batch_id + 1) % self.args.log_frequency == 0:
                 loss = self.train_loss / self.args.log_frequency
                 batch_size = interaction_logs.aux["acc"].size()[0]
-                mean_acc = self.train_accuracies / (self.args.log_frequency * batch_size)
+                mean_acc = self.train_accuracies / (
+                    self.args.log_frequency * batch_size
+                )
                 loss_struct = self.train_func_loss / self.args.log_frequency
                 loss_func = self.train_struct_loss / self.args.log_frequency
 

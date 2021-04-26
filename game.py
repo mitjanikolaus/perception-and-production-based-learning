@@ -155,8 +155,7 @@ class CommunicationRnnMultiTask(nn.Module):
             sender_input, messages, log_prob_s, receiver_input, receiver_output, labels
         )
 
-        loss_func = loss_func.mean()
-        aux_info["loss_functional"] = loss_func.clone().reshape(1).detach()
+        aux_info["loss_functional"] = loss_func.clone().mean().reshape(1).detach()
 
         loss = loss_func
 
@@ -193,6 +192,7 @@ class CommunicationRnnMultiTask(nn.Module):
         #
         optimized_loss = policy_length_loss + policy_loss - weighted_entropy
         # # if the receiver is deterministic/differentiable, we apply the actual loss
+        # TODO
         optimized_loss += loss.mean()
 
         if self.weight_structural_loss > 0:
