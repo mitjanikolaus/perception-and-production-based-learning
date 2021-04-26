@@ -157,7 +157,10 @@ class CommunicationRnnMultiTask(nn.Module):
 
         aux_info["loss_functional"] = loss_func.clone().mean().reshape(1).detach()
 
-        loss = loss_func
+        # Calculate reward: transform 0's in acc to -1
+        reward = (aux_info["acc"] - 1) * 2 + 1
+
+        loss = - reward
 
         # TODO: understand regularization
         # the entropy of the outputs of S before and including the eos symbol - as we don't care about what's after
@@ -193,7 +196,7 @@ class CommunicationRnnMultiTask(nn.Module):
         optimized_loss = policy_length_loss + policy_loss - weighted_entropy
         # # if the receiver is deterministic/differentiable, we apply the actual loss
         # TODO
-        optimized_loss += loss.mean()
+        # optimized_loss += loss.mean()
 
         if self.weight_structural_loss > 0:
             # Forward pass _with_ teacher forcing for structural loss
