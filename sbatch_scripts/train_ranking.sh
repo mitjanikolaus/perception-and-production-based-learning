@@ -7,9 +7,8 @@
 #SBATCH --mem=32000
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
-#SBATCH --output=out/train_ranking_5.out
-#SBATCH --error=out/train_ranking_5.out
+#SBATCH --output=out/train_ranking_fine_tune_resnet.out
 
 source activate egg
-python -u train_image_sentence_ranking.py --lr 0.0001 --n_epochs 15 --checkpoint-dir ~/data/visual_ref/checkpoints/ranking_run_5/
+python -u train_image_sentence_ranking.py --lr 0.0001 --log-frequency 700 --n_epochs 30 --checkpoint-dir ~/data/visual_ref/checkpoints/ranking_fine_tune_resnet --fine-tune-resnet
 
