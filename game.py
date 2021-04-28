@@ -155,8 +155,6 @@ class CommunicationRnnMultiTask(nn.Module):
             sender_input, messages, log_prob_s, receiver_input, receiver_output, labels
         )
 
-        aux_info["loss_functional"] = loss_func.clone().mean().reshape(1).detach()
-
         # Calculate reward: transform 0's in acc to -1
         reward = (aux_info["acc"] - 1) * 2 + 1
 
@@ -170,7 +168,7 @@ class CommunicationRnnMultiTask(nn.Module):
         # # care about the rest
         effective_log_prob_s = torch.zeros_like(log_prob_r)
         #
-        for i in range(messages.size(1)):
+        for i in range(max(message_lengths)):
             not_eosed = (i < message_lengths).float()
             effective_entropy_s += entropy_s[:, i] * not_eosed
             effective_log_prob_s += log_prob_s[:, i] * not_eosed
@@ -198,6 +196,8 @@ class CommunicationRnnMultiTask(nn.Module):
         # # if the receiver is deterministic/differentiable, we apply the actual loss
         # TODO
         # optimized_loss += loss.mean()
+
+        aux_info["loss_functional"] = optimized_loss.clone().reshape(1).detach()
 
         if self.weight_structural_loss > 0:
             # Forward pass _with_ teacher forcing for structural loss
