@@ -168,7 +168,7 @@ class CommunicationRnnMultiTask(nn.Module):
         # # care about the rest
         effective_log_prob_s = torch.zeros_like(log_prob_r)
         #
-        for i in range(max(message_lengths)):
+        for i in range(max(message_lengths) - 1):
             not_eosed = (i < message_lengths).float()
             effective_entropy_s += entropy_s[:, i] * not_eosed
             effective_log_prob_s += log_prob_s[:, i] * not_eosed
