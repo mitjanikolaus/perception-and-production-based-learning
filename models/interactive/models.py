@@ -156,21 +156,25 @@ class ImageEncoder(nn.Module):
 
         return image_features
 
+
 CELL_TYPES = {"rnn": nn.RNNCell, "gru": nn.GRUCell, "lstm": nn.LSTMCell}
+
 
 class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
     def __init__(
-            self,
-            agent,
-            vocab,
-            vocab_size,
-            embed_dim,
-            hidden_size,
-            max_len,
-            num_layers=1,
-            cell="rnn",
+        self,
+        agent,
+        vocab,
+        vocab_size,
+        embed_dim,
+        hidden_size,
+        max_len,
+        num_layers=1,
+        cell="rnn",
     ):
-        super(RnnSenderMultitaskVisualRef, self).__init__(agent, vocab_size, embed_dim, hidden_size, max_len, num_layers, cell)
+        super(RnnSenderMultitaskVisualRef, self).__init__(
+            agent, vocab_size, embed_dim, hidden_size, max_len, num_layers, cell
+        )
 
         self.vocab = vocab
 
@@ -178,14 +182,23 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
         # Expand input dimension of RNN/LSTM cells so that we can feed image input at every timestep
         self.cells = nn.ModuleList(
             [
-                cell_type(input_size=embed_dim+hidden_size, hidden_size=hidden_size)
+                cell_type(input_size=embed_dim + hidden_size, hidden_size=hidden_size)
                 if i == 0
-                else cell_type(input_size=hidden_size+hidden_size, hidden_size=hidden_size)
+                else cell_type(
+                    input_size=hidden_size + hidden_size, hidden_size=hidden_size
+                )
                 for i in range(self.num_layers)
             ]
         )
 
-    def forward(self, images_target, captions=None, decode_lengths=None, use_teacher_forcing=True, decode_sampling=False):
+    def forward(
+        self,
+        images_target,
+        captions=None,
+        decode_lengths=None,
+        use_teacher_forcing=True,
+        decode_sampling=False,
+    ):
         if captions is None:
             use_teacher_forcing = False
             decode_sampling = True
@@ -197,10 +210,7 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
             decode_lengths = decode_lengths - 1
         else:
             decode_lengths = torch.full(
-                (batch_size,),
-                self.max_len - 1,
-                dtype=torch.int64,
-                device=device,
+                (batch_size,), self.max_len - 1, dtype=torch.int64, device=device,
             )
 
         image_features = self.agent(images_target)
@@ -215,7 +225,7 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
 
         input = torch.stack([self.sos_embedding] * prev_hidden[0].size(0))
 
-        #TODO: do the same for logits and entropy, reduce computational overhead!
+        # TODO: do the same for logits and entropy, reduce computational overhead!
         sequences = torch.zeros(
             (batch_size, max(decode_lengths)), device=device, dtype=torch.long
         )
@@ -263,7 +273,9 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
                 x = step_logits.argmax(dim=1)
             logits.append(distr.log_prob(x))
 
-            sequences[indices_incomplete_sequences, step] = x[indices_incomplete_sequences]
+            sequences[indices_incomplete_sequences, step] = x[
+                indices_incomplete_sequences
+            ]
 
             if use_teacher_forcing:
                 x_gold = captions[:, step + 1]
@@ -281,7 +293,7 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
         entropy = torch.cat([entropy, zeros], dim=1)
 
         # Add SOS token to messages
-        sos_tokens = torch.full((sequences.size(0), 1), self.vocab.stoi[TOKEN_START]).to(sequences.device)
+        sos_tokens = torch.full((batch_size, 1), self.vocab.stoi[TOKEN_START], dtype=torch.long, device=device)
         sequences = torch.cat([sos_tokens, sequences], dim=1)
 
         return sequences, logits, entropy
@@ -293,7 +305,9 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
 
         # Repeat input to obtain multiple samples
         x = x.repeat(num_samples, 1, 1, 1)
-        scores, sequence_lengths, extra = self.forward(x, use_teacher_forcing=False, decode_sampling=True)
+        scores, sequence_lengths, extra = self.forward(
+            x, use_teacher_forcing=False, decode_sampling=True
+        )
 
         return sequences(scores), sequence_lengths, extra
 
@@ -322,12 +336,9 @@ def loss_cross_entropy(scores, target_captions, reduction="mean", ignore_index=0
 
     if scores.shape[1] < target_captions.shape[1]:
         # Model didn't produce sequences as long as gold, so we cut the gold captions to be able to calculate the loss
-        target_captions = target_captions[:, :scores.shape[1]]
+        target_captions = target_captions[:, : scores.shape[1]]
 
     scores = scores.permute(0, 2, 1)
     return F.cross_entropy(
-        scores,
-        target_captions,
-        ignore_index=ignore_index,
-        reduction=reduction,
+        scores, target_captions, ignore_index=ignore_index, reduction=reduction,
     )
