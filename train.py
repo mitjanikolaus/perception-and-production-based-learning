@@ -261,7 +261,6 @@ def main(args):
     args.receiver_hidden = DEFAULT_LSTM_HIDDEN_SIZE  # ???
     args.sender_cell = "lstm"
     args.receiver_cell = "lstm"
-    args.max_len = 25
 
     joint_embeddings_size = DEFAULT_LSTM_HIDDEN_SIZE
     lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
