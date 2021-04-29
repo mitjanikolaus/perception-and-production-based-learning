@@ -292,6 +292,10 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
         logits = torch.cat([logits, zeros], dim=1)
         entropy = torch.cat([entropy, zeros], dim=1)
 
+        # Add SOS token to messages
+        sos_tokens = torch.full((batch_size, 1), self.vocab.stoi[TOKEN_START], dtype=torch.long, device=device)
+        sequences = torch.cat([sos_tokens, sequences], dim=1)
+
         return sequences, logits, entropy
 
     def decode(self, x, num_samples):
