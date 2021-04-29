@@ -262,7 +262,6 @@ def main(args):
     args.sender_cell = "lstm"
     args.receiver_cell = "lstm"
     args.max_len = 25
-    args.random_seed = 1
 
     joint_embeddings_size = DEFAULT_LSTM_HIDDEN_SIZE
     lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
