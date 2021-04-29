@@ -11,6 +11,6 @@
 
 source activate egg
 
-python -u train.py --lr 0.0001 --max_len 20 --freeze-receiver --receiver-checkpoint ~/data/visual_ref/checkpoints/ranking_fine_tune_resnet/ranking.pt --sender-checkpoint ~/data/visual_ref/checkpoints/captioning/interactive.pt --print-sample-interactions --sender functional --log-frequency 50 --eval-frequency 300 --weight-structural-loss 0 --out-checkpoints-dir out_rl_finetune --sender-entropy-coeff 0.1 # --eval-semantics
+python -u train.py --lr 0.00001 --max_len 20 --freeze-receiver --receiver-checkpoint ~/data/visual_ref/checkpoints/ranking_fine_tune_resnet/ranking.pt --sender-checkpoint ~/data/visual_ref/checkpoints/captioning/interactive.pt --print-sample-interactions --sender functional --log-frequency 50 --eval-frequency 300 --weight-structural-loss 0 --out-checkpoints-dir out_rl_finetune --sender-entropy-coeff 0.1 # --eval-semantics
 
 
