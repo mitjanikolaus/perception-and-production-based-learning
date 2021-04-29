@@ -204,7 +204,7 @@ class CommunicationRnnMultiTask(nn.Module):
 
         if self.weight_structural_loss > 0:
             # Forward pass _with_ teacher forcing for structural loss
-            scores_struct, _, _ = sender(
+            _, _, _, scores_struct = sender(
                 images_target,
                 captions,
                 sequence_lengths,
