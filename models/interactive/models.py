@@ -12,7 +12,7 @@ import torch.nn.functional as F
 
 import numpy as np
 
-from egg.core import RnnSenderReinforce
+from egg.core import RnnSenderReinforce, find_lengths
 from preprocess import TOKEN_START, TOKEN_END, TOKEN_PADDING
 from utils import SPECIAL_CHARACTERS, sequences
 
@@ -229,8 +229,11 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
         sequences = torch.zeros(
             (batch_size, max(decode_lengths)), device=device, dtype=torch.long
         )
+        scores = torch.zeros(
+            (batch_size, max(decode_lengths), self.vocab_size), device=device
+        )
 
-        logits = []
+        sequence_logits = []
         entropy = []
 
         for step in range(max(decode_lengths)):
@@ -264,6 +267,10 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
 
             step_logits = F.log_softmax(self.hidden_to_output(h_t), dim=1)
 
+            scores[indices_incomplete_sequences, step, :] = step_logits[
+                indices_incomplete_sequences
+            ]
+
             distr = Categorical(logits=step_logits)
             entropy.append(distr.entropy())
 
@@ -271,7 +278,7 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
                 x = distr.sample()
             else:
                 x = step_logits.argmax(dim=1)
-            logits.append(distr.log_prob(x))
+            sequence_logits.append(distr.log_prob(x))
 
             sequences[indices_incomplete_sequences, step] = x[
                 indices_incomplete_sequences
@@ -283,16 +290,16 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
             else:
                 input = self.embedding(x)
 
-        logits = torch.stack(logits).permute(1, 0)
+        sequence_logits = torch.stack(sequence_logits).permute(1, 0)
         entropy = torch.stack(entropy).permute(1, 0)
 
         zeros = torch.zeros((sequences.size(0), 1)).to(sequences.device)
 
         sequences = torch.cat([sequences, zeros.long()], dim=1)
-        logits = torch.cat([logits, zeros], dim=1)
+        sequence_logits = torch.cat([sequence_logits, zeros], dim=1)
         entropy = torch.cat([entropy, zeros], dim=1)
 
-        return sequences, logits, entropy
+        return sequences, sequence_logits, entropy, scores
 
     def decode(self, x, num_samples):
         batch_size = x.shape[0]
@@ -301,16 +308,17 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
 
         # Repeat input to obtain multiple samples
         x = x.repeat(num_samples, 1, 1, 1)
-        scores, sequence_lengths, extra = self.forward(
+        sequences, _, _, scores = self.forward(
             x, use_teacher_forcing=False, decode_sampling=True
         )
+        sequence_lengths = find_lengths(sequences)
 
-        return sequences(scores), sequence_lengths, extra
+        return sequences, sequence_lengths, None
 
     def perplexity(self, images, captions, caption_lengths):
         """Return perplexities of captions given images."""
 
-        scores, _, _ = self.forward(images, captions, caption_lengths)
+        _, _, _, scores = self.forward(images, captions, caption_lengths)
 
         # Do not reduce among samples in batch
         loss = loss_cross_entropy(scores, captions, reduction="none")

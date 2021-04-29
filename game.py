@@ -138,11 +138,11 @@ class CommunicationRnnMultiTask(nn.Module):
 
         # Forward pass without teacher forcing for RL loss
         if self.training:
-            messages, log_prob_s, entropy_s = sender(
+            messages, log_prob_s, entropy_s, _ = sender(
                 images_target, use_teacher_forcing=False, decode_sampling=True,
             )
         else:
-            messages, log_prob_s, entropy_s = sender(
+            messages, log_prob_s, entropy_s, _ = sender(
                 images_target, use_teacher_forcing=False, decode_sampling=True,
             )
         message_lengths = find_lengths(messages)
@@ -198,6 +198,9 @@ class CommunicationRnnMultiTask(nn.Module):
         # optimized_loss += loss.mean()
 
         aux_info["loss_functional"] = optimized_loss.clone().reshape(1).detach()
+        # aux_info["weighted_entropy"] = weighted_entropy
+        # aux_info["policy_loss"] = policy_loss
+        # aux_info["policy_length_loss"] = policy_length_loss
 
         if self.weight_structural_loss > 0:
             # Forward pass _with_ teacher forcing for structural loss
