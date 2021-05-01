@@ -1,5 +1,6 @@
+import random
 from collections import defaultdict
-from typing import Callable
+from typing import Callable, Iterable
 
 import torch
 from torch import nn
@@ -18,7 +19,7 @@ class SenderReceiverRnnMultiTask(nn.Module):
     def __init__(
         self,
         sender: nn.Module,
-        receiver: nn.Module,
+        receivers: Iterable[nn.Module],
         loss_functional: Callable,
         loss_structural: Callable,
         sender_entropy_coeff: float = 0.0,
@@ -51,7 +52,7 @@ class SenderReceiverRnnMultiTask(nn.Module):
         """
         super(SenderReceiverRnnMultiTask, self).__init__()
         self.sender = sender
-        self.receiver = receiver
+        self.receivers = receivers
         self.loss_functional = loss_functional
         self.loss_structural = loss_structural
 
@@ -68,7 +69,7 @@ class SenderReceiverRnnMultiTask(nn.Module):
     def forward(self, sender_input, labels, receiver_input=None):
         return self.mechanics(
             self.sender,
-            self.receiver,
+            self.receivers,
             self.loss_functional,
             self.loss_structural,
             sender_input,
@@ -119,13 +120,16 @@ class CommunicationRnnMultiTask(nn.Module):
     def forward(
         self,
         sender,
-        receiver,
+        receivers,
         loss_functional,
         loss_structural,
         sender_input,
         labels,
         receiver_input=None,
     ):
+        # Sample a random receiver
+        receiver = random.choice(receivers)
+
         (
             images,
             target_label,

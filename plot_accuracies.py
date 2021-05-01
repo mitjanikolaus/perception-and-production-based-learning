@@ -79,7 +79,8 @@ def main(args):
 
     sns.lineplot(data=all_scores[list(legend.values())], ci="sd")
 
-    plt.xlim((0, args.x_lim))
+    if args.x_lim:
+        plt.xlim((0, args.x_lim))
     plt.ylim((0.49, args.y_lim))
 
     # Add chance level line
@@ -100,7 +101,7 @@ def get_args():
         "--rolling-window", default=30, type=int,
     )
     parser.add_argument(
-        "--x-lim", default=TRAINING_SET_SIZE * 20, type=int,
+        "--x-lim", default=None, type=int,
     )
     parser.add_argument(
         "--y-lim", default=1.0, type=float,

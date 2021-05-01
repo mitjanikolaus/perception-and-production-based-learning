@@ -203,14 +203,6 @@ def loss_structural(
     return loss, None
 
 
-# def loss_multitask(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels, weight_structural=1.0):
-#     loss_str, _ = loss_structural(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels)
-#     loss_func, acc = loss_functional(_sender_input, _message, sender_logits, _receiver_input, receiver_output, labels)
-#     loss_func = loss_func.mean()
-#     print(f"Structural Loss: {loss_str:.3f} Functional Loss: {loss_func:.3f}")
-#     return weight_structural * loss_str + loss_func, acc
-
-
 def main(args):
     # create model checkpoint directory
     if not os.path.exists(args.out_checkpoints_dir):
@@ -265,32 +257,6 @@ def main(args):
     joint_embeddings_size = DEFAULT_LSTM_HIDDEN_SIZE
     lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
 
-    # if args.receiver_checkpoint:
-    #     checkpoint_listener = torch.load(args.receiver_checkpoint, map_location=device)
-    #     ranking_model = ImageSentenceRanker(
-    #         word_embedding_size,
-    #         joint_embeddings_size,
-    #         lstm_hidden_size,
-    #         len(vocab),
-    #         fine_tune_resnet=False,
-    #     )
-    #     receiver = VisualRefListenerOracle(ranking_model)
-    #     receiver.load_state_dict(checkpoint_listener["model_state_dict"])
-    # else:
-    checkpoint_ranking_model = torch.load(args.receiver_checkpoint, map_location=device)
-    ranking_model = ImageSentenceRanker(
-        word_embedding_size,
-        joint_embeddings_size,
-        lstm_hidden_size,
-        len(vocab),
-        fine_tune_resnet=False,
-    )
-    ranking_model.load_state_dict(checkpoint_ranking_model["model_state_dict"])
-    receiver = VisualRefListenerOracle(ranking_model)
-
-    if args.freeze_receiver:
-        for param in receiver.parameters():
-            param.requires_grad = False
 
     if args.sender == "oracle":
         sender = VisualRefSpeakerDiscriminativeOracle(
@@ -319,9 +285,28 @@ def main(args):
     # use custom LoggingStrategy that stores image IDs
     logging_strategy = VisualRefLoggingStrategy()
 
+    receivers = []
+    for checkpoint in args.receiver_checkpoints:
+        checkpoint_ranking_model = torch.load(checkpoint, map_location=device)
+        ranking_model = ImageSentenceRanker(
+            word_embedding_size,
+            joint_embeddings_size,
+            lstm_hidden_size,
+            len(vocab),
+            fine_tune_resnet=False,
+        )
+        ranking_model.load_state_dict(checkpoint_ranking_model["model_state_dict"])
+        receiver = VisualRefListenerOracle(ranking_model)
+
+        if args.freeze_receiver:
+            for param in receiver.parameters():
+                param.requires_grad = False
+
+        receivers.append(receiver)
+
     game = SenderReceiverRnnMultiTask(
         sender,
-        receiver,
+        receivers,
         loss_functional=loss_functional,
         loss_structural=loss_structural,
         sender_entropy_coeff=args.sender_entropy_coeff,
@@ -448,9 +433,10 @@ def get_args():
         help="Checkpoint to load the sender model from",
     )
     parser.add_argument(
-        "--receiver-checkpoint",
+        "--receiver-checkpoints",
         type=str,
-        help="Checkpoint to load the receiver model from",
+        nargs="+",
+        help="Checkpoint to load the receiver models from",
     )
     parser.add_argument(
         "--out-checkpoints-dir",
