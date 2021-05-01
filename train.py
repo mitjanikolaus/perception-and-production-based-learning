@@ -296,12 +296,14 @@ def main(args):
             fine_tune_resnet=False,
         )
         ranking_model.load_state_dict(checkpoint_ranking_model["model_state_dict"])
+        ranking_model = ranking_model.to(device)
         receiver = VisualRefListenerOracle(ranking_model)
 
         if args.freeze_receiver:
             for param in receiver.parameters():
                 param.requires_grad = False
 
+        receiver = receiver.to(device)
         receivers.append(receiver)
 
     game = SenderReceiverRnnMultiTask(
