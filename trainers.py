@@ -62,14 +62,14 @@ class VisualRefTrainer(Trainer):
         self.vocab = vocab
 
     def save_models(self):
-        torch.save(
-            {
-                "model_state_dict": self.game.receiver.state_dict(),
-                "optimizer_state_dict": self.optimizer.state_dict(),
-                "loss": self.best_val_loss,
-            },
-            os.path.join(self.out_checkpoints_dir, CHECKPOINT_NAME_RECEIVER),
-        )
+        # torch.save(
+        #     {
+        #         "model_state_dict": self.game.receiver.state_dict(),
+        #         "optimizer_state_dict": self.optimizer.state_dict(),
+        #         "loss": self.best_val_loss,
+        #     },
+        #     os.path.join(self.out_checkpoints_dir, CHECKPOINT_NAME_RECEIVER),
+        # )
         torch.save(
             {
                 "model_state_dict": self.game.sender.state_dict(),
