@@ -210,7 +210,7 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
             decode_lengths = decode_lengths - 1
         else:
             decode_lengths = torch.full(
-                (batch_size,), self.max_len - 1, dtype=torch.int64, device=device,
+                (batch_size,), self.max_len, dtype=torch.int64, device=device,
             )
 
         image_features = self.agent(images_target)
