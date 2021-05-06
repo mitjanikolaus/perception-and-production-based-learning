@@ -12,6 +12,7 @@ from torch.utils.data import DataLoader
 from torch.nn import functional as F
 
 import matplotlib.pyplot as plt
+from torchtext.vocab import Vocab
 
 import egg.core as core
 from egg.core import (
@@ -38,6 +39,9 @@ from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
     VOCAB_FILENAME,
+    TOKEN_PADDING,
+    TOKEN_START,
+    TOKEN_END,
 )
 from trainers import VisualRefTrainer
 from utils import (
@@ -240,6 +244,15 @@ def main(args):
     with open(vocab_path, "rb") as file:
         vocab = pickle.load(file)
 
+    sender_vocab = vocab
+    if args.sender_vocab_size:
+        # create a new vocab with smaller number of elements
+        sender_vocab = Vocab(
+            vocab.freqs,
+            max_size=args.sender_vocab_size,
+            specials=[TOKEN_PADDING, Vocab.UNK, TOKEN_START, TOKEN_END],
+        )
+
     semantics_eval_loaders = {
         file: get_semantics_eval_dataloader(file, vocab)
         for file in SEMANTICS_EVAL_FILES
@@ -257,7 +270,6 @@ def main(args):
     joint_embeddings_size = DEFAULT_LSTM_HIDDEN_SIZE
     lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
 
-
     if args.sender == "oracle":
         sender = VisualRefSpeakerDiscriminativeOracle(
             DATA_PATH, CAPTIONS_FILENAME, args.max_len, vocab
@@ -267,8 +279,7 @@ def main(args):
         encoder = ImageEncoder(joint_embeddings_size, fine_tune_resnet=False)
         sender = RnnSenderMultitaskVisualRef(
             encoder,
-            vocab_size=len(vocab),
-            vocab=vocab,
+            vocab=sender_vocab,
             embed_dim=args.sender_embedding,
             hidden_size=args.sender_hidden,
             cell=args.sender_cell,
@@ -471,6 +482,12 @@ def get_args():
         default=1.0,
         type=float,
         help="Structural loss weight (if 1, then it's equal to functional loss)",
+    )
+    parser.add_argument(
+        "--sender-vocab-size",
+        default=None,
+        type=int,
+        help="Max size of the sender vocab",
     )
 
     # initialize the egg lib

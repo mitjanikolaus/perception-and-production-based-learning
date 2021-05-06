@@ -165,7 +165,6 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
         self,
         agent,
         vocab,
-        vocab_size,
         embed_dim,
         hidden_size,
         max_len,
@@ -173,7 +172,7 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
         cell="rnn",
     ):
         super(RnnSenderMultitaskVisualRef, self).__init__(
-            agent, vocab_size, embed_dim, hidden_size, max_len, num_layers, cell
+            agent, len(vocab), embed_dim, hidden_size, max_len, num_layers, cell
         )
 
         self.vocab = vocab
