@@ -192,8 +192,8 @@ class CommunicationRnnMultiTask(nn.Module):
             * effective_log_prob_s
         ).mean()
         policy_loss = (
-            #(loss.detach() - self.baselines["loss"].predict(loss.detach())) * log_prob
-            (loss.detach()) * log_prob
+            (loss.detach() - self.baselines["loss"].predict(loss.detach())) * log_prob
+            # (loss.detach()) * log_prob
         ).mean()
         #
         optimized_loss = policy_length_loss + policy_loss - weighted_entropy
