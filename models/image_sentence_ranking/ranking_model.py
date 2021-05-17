@@ -186,8 +186,9 @@ class ImageEmbedding(nn.Module):
         self.embed = nn.Linear(resnet.fc.in_features, joint_embeddings_size)
 
     def forward(self, images):
+        batch_size = images.shape[0]
         images_embedded = self.resnet(images)
-        images_embedded = self.embed(images_embedded.squeeze())
+        images_embedded = self.embed(images_embedded.reshape(batch_size, -1))
         images_embedded = l2_norm(images_embedded)
 
         return images_embedded
