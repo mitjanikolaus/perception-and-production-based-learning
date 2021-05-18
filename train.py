@@ -110,9 +110,12 @@ class PrintDebugEvents(Callback):
                 )
 
     def on_test_end(self, loss, interaction_logs: Interaction, batch_id: int):
-        val_acc = interaction_logs.aux["acc"].mean().item()
-        loss_func = interaction_logs.aux["loss_functional"].mean().item()
+        loss_func = 0
         loss_struct = 0
+        val_acc = 0
+        if "loss_functional" in interaction_logs.aux:
+            val_acc = interaction_logs.aux["acc"].mean().item()
+            loss_func = interaction_logs.aux["loss_functional"].mean().item()
         if "loss_structural" in interaction_logs.aux:
             loss_struct = interaction_logs.aux["loss_structural"].mean().item()
         accuracies = {
@@ -163,14 +166,15 @@ class PrintDebugEvents(Callback):
                 self.train_struct_loss = 0
 
             self.train_loss += loss
-            self.train_accuracies += interaction_logs.aux["acc"].sum()
-            self.train_func_loss += interaction_logs.aux["loss_functional"].item()
+            if "loss_functional" in interaction_logs.aux:
+                self.train_accuracies += interaction_logs.aux["acc"].sum()
+                self.train_func_loss += interaction_logs.aux["loss_functional"].item()
             if "loss_structural" in interaction_logs.aux:
                 self.train_struct_loss += interaction_logs.aux["loss_structural"].item()
 
             if (batch_id + 1) % self.args.log_frequency == 0:
                 loss = self.train_loss / self.args.log_frequency
-                batch_size = interaction_logs.aux["acc"].size()[0]
+                batch_size = interaction_logs.labels.shape[0]
                 mean_acc = self.train_accuracies / (
                     self.args.log_frequency * batch_size
                 )
@@ -195,7 +199,8 @@ def loss_functional(
     # probabilities over target poisitions) and the corresponding label read from input, indicating the ground-truth position of the target
     acc = (receiver_output.argmax(dim=1) == labels).detach().float()
     # similarly, the loss computes cross-entropy between the Receiver-produced target-position probability distribution and the labels
-    loss = F.cross_entropy(receiver_output, labels, reduction="none")
+    # loss = F.cross_entropy(receiver_output, labels, reduction="none")
+    loss = - acc
     return loss, {"acc": acc}
 
 
@@ -328,6 +333,8 @@ def main(args):
         train_logging_strategy=logging_strategy,
         test_logging_strategy=logging_strategy,
         weight_structural_loss=args.weight_structural_loss,
+        weight_functional_loss=args.weight_functional_loss,
+
     )
 
     callbacks = [
@@ -481,7 +488,13 @@ def get_args():
         "--weight-structural-loss",
         default=1.0,
         type=float,
-        help="Structural loss weight (if 1, then it's equal to functional loss)",
+        help="Structural loss weight",
+    )
+    parser.add_argument(
+        "--weight-functional-loss",
+        default=1.0,
+        type=float,
+        help="Functional loss weight",
     )
     parser.add_argument(
         "--sender-vocab-size",

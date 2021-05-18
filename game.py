@@ -26,6 +26,7 @@ class SenderReceiverRnnMultiTask(nn.Module):
         receiver_entropy_coeff: float = 0.0,
         length_cost: float = 0.0,
         weight_structural_loss: float = 1.0,
+        weight_functional_loss: float = 1.0,
         baseline_type: Baseline = MeanBaseline,
         train_logging_strategy: LoggingStrategy = None,
         test_logging_strategy: LoggingStrategy = None,
@@ -61,6 +62,7 @@ class SenderReceiverRnnMultiTask(nn.Module):
             receiver_entropy_coeff,
             length_cost,
             weight_structural_loss,
+            weight_functional_loss,
             baseline_type,
             train_logging_strategy,
             test_logging_strategy,
@@ -85,6 +87,7 @@ class CommunicationRnnMultiTask(nn.Module):
         receiver_entropy_coeff: float,
         length_cost: float = 0.0,
         weight_structural_loss: float = 1.0,
+        weight_functional_loss: float = 1.0,
         baseline_type: Baseline = MeanBaseline,
         train_logging_strategy: LoggingStrategy = None,
         test_logging_strategy: LoggingStrategy = None,
@@ -104,6 +107,7 @@ class CommunicationRnnMultiTask(nn.Module):
         self.receiver_entropy_coeff = receiver_entropy_coeff
         self.length_cost = length_cost
         self.weight_structural_loss = weight_structural_loss
+        self.weight_functional_loss = weight_functional_loss
 
         self.baselines = defaultdict(baseline_type)
         self.train_logging_strategy = (
@@ -140,71 +144,84 @@ class CommunicationRnnMultiTask(nn.Module):
         ) = sender_input
         images_target = images[target_label, range(images.size(1))]
 
-        # Forward pass without teacher forcing for RL loss
-        if self.training:
-            messages, log_prob_s, entropy_s, _ = sender(
-                images_target, use_teacher_forcing=False, decode_sampling=True,
+        optimized_loss = 0
+        aux_info = {}
+        messages = None
+        message_lengths = None
+        receiver_output = None
+
+        if self.weight_functional_loss > 0:
+            # Forward pass without teacher forcing for RL loss
+            if self.training:
+                messages, log_prob_s, entropy_s, _ = sender(
+                    images_target, use_teacher_forcing=False, decode_sampling=True,
+                )
+            else:
+                messages, log_prob_s, entropy_s, _ = sender(
+                    images_target, use_teacher_forcing=False, decode_sampling=True,
+                )
+            message_lengths = find_lengths(messages)
+
+            receiver_output, log_prob_r, entropy_r = receiver(
+                messages, receiver_input, message_lengths
             )
-        else:
-            messages, log_prob_s, entropy_s, _ = sender(
-                images_target, use_teacher_forcing=False, decode_sampling=True,
+
+            loss, aux_info = loss_functional(
+                sender_input, messages, log_prob_s, receiver_input, receiver_output, labels
             )
-        message_lengths = find_lengths(messages)
 
-        receiver_output, log_prob_r, entropy_r = receiver(
-            messages, receiver_input, message_lengths
-        )
+            # the entropy of the outputs of S before and including the eos symbol - as we don't care about what's after
+            effective_entropy_s = torch.zeros_like(entropy_r)
+            #
+            # # the log prob of the choices made by S before and including the eos symbol - again, we don't
+            # # care about the rest
+            effective_log_prob_s = torch.zeros_like(log_prob_r)
+            #
+            for i in range(max(message_lengths)):
+                not_eosed = (i < message_lengths).float()
+                effective_entropy_s += entropy_s[:, i] * not_eosed
+                effective_log_prob_s += log_prob_s[:, i] * not_eosed
+            effective_entropy_s = effective_entropy_s / message_lengths.float()
 
-        loss_func, aux_info = loss_functional(
-            sender_input, messages, log_prob_s, receiver_input, receiver_output, labels
-        )
+            weighted_entropy = (
+                effective_entropy_s.mean() * self.sender_entropy_coeff
+                + entropy_r.mean() * self.receiver_entropy_coeff
+            )
 
-        # Calculate reward: transform 0's in acc to -1
-        reward = (aux_info["acc"] - 1) * 2 + 1
+            log_prob = effective_log_prob_s + log_prob_r
 
-        loss = - reward
+            length_loss = message_lengths.float() * self.length_cost
 
-        # TODO: understand regularization
-        # the entropy of the outputs of S before and including the eos symbol - as we don't care about what's after
-        effective_entropy_s = torch.zeros_like(entropy_r)
-        #
-        # # the log prob of the choices made by S before and including the eos symbol - again, we don't
-        # # care about the rest
-        effective_log_prob_s = torch.zeros_like(log_prob_r)
-        #
-        for i in range(max(message_lengths)):
-            not_eosed = (i < message_lengths).float()
-            effective_entropy_s += entropy_s[:, i] * not_eosed
-            effective_log_prob_s += log_prob_s[:, i] * not_eosed
-        effective_entropy_s = effective_entropy_s / message_lengths.float()
+            policy_length_loss = (
+                (length_loss - self.baselines["length"].predict(length_loss))
+                * effective_log_prob_s
+            ).mean()
+            policy_loss = (
+                (loss.detach() - self.baselines["loss"].predict(loss.detach())) * log_prob
+            ).mean()
 
-        weighted_entropy = (
-            effective_entropy_s.mean() * self.sender_entropy_coeff
-            + entropy_r.mean() * self.receiver_entropy_coeff
-        )
+            functional_loss = policy_length_loss + policy_loss - weighted_entropy
+            # # if the receiver is deterministic/differentiable, we apply the actual loss
+            # TODO in our case the receiver is not trained
+            # optimized_loss += loss.mean()
 
-        log_prob = effective_log_prob_s + log_prob_r
+            aux_info["loss_functional"] = functional_loss.clone().reshape(1).detach()
+            # aux_info["weighted_entropy"] = weighted_entropy
+            # aux_info["policy_loss"] = policy_loss
+            # aux_info["policy_length_loss"] = policy_length_loss
 
-        length_loss = message_lengths.float() * self.length_cost
+            if self.training:
+                self.baselines["loss"].update(loss)
+                self.baselines["length"].update(length_loss)
 
-        policy_length_loss = (
-            (length_loss - self.baselines["length"].predict(length_loss))
-            * effective_log_prob_s
-        ).mean()
-        policy_loss = (
-            (loss.detach() - self.baselines["loss"].predict(loss.detach())) * log_prob
-            # (loss.detach()) * log_prob
-        ).mean()
-        #
-        optimized_loss = policy_length_loss + policy_loss - weighted_entropy
-        # # if the receiver is deterministic/differentiable, we apply the actual loss
-        # TODO
-        # optimized_loss += loss.mean()
+            aux_info["sender_entropy"] = entropy_s.detach()
+            aux_info["receiver_entropy"] = entropy_r.detach()
+            aux_info["length"] = message_lengths.float()  # will be averaged
 
-        aux_info["loss_functional"] = optimized_loss.clone().reshape(1).detach()
-        # aux_info["weighted_entropy"] = weighted_entropy
-        # aux_info["policy_loss"] = policy_loss
-        # aux_info["policy_length_loss"] = policy_length_loss
+            optimized_loss += self.weight_functional_loss * functional_loss
+
+            messages = messages.detach()
+            receiver_output = receiver_output.detach()
 
         if self.weight_structural_loss > 0:
             # Forward pass _with_ teacher forcing for structural loss
@@ -221,14 +238,6 @@ class CommunicationRnnMultiTask(nn.Module):
 
             optimized_loss += self.weight_structural_loss * loss_struct
 
-        if self.training:
-            self.baselines["loss"].update(loss)
-            self.baselines["length"].update(length_loss)
-
-        aux_info["sender_entropy"] = entropy_s.detach()
-        aux_info["receiver_entropy"] = entropy_r.detach()
-        aux_info["length"] = message_lengths.float()  # will be averaged
-
         logging_strategy = (
             self.train_logging_strategy if self.training else self.test_logging_strategy
         )
@@ -236,8 +245,8 @@ class CommunicationRnnMultiTask(nn.Module):
             sender_input=sender_input,
             labels=labels,
             receiver_input=receiver_input,
-            message=messages.detach(),
-            receiver_output=receiver_output.detach(),
+            message=messages,
+            receiver_output=receiver_output,
             message_length=message_lengths,
             aux=aux_info,
         )
