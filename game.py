@@ -206,9 +206,9 @@ class CommunicationRnnMultiTask(nn.Module):
             # optimized_loss += loss.mean()
 
             aux_info["loss_functional"] = functional_loss.clone().reshape(1).detach()
-            # aux_info["weighted_entropy"] = weighted_entropy
-            # aux_info["policy_loss"] = policy_loss
-            # aux_info["policy_length_loss"] = policy_length_loss
+            aux_info["weighted_entropy"] = weighted_entropy
+            aux_info["policy_loss"] = policy_loss
+            aux_info["policy_length_loss"] = policy_length_loss
 
             if self.training:
                 self.baselines["loss"].update(loss)
@@ -224,14 +224,35 @@ class CommunicationRnnMultiTask(nn.Module):
             receiver_output = receiver_output.detach()
 
         if self.weight_structural_loss > 0:
-            # Forward pass _with_ teacher forcing for structural loss
-            _, _, _, scores_struct = sender(
-                images_target,
-                captions,
-                sequence_lengths,
-                use_teacher_forcing=True,
-                decode_sampling=False,
-            )
+            if self.training:
+                # Forward pass _with_ teacher forcing for structural loss
+                _, _, _, scores_struct = sender(
+                    images_target,
+                    captions,
+                    sequence_lengths,
+                    use_teacher_forcing=True,
+                    decode_sampling=False,
+                )
+            else:
+                # Eval: do not use teacher forcing and pass to receiver to evaluate model if functional loss is not used
+                messages_struct, log_prob_s, _, scores_struct = sender(
+                    images_target,
+                    captions,
+                    sequence_lengths,
+                    use_teacher_forcing=False,
+                    decode_sampling=True,
+                )
+                if self.weight_functional_loss == 0:
+                    messages = messages_struct.detach()
+                    message_lengths = find_lengths(messages)
+
+                    receiver_output, _, _ = receiver(
+                        messages, receiver_input, message_lengths
+                    )
+                    # calculate functional loss to get accuracy
+                    _, aux_info = loss_functional(
+                        sender_input, messages, log_prob_s, receiver_input, receiver_output, labels
+                    )
 
             loss_struct, _ = loss_structural(captions, scores_struct)
             aux_info["loss_structural"] = loss_struct.reshape(1).detach()

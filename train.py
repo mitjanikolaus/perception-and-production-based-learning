@@ -112,9 +112,8 @@ class PrintDebugEvents(Callback):
     def on_test_end(self, loss, interaction_logs: Interaction, batch_id: int):
         loss_func = 0
         loss_struct = 0
-        val_acc = 0
+        val_acc = interaction_logs.aux["acc"].mean().item()
         if "loss_functional" in interaction_logs.aux:
-            val_acc = interaction_logs.aux["acc"].mean().item()
             loss_func = interaction_logs.aux["loss_functional"].mean().item()
         if "loss_structural" in interaction_logs.aux:
             loss_struct = interaction_logs.aux["loss_structural"].mean().item()
