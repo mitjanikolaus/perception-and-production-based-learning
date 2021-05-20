@@ -206,9 +206,9 @@ class CommunicationRnnMultiTask(nn.Module):
             # optimized_loss += loss.mean()
 
             aux_info["loss_functional"] = functional_loss.clone().reshape(1).detach()
-            aux_info["weighted_entropy"] = weighted_entropy
-            aux_info["policy_loss"] = policy_loss
-            aux_info["policy_length_loss"] = policy_length_loss
+            # aux_info["weighted_entropy"] = weighted_entropy
+            # aux_info["policy_loss"] = policy_loss
+            # aux_info["policy_length_loss"] = policy_length_loss
 
             if self.training:
                 self.baselines["loss"].update(loss)
