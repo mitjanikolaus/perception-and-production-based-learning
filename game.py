@@ -240,7 +240,7 @@ class CommunicationRnnMultiTask(nn.Module):
                     captions,
                     sequence_lengths,
                     use_teacher_forcing=False,
-                    decode_sampling=True,
+                    decode_sampling=False,
                 )
                 if self.weight_functional_loss == 0:
                     messages = messages_struct.detach()
