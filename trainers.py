@@ -55,7 +55,7 @@ class VisualRefTrainer(Trainer):
         common_opts = get_opts()
         self.eval_frequency = common_opts.eval_frequency
 
-        self.best_val_loss = math.inf
+        self.best_val_acc = 0
 
         self.out_checkpoints_dir = out_checkpoints_dir
 
@@ -74,7 +74,7 @@ class VisualRefTrainer(Trainer):
             {
                 "model_state_dict": self.game.sender.state_dict(),
                 "optimizer_state_dict": self.optimizer.state_dict(),
-                "loss": self.best_val_loss,
+                "acc": self.best_val_acc,
             },
             os.path.join(self.out_checkpoints_dir, CHECKPOINT_NAME_SENDER),
         )
@@ -89,9 +89,10 @@ class VisualRefTrainer(Trainer):
         for batch_id, batch in enumerate(self.train_data):
             if batch_id % self.eval_frequency == 0:
                 val_loss, val_interactions = self.eval()
+                val_acc = val_interactions.aux["acc"].mean()
 
-                if val_loss < self.best_val_loss:
-                    self.best_val_loss = val_loss
+                if val_acc > self.best_val_acc:
+                    self.best_val_acc = val_acc
                     self.save_models()
 
                 for callback in self.callbacks:

@@ -317,7 +317,7 @@ class RnnSenderMultitaskVisualRef(RnnSenderReinforce):
     def perplexity(self, images, captions, caption_lengths):
         """Return perplexities of captions given images."""
 
-        _, _, _, scores = self.forward(images, captions, caption_lengths)
+        _, _, _, scores = self.forward(images, captions, caption_lengths, use_teacher_forcing=True)
 
         # Do not reduce among samples in batch
         loss = loss_cross_entropy(scores, captions, reduction="none")

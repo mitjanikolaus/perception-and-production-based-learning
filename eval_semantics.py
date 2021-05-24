@@ -17,7 +17,7 @@ from models.image_sentence_ranking.ranking_model import ImageSentenceRanker, cos
 from models.image_sentence_ranking.ranking_model_grounded import (
     ImageSentenceRankerGrounded,
 )
-from models.interactive.models import RnnSenderMultitaskVisualRef
+from models.interactive.models import RnnSenderMultitaskVisualRef, ImageEncoder
 from models.joint.joint_learner import JointLearner
 from models.joint.joint_learner_sat import JointLearnerSAT
 from models.language_modeling.language_model import LanguageModel
@@ -28,7 +28,7 @@ from preprocess import (
     MAX_CAPTION_LEN,
     DATA_PATH,
 )
-from utils import decode_caption, SEMANTICS_EVAL_FILES
+from utils import decode_caption, SEMANTICS_EVAL_FILES, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -174,6 +174,20 @@ def main(args):
             vocab,
             MAX_CAPTION_LEN,
             fine_tune_resnet=False,
+        )
+
+    elif "sender" in args.checkpoint:
+        print("Loading sender image captioning model.")
+        word_embedding_size = DEFAULT_WORD_EMBEDDINGS_SIZE
+        sender_hidden = DEFAULT_LSTM_HIDDEN_SIZE
+        encoder = ImageEncoder(sender_hidden, fine_tune_resnet=False)
+        model = RnnSenderMultitaskVisualRef(
+            encoder,
+            vocab=vocab,
+            embed_dim=word_embedding_size,
+            hidden_size=sender_hidden,
+            cell="lstm",
+            max_len=MAX_CAPTION_LEN,
         )
 
     elif "joint" in args.checkpoint:
