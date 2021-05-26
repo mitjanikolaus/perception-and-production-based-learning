@@ -53,15 +53,15 @@ def main(args):
 
         if "epoch" in scores.columns:
             scores["num_samples"] = scores.aggregate(lambda x: x["epoch"] * TRAINING_SET_SIZE + x["batch_id"] * DEFAULT_BATCH_SIZE, axis=1)
-            print(
-                f"Epoch with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['epoch'].values[0]}"
-            )
+            # print(
+            #     f"Epoch with max val acc:{scores[scores['val_acc'] == scores['val_acc'].max()]['epoch'].values[0]}"
+            # )
         else:
             scores["num_samples"] = scores.aggregate(lambda x: x["batch_id"] * DEFAULT_BATCH_SIZE, axis=1)
 
-        print(
-            f"num_samples with min val loss:{scores[scores['val_loss'] == scores['val_loss'].min()]['num_samples'].values[0]}"
-        )
+        # print(
+        #     f"num_samples with max val acc:{scores[scores['val_acc'] == scores['val_acc'].max()]['num_samples'].values[0]}"
+        # )
 
         scores.set_index("num_samples", inplace=True)
 
@@ -76,6 +76,10 @@ def main(args):
         all_scores.append(scores.copy())
 
     all_scores = pd.concat(all_scores)
+
+    if "val_acc" in all_scores.columns:
+        print(f"Max val acc: {scores['val_acc'].max()}")
+        legend["val_acc"] = "val_acc"
 
     sns.lineplot(data=all_scores[list(legend.values())], ci="sd")
 
