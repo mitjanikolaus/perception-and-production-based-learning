@@ -360,13 +360,13 @@ def get_args():
         help="Logging frequency (number of batches)",
     )
     parser.add_argument(
-        "--n_epochs",
+        "--n-epochs",
         type=int,
         default=15,
         help="Number of epochs to train (default: 15)",
     )
     parser.add_argument(
-        "--batch_size",
+        "--batch-size",
         type=int,
         default=32,
         help="Input batch size for training (default: 32)",
