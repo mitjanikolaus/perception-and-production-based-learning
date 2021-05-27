@@ -198,7 +198,6 @@ def main(args):
         )
         model = RnnSenderMultitaskVisualRef(
             encoder,
-            vocab_size=len(vocab),
             vocab=vocab,
             embed_dim=word_embedding_size,
             hidden_size=lstm_hidden_size,
@@ -216,7 +215,7 @@ def main(args):
             fine_tune_resnet=args.fine_tune_resnet,
         )
     elif args.model == "show_and_tell":
-        word_embedding_size = 512
+        word_embedding_size = 100
         model = ShowAndTell(
             word_embedding_size,
             visual_embedding_size,

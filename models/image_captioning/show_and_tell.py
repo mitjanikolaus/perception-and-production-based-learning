@@ -64,8 +64,6 @@ class ShowAndTell(CaptioningModel):
             fine_tune_decoder_word_embeddings,
         )
         self.image_encoder = ImageEncoder(visual_embeddings_size, fine_tune_resnet)
-        if word_embedding_size != visual_embeddings_size:
-            raise ValueError("word embeddings must have same size as visual embeddings")
 
         self.lstm_hidden_size = lstm_hidden_size
 
