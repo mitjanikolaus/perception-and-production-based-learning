@@ -379,4 +379,5 @@ def get_args():
 if __name__ == "__main__":
     print("Start training on device: ", device)
     args = get_args()
+    print(args)
     main(args)
