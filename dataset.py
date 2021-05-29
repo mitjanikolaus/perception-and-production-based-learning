@@ -170,7 +170,7 @@ class CaptionRLDataset(Dataset):
 
         captions = self.captions[image_id]
 
-        captions = [torch.LongTensor(caption, device=device) for caption in captions]
+        captions = [torch.Tensor(caption, device=device, dtype=torch.long) for caption in captions]
 
         return image, captions, image_id
 
@@ -180,13 +180,13 @@ class CaptionRLDataset(Dataset):
     def pad_collate(batch):
         images = torch.stack([s[0] for s in batch])
         captions = [s[1] for s in batch]
-        image_ids = torch.tensor([s[2] for s in batch])
+        image_ids = torch.tensor([s[2] for s in batch], device=device)
 
         # flatten captions in order to pad
         flattened_captions = []
         for captions_image in captions:
             flattened_captions.extend(captions_image)
-        sequence_lengths = torch.tensor([len(c) for c in flattened_captions])
+        sequence_lengths = torch.tensor([len(c) for c in flattened_captions], device=device)
         padded_captions = pad_sequence(flattened_captions, batch_first=True)
 
         # separate back into captions per image
