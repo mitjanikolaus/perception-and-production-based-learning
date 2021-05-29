@@ -184,7 +184,7 @@ class CaptioningModel(nn.Module):
             )
 
         loss = - torch.tensor(
-            corpus_bleu(references_decoded, sequences_decoded), device=device
+            corpus_bleu(references_decoded, sequences_decoded), device=device, dtype=torch.float
         )
 
         # TODO: check whether this step is superfluous
