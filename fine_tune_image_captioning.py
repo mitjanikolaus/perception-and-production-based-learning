@@ -165,6 +165,8 @@ def main(args):
     accuracies_over_time = []
     for epoch in range(args.n_epochs):
         losses = []
+        bleu_scores = []
+
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(
             train_loader
         ):
@@ -176,11 +178,7 @@ def main(args):
                     ranking_loss,
                     val_acc,
                 ) = validate_model(
-                    model,
-                    val_images_loader,
-                    semantics_eval_loaders,
-                    vocab,
-                    args
+                    model, val_images_loader, semantics_eval_loaders, vocab, args
                 )
                 accuracies["val_loss"] = val_loss
                 accuracies["batch_id"] = batch_idx
@@ -240,13 +238,15 @@ def main(args):
                 baselines["length"].update(length_loss)
 
             losses.append(rl_loss.item())
+            bleu_scores.append(-loss.item())
 
             optimizer.zero_grad()
             rl_loss.backward()
             optimizer.step()
 
         print(
-            f"End of epoch: {epoch} | train loss: {np.mean(losses)} | best val loss: {best_val_loss}\n\n"
+            f"End of epoch: {epoch} | train loss: {np.mean(losses)} | BLEU score: {np.mean(bleu_scores)} | "
+            f"best val loss: {best_val_loss}\n\n"
         )
 
 
