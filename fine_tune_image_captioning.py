@@ -252,7 +252,7 @@ def main(args):
                 baselines["loss"].update(loss)
                 baselines["length"].update(length_loss)
 
-            losses.append(rl_loss)
+            losses.append(rl_loss.item())
 
             optimizer.zero_grad()
             rl_loss.backward()
