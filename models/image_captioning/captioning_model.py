@@ -1,7 +1,7 @@
 import random
 
 import torch
-from nltk.translate.bleu_score import corpus_bleu
+from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
 from torch import nn
 import torch.nn.functional as F
 from torch.distributions import Categorical
@@ -183,8 +183,14 @@ class CaptioningModel(nn.Module):
                 [decode_caption(c, vocab) for c in target_captions_image]
             )
 
-        loss = - torch.tensor(
-            corpus_bleu(references_decoded, sequences_decoded), device=device, dtype=torch.float
+        loss = -torch.tensor(
+            corpus_bleu(
+                references_decoded,
+                sequences_decoded,
+                smoothing_function=SmoothingFunction().method1,
+            ),
+            device=device,
+            dtype=torch.float,
         )
 
         # TODO: check whether this step is superfluous
@@ -546,9 +552,15 @@ class CaptioningModel(nn.Module):
             next_words = distr.sample()
 
             # Add new words to sequences, update entropies and logits
-            sequences[indices_incomplete_sequences, step + 1] = next_words[indices_incomplete_sequences]
-            entropies[indices_incomplete_sequences, step + 1] = distr.entropy()[indices_incomplete_sequences]
-            logits[indices_incomplete_sequences, step + 1] = distr.log_prob(next_words)[indices_incomplete_sequences]
+            sequences[indices_incomplete_sequences, step + 1] = next_words[
+                indices_incomplete_sequences
+            ]
+            entropies[indices_incomplete_sequences, step + 1] = distr.entropy()[
+                indices_incomplete_sequences
+            ]
+            logits[indices_incomplete_sequences, step + 1] = distr.log_prob(next_words)[
+                indices_incomplete_sequences
+            ]
 
         return sequences, logits, entropies, decode_lengths
 
