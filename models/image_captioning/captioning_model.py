@@ -189,8 +189,8 @@ class CaptioningModel(nn.Module):
 
         # TODO: check whether this step is superfluous
         # # the log prob/ entropy of the choices made by S before and including the eos symbol
-        effective_entropy = torch.zeros(entropies.shape[0])
-        effective_log_prob = torch.zeros(logits.shape[0])
+        effective_entropy = torch.zeros(entropies.shape[0], device=device)
+        effective_log_prob = torch.zeros(logits.shape[0], device=device)
 
         for i in range(max(sequence_lengths)):
             not_eosed = (i < sequence_lengths).float()
