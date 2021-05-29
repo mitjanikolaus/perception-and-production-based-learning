@@ -74,8 +74,8 @@ class MeanBaseline:
 
 def main(args):
     # create model checkpoint directory
-    if not os.path.exists(CHECKPOINT_DIR_IMAGE_CAPTIONING):
-        os.makedirs(CHECKPOINT_DIR_IMAGE_CAPTIONING)
+    if not os.path.exists(args.out_checkpoints_dir):
+        os.makedirs(args.out_checkpoints_dir)
 
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
     print("Loading vocab from {}".format(vocab_path))
