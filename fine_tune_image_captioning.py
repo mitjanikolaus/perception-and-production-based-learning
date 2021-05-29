@@ -189,8 +189,8 @@ def main(args):
                     CHECKPOINT_DIR_IMAGE_CAPTIONING + args.model + "_accuracies.csv",
                 )
                 print(
-                    f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | BLEU score (train): {np.mean(bleu_scores)}"
-                    f" | val loss: {val_loss:.3f} | captioning loss:"
+                    f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | BLEU score (train): "
+                    f"{np.mean(bleu_scores):.3f} | val loss: {val_loss:.3f} | captioning loss:"
                     f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f}"
                 )
                 if val_loss < best_val_loss:
@@ -246,7 +246,7 @@ def main(args):
             optimizer.step()
 
         print(
-            f"End of epoch: {epoch} | train loss: {np.mean(losses)} | BLEU score: {np.mean(bleu_scores)} | "
+            f"End of epoch: {epoch} | train loss: {np.mean(losses)} | BLEU score: {np.mean(bleu_scores):.3f} | "
             f"best val loss: {best_val_loss}\n\n"
         )
 
