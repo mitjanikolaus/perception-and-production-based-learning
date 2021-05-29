@@ -1,8 +1,10 @@
 import random
 
 import torch
+from nltk.translate.bleu_score import corpus_bleu
 from torch import nn
 import torch.nn.functional as F
+from torch.distributions import Categorical
 
 from preprocess import TOKEN_PADDING
 from utils import TOKEN_START, decode_caption, TOKEN_END
@@ -161,6 +163,46 @@ class CaptioningModel(nn.Module):
             ignore_index=self.vocab[TOKEN_PADDING],
             reduction=reduction,
         )
+
+    def loss_rl(
+        self,
+        sequences,
+        target_captions,
+        logits,
+        entropies,
+        sequence_lengths,
+        vocab,
+        entropy_coeff,
+        length_cost,
+    ):
+        sequences_decoded = [decode_caption(sequence, vocab) for sequence in sequences]
+
+        references_decoded = []
+        for target_captions_image in target_captions:
+            references_decoded.append(
+                [decode_caption(c, vocab) for c in target_captions_image]
+            )
+
+        loss = - torch.tensor(
+            corpus_bleu(references_decoded, sequences_decoded), device=device
+        )
+
+        # TODO: check whether this step is superfluous
+        # # the log prob/ entropy of the choices made by S before and including the eos symbol
+        effective_entropy = torch.zeros(entropies.shape[0])
+        effective_log_prob = torch.zeros(logits.shape[0])
+
+        for i in range(max(sequence_lengths)):
+            not_eosed = (i < sequence_lengths).float()
+            effective_entropy += entropies[:, i] * not_eosed
+            effective_log_prob += logits[:, i] * not_eosed
+        effective_entropy = effective_entropy / sequence_lengths.float()
+
+        weighted_entropy = effective_entropy.mean() * entropy_coeff
+
+        length_loss = sequence_lengths.float() * length_cost
+
+        return loss, length_loss, effective_log_prob, weighted_entropy
 
     def beam_search(
         self,
@@ -428,6 +470,87 @@ class CaptioningModel(nn.Module):
             )
         ]
         return sorted_sequences, None, None
+
+    def decode_sampling(self, images):
+        """Generate and return sampled sequences and probability scores for RL."""
+        encoder_output = self.image_encoder(images)
+
+        batch_size = images.shape[0]
+
+        encoder_dim = encoder_output.size()[-1]
+
+        # Flatten encoding
+        encoder_output = encoder_output.view(batch_size, -1, encoder_dim)
+
+        decode_lengths = torch.full(
+            (batch_size,), self.max_caption_length, dtype=torch.int64, device=device,
+        )
+
+        # Tensor to store sequences
+        sequences = torch.zeros(
+            (batch_size, max(decode_lengths)), device=device, dtype=torch.int64,
+        )
+
+        # Tensor to store entropies
+        entropies = torch.zeros(
+            (batch_size, max(decode_lengths),), device=device, dtype=torch.float,
+        )
+
+        # Tensor to store sequence logits
+        logits = torch.zeros(
+            (batch_size, max(decode_lengths),), device=device, dtype=torch.float,
+        )
+
+        # Initialize hidden states
+        states = self.init_hidden_states(encoder_output)
+
+        # Initialize next words with SOS tokens
+        next_words = torch.full(
+            (batch_size,), self.vocab[TOKEN_START], dtype=torch.int64, device=device
+        )
+
+        # Start decoding
+        for step in range(0, self.max_caption_length - 1):
+            prev_words = next_words
+
+            if step == 0:
+                prev_words_embedded = self.lstm_input_first_timestep(
+                    batch_size, encoder_output
+                )
+            else:
+                prev_words_embedded = self.word_embedding(prev_words)
+
+                # Find all sequences where an <end> token has been produced in the last timestep
+                ind_end_token = (
+                    torch.nonzero(prev_words == self.vocab[TOKEN_END]).view(-1).tolist()
+                )
+
+                # Update the decode lengths accordingly
+                decode_lengths[ind_end_token] = torch.min(
+                    decode_lengths[ind_end_token],
+                    torch.full_like(decode_lengths[ind_end_token], step, device=device),
+                )
+
+            # Check if all sequences are finished:
+            indices_incomplete_sequences = torch.nonzero(decode_lengths > step).view(-1)
+            if len(indices_incomplete_sequences) == 0:
+                break
+
+            predictions, states, alpha = self.forward_step(
+                encoder_output, prev_words_embedded, states
+            )
+            scores = F.log_softmax(predictions, dim=1)
+
+            distr = Categorical(logits=scores)
+
+            next_words = distr.sample()
+
+            # Add new words to sequences, update entropies and logits
+            sequences[indices_incomplete_sequences, step + 1] = next_words[indices_incomplete_sequences]
+            entropies[indices_incomplete_sequences, step + 1] = distr.entropy()[indices_incomplete_sequences]
+            logits[indices_incomplete_sequences, step + 1] = distr.log_prob(next_words)[indices_incomplete_sequences]
+
+        return sequences, logits, entropies, decode_lengths
 
     def perplexity(self, images, captions, caption_lengths):
         """Return perplexities of captions given images."""

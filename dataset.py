@@ -109,6 +109,98 @@ class CaptionDataset(Dataset):
         )
 
 
+class CaptionRLDataset(Dataset):
+    """
+    PyTorch Dataset that provides batches of images along with all gold captions of a given split
+    """
+
+    CAPTIONS_PER_IMAGE = 6
+
+    def __init__(
+        self,
+        data_folder,
+        features_filename,
+        captions_filename,
+        vocab,
+        features_scale_factor=1 / 255.0,
+    ):
+        """
+        :param data_folder: folder where data files are stored
+        :param features_filename: Filename of the image features file
+        :param normalize: PyTorch normalization transformation
+        :param features_scale_factor: Additional scale factor, applied before normalization
+        """
+        self.images = h5py.File(os.path.join(data_folder, features_filename), "r")
+
+        self.features_scale_factor = features_scale_factor
+
+        # Load captions
+        with open(os.path.join(data_folder, captions_filename), "rb") as file:
+            self.captions = pickle.load(file)
+
+        # Set pytorch transformation pipeline
+        self.normalize = transforms.Normalize(
+            mean=MEAN_ABSTRACT_SCENES, std=STD_ABSTRACT_SCENES
+        )
+
+        self.image_ids = [int(i) for i in list(self.images.keys())]
+
+        self.vocab = vocab
+
+    def get_image_features(self, id, channels_first=True, normalize=True):
+        image_data = self.images[str(id)][()]
+
+        image = torch.FloatTensor(image_data)
+
+        if channels_first:
+            image = image.permute(2, 0, 1)
+
+        if normalize:
+            image = self.normalize(image)
+
+        # scale the features with given factor
+        image = image * self.features_scale_factor
+
+        return image
+
+    def __getitem__(self, i):
+        image_id = self.image_ids[i]
+
+        image = self.get_image_features(image_id)
+
+        captions = self.captions[image_id]
+
+        captions = [torch.LongTensor(caption, device=device) for caption in captions]
+
+        return image, captions, image_id
+
+    def __len__(self):
+        return len(self.images)
+
+    def pad_collate(batch):
+        images = torch.stack([s[0] for s in batch])
+        captions = [s[1] for s in batch]
+        image_ids = torch.tensor([s[2] for s in batch])
+
+        # flatten captions in order to pad
+        flattened_captions = []
+        for captions_image in captions:
+            flattened_captions.extend(captions_image)
+        sequence_lengths = torch.tensor([len(c) for c in flattened_captions])
+        padded_captions = pad_sequence(flattened_captions, batch_first=True)
+
+        # separate back into captions per image
+        padded_captions = padded_captions.reshape(images.shape[0], CaptionRLDataset.CAPTIONS_PER_IMAGE, -1)
+        sequence_lengths = sequence_lengths.reshape(images.shape[0], -1)
+
+        return (
+            images.to(device),
+            padded_captions.to(device),
+            sequence_lengths.to(device),
+            image_ids,
+        )
+
+
 class SemanticsEvalDataset(Dataset):
     """
     PyTorch Dataset that provides sets of target and distractor images for syntax learning evaluation

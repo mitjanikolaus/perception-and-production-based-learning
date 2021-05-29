@@ -1,7 +1,9 @@
 import argparse
 import math
+import pathlib
 import pickle
 import os
+from collections import defaultdict
 
 import numpy as np
 
@@ -13,12 +15,16 @@ import torch.utils.data
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 
-from dataset import CaptionDataset
+from dataset import CaptionDataset, CaptionRLDataset
 from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.image_sentence_ranking.ranking_model import accuracy_discrimination
-from models.interactive.models import ImageEncoder, RnnSenderMultitaskVisualRef, loss_cross_entropy
+from models.interactive.models import (
+    ImageEncoder,
+    RnnSenderMultitaskVisualRef,
+    loss_cross_entropy,
+)
 from models.joint.joint_learner_sat import JointLearnerSAT
 from preprocess import (
     IMAGES_FILENAME,
@@ -27,127 +33,43 @@ from preprocess import (
     MAX_CAPTION_LEN,
     DATA_PATH,
 )
+from train_image_captioning import validate_model, save_model
 from utils import (
     print_caption,
     CHECKPOINT_DIR_IMAGE_CAPTIONING,
     SEMANTICS_EVAL_FILES,
-    DEFAULT_LOG_FREQUENCY, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE,
+    DEFAULT_LOG_FREQUENCY,
+    DEFAULT_WORD_EMBEDDINGS_SIZE,
+    DEFAULT_LSTM_HIDDEN_SIZE,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-PRINT_SAMPLE_CAPTIONS = 1
 
-NUM_BATCHES_VALIDATION = 100
+class MeanBaseline:
+    """Running mean baseline; all loss batches have equal importance/weight,
+    hence it is better if they are equally-sized.
+    """
 
-WEIGH_RANKING_LOSS = 1 / 3
+    def __init__(self):
+        super().__init__()
 
+        self.mean_baseline = torch.zeros(1, requires_grad=False)
+        self.n_points = 0.0
 
-def print_model_output(output, target_captions, image_ids, vocab, num_captions=1):
-    captions_model = torch.argmax(output, dim=1)
-    print_captions(captions_model, target_captions, image_ids, vocab, num_captions)
+    def update(self, loss: torch.Tensor) -> None:
+        self.n_points += 1
+        if self.mean_baseline.device != loss.device:
+            self.mean_baseline = self.mean_baseline.to(loss.device)
 
+        self.mean_baseline += (
+            loss.detach().mean().item() - self.mean_baseline
+        ) / self.n_points
 
-def print_captions(captions, target_captions, image_ids, vocab, num_captions=1):
-    for i in range(num_captions):
-        print(f"Image ID: {image_ids[i]}")
-        print("Target: ", end="")
-        print_caption(target_captions[i], vocab)
-        print("Model output: ", end="")
-        print_caption(captions[i], vocab)
-
-
-def print_sample_model_output(model, dataloader, vocab, num_captions=1):
-    images, target_captions, caption_lengths, image_ids = next(iter(dataloader))
-
-    captions, _, _ = model.decode(images, 1)
-
-    print_captions(captions, target_captions, image_ids, vocab, num_captions)
-
-
-def validate_model(
-    model, dataloader, print_images_loader, semantic_images_loaders, vocab, args
-):
-    semantic_accuracies = {}
-
-    model.eval()
-    with torch.no_grad():
-        print_sample_model_output(
-            model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS
-        )
-        for name, semantic_images_loader in semantic_images_loaders.items():
-            acc = eval_semantics_score(model, semantic_images_loader, vocab)
-            print(f"Accuracy for {name}: {acc:.3f}")
-            semantic_accuracies[name] = acc
-
-        val_losses = []
-        captioning_losses = []
-        ranking_losses = []
-        val_accuracies = []
-        for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
-            if args.model == "joint":
-                (
-                    scores,
-                    decode_lengths,
-                    alphas,
-                    images_embedded,
-                    captions_embedded,
-                ) = model(images, captions, caption_lengths)
-                loss_captioning, loss_ranking = model.loss(
-                    scores,
-                    captions,
-                    decode_lengths,
-                    alphas,
-                    images_embedded,
-                    captions_embedded,
-                )
-
-                # TODO weigh losses
-                loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
-                loss = loss_captioning + loss_ranking
-
-                acc = accuracy_discrimination(images_embedded, captions_embedded)
-                val_accuracies.append(acc)
-
-                captioning_losses.append(loss_captioning.item())
-                ranking_losses.append(loss_ranking.item())
-            elif args.model == "interactive":
-                scores, decode_lengths, _ = model(
-                    images, captions, caption_lengths
-                )
-                loss = loss_cross_entropy(scores, captions)
-
-            else:
-                scores, decode_lengths, alphas = model(
-                    images, captions, caption_lengths
-                )
-                loss = model.loss(scores, captions, decode_lengths, alphas)
-
-            val_losses.append(loss.mean().item())
-
-            if batch_idx > NUM_BATCHES_VALIDATION:
-                break
-
-    model.train()
-    return (
-        np.mean(val_losses),
-        semantic_accuracies,
-        np.mean(captioning_losses),
-        np.mean(ranking_losses),
-        np.mean(val_accuracies),
-    )
-
-
-def save_model(model, optimizer, best_val_loss, epoch, path):
-    torch.save(
-        {
-            "epoch": epoch,
-            "model_state_dict": model.state_dict(),
-            "optimizer_state_dict": optimizer.state_dict(),
-            "loss": best_val_loss,
-        },
-        path,
-    )
+    def predict(self, loss: torch.Tensor) -> torch.Tensor:
+        if self.mean_baseline.device != loss.device:
+            self.mean_baseline = self.mean_baseline.to(loss.device)
+        return self.mean_baseline
 
 
 def main(args):
@@ -161,14 +83,14 @@ def main(args):
         vocab = pickle.load(file)
 
     train_loader = DataLoader(
-        CaptionDataset(
+        CaptionRLDataset(
             DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab,
         ),
         batch_size=args.batch_size,
         shuffle=True,
         num_workers=0,
         pin_memory=False,
-        collate_fn=CaptionDataset.pad_collate,
+        collate_fn=CaptionRLDataset.pad_collate,
     )
     val_images_loader = torch.utils.data.DataLoader(
         CaptionDataset(
@@ -205,17 +127,7 @@ def main(args):
     dropout = 0.2
 
     if args.model == "interactive":
-        encoder = ImageEncoder(
-            joint_embeddings_size, fine_tune_resnet=False
-        )
-        model = RnnSenderMultitaskVisualRef(
-            encoder,
-            vocab=vocab,
-            embed_dim=word_embedding_size,
-            hidden_size=lstm_hidden_size,
-            cell="lstm",
-            max_len=MAX_CAPTION_LEN,
-        )
+        raise NotImplementedError()
 
     elif args.model == "show_attend_and_tell":
         model = ShowAttendAndTell(
@@ -252,7 +164,14 @@ def main(args):
 
     optimizer = Adam(model.parameters(), lr=args.lr)
 
+    if args.checkpoint:
+        print(f"Loading model checkpoints from: {args.checkpoint}")
+        model_checkpoint = torch.load(args.checkpoint, map_location=device)
+        model.load_state_dict(model_checkpoint["model_state_dict"])
+
     model = model.to(device)
+
+    baselines = defaultdict(MeanBaseline)
 
     best_val_loss = math.inf
     accuracies_over_time = []
@@ -295,45 +214,48 @@ def main(args):
                         optimizer,
                         best_val_loss,
                         epoch,
-                        CHECKPOINT_DIR_IMAGE_CAPTIONING + args.model + ".pt",
+                        os.path.join(args.out_checkpoints_dir, args.model + ".pt"),
                     )
 
             model.train()
 
-            # Forward pass
-            if args.model == "joint":
-                (
-                    scores,
-                    decode_lengths,
-                    alphas,
-                    images_embedded,
-                    captions_embedded,
-                ) = model(images, captions, caption_lengths)
-                loss_captioning, loss_ranking = model.loss(
-                    scores,
-                    captions,
-                    decode_lengths,
-                    alphas,
-                    images_embedded,
-                    captions_embedded,
-                )
-                # TODO weigh losses
-                loss = loss_captioning + loss_ranking
-            elif args.model == "interactive":
-                scores, _, _ = model(
-                    images, captions, caption_lengths
-                )
-                loss = loss_cross_entropy(scores, captions)
+            # Forward pass: RL
+            if args.model == "joint" or args.model == "interactive":
+                raise NotImplementedError()
             else:
-                scores, decode_lengths, alphas = model(
-                    images, captions, caption_lengths
+                sequences, logits, entropies, decode_lengths = model.decode_sampling(
+                    images
                 )
-                loss = model.loss(scores, captions, decode_lengths, alphas)
 
-            losses.append(loss.mean().item())
+                loss, length_loss, log_prob, entropy = model.loss_rl(
+                    sequences,
+                    captions,
+                    logits,
+                    entropies,
+                    decode_lengths,
+                    vocab,
+                    args.entropy_coeff,
+                    args.length_cost,
+                )
+
+                policy_length_loss = (
+                    (length_loss - baselines["length"].predict(length_loss)) * log_prob
+                ).mean()
+                policy_loss = (
+                    (loss.detach() - baselines["loss"].predict(loss.detach()))
+                    * log_prob
+                ).mean()
+
+                rl_loss = policy_length_loss + policy_loss - entropy
+
+                # update baselines
+                baselines["loss"].update(loss)
+                baselines["length"].update(length_loss)
+
+            losses.append(rl_loss)
 
             optimizer.zero_grad()
-            loss.backward()
+            rl_loss.backward()
             optimizer.step()
 
         print(
@@ -347,6 +269,17 @@ def get_args():
         "--model",
         default="show_attend_and_tell",
         choices=["show_and_tell", "show_attend_and_tell", "joint", "interactive"],
+    )
+    parser.add_argument(
+        "--checkpoint", help="Path to checkpoint of pre-trained model",
+    )
+    parser.add_argument(
+        "--out-checkpoints-dir",
+        type=str,
+        default=os.path.join(
+            pathlib.Path.home(), "data/visual_ref/checkpoints/captioning_finetuned"
+        ),
+        help="Directory to which checkpoints should be saved to",
     )
     parser.add_argument(
         "--fine-tune-resnet",
@@ -371,6 +304,12 @@ def get_args():
         type=int,
         default=32,
         help="Input batch size for training (default: 32)",
+    )
+    parser.add_argument(
+        "--entropy-coeff", type=float, default=0.1, help="Entropy coefficient for RL",
+    )
+    parser.add_argument(
+        "--length-cost", type=float, default=0.0, help="Length penalty for RL",
     )
     parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
 
