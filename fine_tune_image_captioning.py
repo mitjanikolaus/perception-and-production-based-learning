@@ -103,18 +103,6 @@ def main(args):
         collate_fn=CaptionDataset.pad_collate,
     )
 
-    # TODO
-    print_captions_loader = torch.utils.data.DataLoader(
-        CaptionDataset(
-            DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab
-        ),
-        batch_size=1,
-        shuffle=True,
-        num_workers=0,
-        pin_memory=False,
-        collate_fn=CaptionDataset.pad_collate,
-    )
-
     semantics_eval_loaders = {
         file: get_semantics_eval_dataloader(file, vocab)
         for file in SEMANTICS_EVAL_FILES
@@ -190,7 +178,6 @@ def main(args):
                 ) = validate_model(
                     model,
                     val_images_loader,
-                    print_captions_loader,
                     semantics_eval_loaders,
                     vocab,
                     args
@@ -310,6 +297,12 @@ def get_args():
     )
     parser.add_argument(
         "--length-cost", type=float, default=0.0, help="Length penalty for RL",
+    )
+    parser.add_argument(
+        "--eval-semantics",
+        default=False,
+        action="store_true",
+        help="Eval semantics of model using 2AFC",
     )
     parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
 

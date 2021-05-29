@@ -36,7 +36,7 @@ from utils import (
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-PRINT_SAMPLE_CAPTIONS = 1
+PRINT_SAMPLE_CAPTIONS = 5
 
 NUM_BATCHES_VALIDATION = 100
 
@@ -57,28 +57,29 @@ def print_captions(captions, target_captions, image_ids, vocab, num_captions=1):
         print_caption(captions[i], vocab)
 
 
-def print_sample_model_output(model, dataloader, vocab, num_captions=1):
+def print_sample_model_output(model, dataloader, vocab, num_captions=5):
     images, target_captions, caption_lengths, image_ids = next(iter(dataloader))
 
-    captions, _, _ = model.decode(images, 1)
+    captions, _, _, _ = model.decode_sampling(images)
 
     print_captions(captions, target_captions, image_ids, vocab, num_captions)
 
 
 def validate_model(
-    model, dataloader, print_images_loader, semantic_images_loaders, vocab, args
+    model, dataloader, semantic_images_loaders, vocab, args
 ):
     semantic_accuracies = {}
 
     model.eval()
     with torch.no_grad():
         print_sample_model_output(
-            model, print_images_loader, vocab, PRINT_SAMPLE_CAPTIONS
+            model, dataloader, vocab, PRINT_SAMPLE_CAPTIONS
         )
-        for name, semantic_images_loader in semantic_images_loaders.items():
-            acc = eval_semantics_score(model, semantic_images_loader, vocab)
-            print(f"Accuracy for {name}: {acc:.3f}")
-            semantic_accuracies[name] = acc
+        if args.eval_semantics:
+            for name, semantic_images_loader in semantic_images_loaders.items():
+                acc = eval_semantics_score(model, semantic_images_loader, vocab)
+                print(f"Accuracy for {name}: {acc:.3f}")
+                semantic_accuracies[name] = acc
 
         val_losses = []
         captioning_losses = []
@@ -371,6 +372,12 @@ def get_args():
         type=int,
         default=32,
         help="Input batch size for training (default: 32)",
+    )
+    parser.add_argument(
+        "--eval-semantics",
+        default=False,
+        action="store_true",
+        help="Eval semantics of model using 2AFC",
     )
     parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
 
