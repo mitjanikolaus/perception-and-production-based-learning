@@ -170,7 +170,7 @@ class CaptionRLDataset(Dataset):
 
         captions = self.captions[image_id]
 
-        captions = [torch.Tensor(caption, device=device, dtype=torch.long) for caption in captions]
+        captions = [torch.tensor(caption, device=device, dtype=torch.long) for caption in captions]
 
         return image, captions, image_id
 
