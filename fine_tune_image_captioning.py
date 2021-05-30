@@ -186,6 +186,7 @@ def main(args):
                 accuracies["val_loss"] = val_loss
                 accuracies["batch_id"] = batch_idx
                 accuracies["epoch"] = epoch
+                accuracies["bleu_score_train"] = np.mean(bleu_scores)
 
                 accuracies_over_time.append(accuracies)
                 pd.DataFrame(accuracies_over_time).to_csv(
