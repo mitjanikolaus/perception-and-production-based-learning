@@ -1,5 +1,8 @@
 import os
 from pathlib import Path
+import random
+
+import numpy as np
 
 import torch
 from torch.distributions import Categorical
@@ -84,3 +87,11 @@ def decode_caption(caption, vocab, join=True):
 def print_caption(caption, vocab):
     caption = decode_caption(caption, vocab)
     print(caption)
+
+
+def set_seeds(seed):
+    random.seed(seed)
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)

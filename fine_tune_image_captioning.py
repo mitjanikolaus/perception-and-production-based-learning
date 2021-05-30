@@ -40,7 +40,7 @@ from utils import (
     SEMANTICS_EVAL_FILES,
     DEFAULT_LOG_FREQUENCY,
     DEFAULT_WORD_EMBEDDINGS_SIZE,
-    DEFAULT_LSTM_HIDDEN_SIZE,
+    DEFAULT_LSTM_HIDDEN_SIZE, set_seeds,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -73,6 +73,9 @@ class MeanBaseline:
 
 
 def main(args):
+    if args.seed:
+        set_seeds(args.seed)
+
     # create model checkpoint directory
     if not os.path.exists(args.out_checkpoints_dir):
         os.makedirs(args.out_checkpoints_dir)
@@ -186,7 +189,7 @@ def main(args):
 
                 accuracies_over_time.append(accuracies)
                 pd.DataFrame(accuracies_over_time).to_csv(
-                    CHECKPOINT_DIR_IMAGE_CAPTIONING + args.model + "_accuracies.csv",
+                    os.path.join(args.out_checkpoints_dir, args.model + "_accuracies.csv")
                 )
                 print(
                     f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | BLEU score (train): "
@@ -306,6 +309,11 @@ def get_args():
         help="Eval semantics of model using 2AFC",
     )
     parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
+    parser.add_argument(
+        "--seed",
+        type=int,
+        help="Random seed",
+    )
 
     return parser.parse_args()
 
