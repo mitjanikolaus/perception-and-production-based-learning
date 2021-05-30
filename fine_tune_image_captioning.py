@@ -217,7 +217,7 @@ def main(args):
                     images
                 )
 
-                loss, length_loss, log_prob, entropy = model.loss_rl(
+                reward, length_loss, log_prob, entropy = model.reward_rl(
                     sequences,
                     captions,
                     logits,
@@ -231,19 +231,19 @@ def main(args):
                 policy_length_loss = (
                     (length_loss - baselines["length"].predict(length_loss)) * log_prob
                 ).mean()
-                policy_loss = (
-                    (loss.detach() - baselines["loss"].predict(loss.detach()))
+                policy_loss = - (
+                    (reward.detach() - baselines["loss"].predict(reward.detach()))
                     * log_prob
                 ).mean()
 
                 rl_loss = policy_length_loss + policy_loss - entropy
 
                 # update baselines
-                baselines["loss"].update(loss)
+                baselines["loss"].update(reward)
                 baselines["length"].update(length_loss)
 
             losses.append(rl_loss.item())
-            bleu_scores.append(-loss.item())
+            bleu_scores.append(reward.item())
 
             optimizer.zero_grad()
             rl_loss.backward()

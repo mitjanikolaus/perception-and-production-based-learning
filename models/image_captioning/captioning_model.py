@@ -164,7 +164,7 @@ class CaptioningModel(nn.Module):
             reduction=reduction,
         )
 
-    def loss_rl(
+    def reward_rl(
         self,
         sequences,
         target_captions,
@@ -183,7 +183,7 @@ class CaptioningModel(nn.Module):
                 [decode_caption(c, vocab) for c in target_captions_image]
             )
 
-        loss = -torch.tensor(
+        reward = torch.tensor(
             corpus_bleu(
                 references_decoded,
                 sequences_decoded,
@@ -208,7 +208,7 @@ class CaptioningModel(nn.Module):
 
         length_loss = sequence_lengths.float() * length_cost
 
-        return loss, length_loss, effective_log_prob, weighted_entropy
+        return reward, length_loss, effective_log_prob, weighted_entropy
 
     def beam_search(
         self,
