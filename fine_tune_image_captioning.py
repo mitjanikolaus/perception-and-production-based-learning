@@ -228,12 +228,18 @@ def main(args):
                     args.length_cost,
                 )
 
+                # policy_length_loss = (
+                #     (length_loss - baselines["length"].predict(length_loss)) * log_prob
+                # ).mean()
+                # policy_loss = - (
+                #     (reward.detach() - baselines["loss"].predict(reward.detach()))
+                #     * log_prob
+                # ).mean()
                 policy_length_loss = (
-                    (length_loss - baselines["length"].predict(length_loss)) * log_prob
+                        length_loss * log_prob
                 ).mean()
                 policy_loss = - (
-                    (reward.detach() - baselines["loss"].predict(reward.detach()))
-                    * log_prob
+                        reward.detach() * log_prob
                 ).mean()
 
                 rl_loss = policy_length_loss + policy_loss - entropy
