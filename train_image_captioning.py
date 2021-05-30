@@ -19,6 +19,7 @@ from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.image_sentence_ranking.ranking_model import accuracy_discrimination
 from models.interactive.models import ImageEncoder, RnnSenderMultitaskVisualRef, loss_cross_entropy
+from models.joint.joint_learner import JointLearner
 from models.joint.joint_learner_sat import JointLearnerSAT
 from preprocess import (
     IMAGES_FILENAME,
@@ -182,18 +183,6 @@ def main(args):
         collate_fn=CaptionDataset.pad_collate,
     )
 
-    # TODO
-    print_captions_loader = torch.utils.data.DataLoader(
-        CaptionDataset(
-            DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab
-        ),
-        batch_size=1,
-        shuffle=True,
-        num_workers=0,
-        pin_memory=False,
-        collate_fn=CaptionDataset.pad_collate,
-    )
-
     semantics_eval_loaders = {
         file: get_semantics_eval_dataloader(file, vocab)
         for file in SEMANTICS_EVAL_FILES
@@ -238,8 +227,7 @@ def main(args):
             fine_tune_resnet=args.fine_tune_resnet,
         )
     elif args.model == "joint":
-        word_embedding_size = 512
-        model = JointLearnerSAT(
+        model = JointLearner(
             word_embedding_size,
             lstm_hidden_size,
             vocab,
@@ -272,13 +260,14 @@ def main(args):
                 ) = validate_model(
                     model,
                     val_images_loader,
-                    print_captions_loader,
                     semantics_eval_loaders,
                     vocab,
                     args
                 )
                 accuracies["val_loss"] = val_loss
                 accuracies["batch_id"] = batch_idx
+                accuracies["captioninig_loss"] = captioning_loss
+                accuracies["ranking_loss"] = ranking_loss
                 accuracies["epoch"] = epoch
 
                 accuracies_over_time.append(accuracies)
@@ -319,6 +308,7 @@ def main(args):
                     captions_embedded,
                 )
                 # TODO weigh losses
+                loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
                 loss = loss_captioning + loss_ranking
             elif args.model == "interactive":
                 scores, _, _ = model(

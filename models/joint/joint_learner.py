@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-import torchvision
 
 from models.image_captioning.captioning_model import CaptioningModel
 from models.image_captioning.show_and_tell import ImageEncoder
@@ -32,9 +31,6 @@ class JointLearner(CaptioningModel):
         )
         self.image_encoder = ImageEncoder(joint_embeddings_size, fine_tune_resnet)
 
-        if word_embedding_size != joint_embeddings_size:
-            raise ValueError("word embeddings must have same size as joint embeddings")
-
         self.lstm_hidden_size = lstm_hidden_size
 
         self.vocab = vocab
@@ -51,7 +47,7 @@ class JointLearner(CaptioningModel):
         )
 
         self.language_generation_lstm = nn.LSTMCell(
-            input_size=joint_embeddings_size + word_embedding_size,
+            input_size=joint_embeddings_size + lstm_hidden_size,
             hidden_size=lstm_hidden_size,
         )
         self.dropout = nn.Dropout(p=dropout)

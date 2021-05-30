@@ -5,22 +5,15 @@ import pickle
 import os
 
 import h5py
-import numpy as np
 
 import torch
 import torch.distributions
 import torch.utils.data
 
-from dataset import SemanticsEvalDataset, CaptionDataset
+from dataset import CaptionDataset
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
-from models.image_sentence_ranking.ranking_model import ImageSentenceRanker, cosine_sim
-from models.image_sentence_ranking.ranking_model_grounded import (
-    ImageSentenceRankerGrounded,
-)
 from models.joint.joint_learner import JointLearner
-from models.joint.joint_learner_sat import JointLearnerSAT
-from models.language_modeling.language_model import LanguageModel
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -30,7 +23,6 @@ from preprocess import (
     show_image,
 )
 from train_image_captioning import print_captions
-from utils import decode_caption, CHECKPOINT_DIR_IMAGE_CAPTIONING, SEMANTICS_EVAL_FILES
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -92,10 +84,10 @@ def main(args):
 
     elif "joint" in args.checkpoint:
         print("Loading joint learner model.")
-        word_embedding_size = 512
+        word_embedding_size = 100
         joint_embeddings_size = 512
         lstm_hidden_size = 512
-        model = JointLearnerSAT(
+        model = JointLearner(
             word_embedding_size,
             lstm_hidden_size,
             vocab,
