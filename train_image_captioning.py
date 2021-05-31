@@ -202,10 +202,11 @@ def main(args):
     with open(vocab_path, "rb") as file:
         vocab = pickle.load(file)
 
+    train_dataset = CaptionDataset(
+        DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab, args.training_set_size
+    )
     train_loader = DataLoader(
-        CaptionDataset(
-            DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab, args.training_set_size
-        ),
+        train_dataset,
         batch_size=args.batch_size,
         shuffle=True,
         num_workers=0,
@@ -309,6 +310,7 @@ def main(args):
                 accuracies["captioninig_loss"] = captioning_loss
                 accuracies["ranking_loss"] = ranking_loss
                 accuracies["epoch"] = epoch
+                accuracies["num_samples"] = epoch * len(train_dataset) + batch_idx * args.batch_size
 
                 accuracies_over_time.append(accuracies)
                 pd.DataFrame(accuracies_over_time).to_csv(
