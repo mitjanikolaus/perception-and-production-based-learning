@@ -32,7 +32,7 @@ from utils import (
     print_caption,
     CHECKPOINT_DIR_IMAGE_CAPTIONING,
     SEMANTICS_EVAL_FILES,
-    DEFAULT_LOG_FREQUENCY, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE,
+    DEFAULT_LOG_FREQUENCY, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE, LEGEND,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -79,7 +79,7 @@ def validate_model(
         if args.eval_semantics:
             for name, semantic_images_loader in semantic_images_loaders.items():
                 acc = eval_semantics_score(model, semantic_images_loader, vocab)
-                print(f"Accuracy for {name}: {acc:.3f}")
+                print(f"Accuracy for {LEGEND[name]}: {acc:.3f}")
                 semantic_accuracies[name] = acc
 
         val_losses = []
