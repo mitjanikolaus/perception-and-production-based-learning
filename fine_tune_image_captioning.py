@@ -270,8 +270,8 @@ def main(args):
             if args.weight_supervised_loss > 0:
                 # Sample target sentences:
                 sentence_idx = [random.choice(range(captions.shape[1])) for _ in range(images.shape[0])]
-                target_captions = captions[torch.arange(32), sentence_idx]
-                target_caption_lengths = caption_lengths[torch.arange(32), sentence_idx]
+                target_captions = captions[torch.arange(captions.shape[0]), sentence_idx]
+                target_caption_lengths = caption_lengths[torch.arange(captions.shape[0]), sentence_idx]
                 target_captions = target_captions[:, :max(target_caption_lengths)]
 
                 loss_supervised = forward_pass(model, images, target_captions, target_caption_lengths, args)
