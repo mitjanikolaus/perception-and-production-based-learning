@@ -50,6 +50,25 @@ SEMANTICS_EVAL_FILES = [
     "data/semantics_eval_semantic_roles_filtered.csv",
 ]
 
+LEGEND = {
+    "data/semantics_eval_persons.csv": "persons",
+    "data/semantics_eval_animals.csv": "animals",
+    "data/semantics_eval_inanimates.csv": "objects",
+    "data/semantics_eval_verbs.csv": "verbs",
+    "data/semantics_eval_adjectives.csv": "adjectives",
+    "data/semantics_eval_adjective_noun_binding.csv": "adjective-noun dependency",
+    "data/semantics_eval_verb_noun_binding_filtered.csv": "verb-noun dependency",
+    "data/semantics_eval_semantic_roles_filtered.csv": "semantic roles",
+}
+
+LEGEND_GROUPED_NOUNS = {
+    "nouns": "nouns",
+    "data/semantics_eval_verbs.csv": "verbs",
+    "data/semantics_eval_adjectives.csv": "adjectives",
+    "data/semantics_eval_adjective_noun_binding.csv": "adjective-noun dependency",
+    "data/semantics_eval_verb_noun_binding_filtered.csv": "verb-noun dependency",
+    "data/semantics_eval_semantic_roles_filtered.csv": "semantic roles",
+}
 
 def sequences(scores, pad_to_length=None):
     """Get the most likely sequence given scores."""

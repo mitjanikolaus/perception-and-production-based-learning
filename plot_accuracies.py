@@ -4,30 +4,9 @@ import seaborn as sns
 
 import matplotlib.pyplot as plt
 
-from utils import DEFAULT_BATCH_SIZE
+from utils import DEFAULT_BATCH_SIZE, LEGEND_GROUPED_NOUNS, LEGEND
 
 TRAINING_SET_SIZE = 48198
-
-LEGEND = {
-    "data/semantics_eval_persons.csv": "persons",
-    "data/semantics_eval_animals.csv": "animals",
-    "data/semantics_eval_inanimates.csv": "objects",
-    "data/semantics_eval_verbs.csv": "verbs",
-    "data/semantics_eval_adjectives.csv": "adjectives",
-    "data/semantics_eval_adjective_noun_binding.csv": "adjective-noun dependency",
-    "data/semantics_eval_verb_noun_binding_filtered.csv": "verb-noun dependency",
-    "data/semantics_eval_semantic_roles_filtered.csv": "semantic roles",
-}
-
-LEGEND_GROUPED_NOUNS = {
-    "nouns": "nouns",
-    "data/semantics_eval_verbs.csv": "verbs",
-    "data/semantics_eval_adjectives.csv": "adjectives",
-    "data/semantics_eval_adjective_noun_binding.csv": "adjective-noun dependency",
-    "data/semantics_eval_verb_noun_binding_filtered.csv": "verb-noun dependency",
-    "data/semantics_eval_semantic_roles_filtered.csv": "semantic roles",
-}
-
 
 def main(args):
     sns.set_context(

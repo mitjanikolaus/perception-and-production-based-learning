@@ -28,7 +28,7 @@ from preprocess import (
     MAX_CAPTION_LEN,
     DATA_PATH,
 )
-from utils import decode_caption, SEMANTICS_EVAL_FILES, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE
+from utils import decode_caption, SEMANTICS_EVAL_FILES, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE, LEGEND
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -146,101 +146,108 @@ def main(args):
     with open(vocab_path, "rb") as file:
         vocab = pickle.load(file)
 
-    print("Loading model checkpoint from {}".format(args.checkpoint))
-    checkpoint = torch.load(args.checkpoint, map_location=device)
+    # Initialize lists for storing results of multiple checkpoints
+    semantic_accuracies = {key: [] for key in SEMANTICS_EVAL_FILES}
 
-    word_embedding_size = DEFAULT_WORD_EMBEDDINGS_SIZE
-    joint_embeddings_size = DEFAULT_LSTM_HIDDEN_SIZE
-    lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
-    visual_embedding_size = DEFAULT_LSTM_HIDDEN_SIZE
+    for checkpoint_dir in args.checkpoints:
+        print("Loading model checkpoint from {}".format(checkpoint_dir))
+        checkpoint = torch.load(checkpoint_dir, map_location=device)
 
-    if "show_attend_and_tell" in args.checkpoint:
-        print("Loading sat image captioning model.")
-        word_embedding_size = 512
-        lstm_hidden_size = 512
-        model = ShowAttendAndTell(
-            word_embedding_size,
-            lstm_hidden_size,
-            vocab,
-            MAX_CAPTION_LEN,
-            fine_tune_resnet=False,
-        )
-
-    elif "show_and_tell" in args.checkpoint:
-        print("Loading st image captioning model.")
-        model = ShowAndTell(
-            word_embedding_size,
-            visual_embedding_size,
-            lstm_hidden_size,
-            vocab,
-            MAX_CAPTION_LEN,
-            fine_tune_resnet=False,
-        )
-
-    elif "sender" in args.checkpoint:
-        print("Loading sender image captioning model.")
         word_embedding_size = DEFAULT_WORD_EMBEDDINGS_SIZE
-        sender_hidden = DEFAULT_LSTM_HIDDEN_SIZE
-        encoder = ImageEncoder(sender_hidden, fine_tune_resnet=False)
-        model = RnnSenderMultitaskVisualRef(
-            encoder,
-            vocab=vocab,
-            embed_dim=word_embedding_size,
-            hidden_size=sender_hidden,
-            cell="lstm",
-            max_len=MAX_CAPTION_LEN,
-        )
+        joint_embeddings_size = DEFAULT_LSTM_HIDDEN_SIZE
+        lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
+        visual_embedding_size = DEFAULT_LSTM_HIDDEN_SIZE
 
-    elif "joint" in args.checkpoint:
-        print("Loading joint learner model.")
-        model = JointLearner(
-            word_embedding_size,
-            lstm_hidden_size,
-            vocab,
-            MAX_CAPTION_LEN,
-            joint_embeddings_size,
-            fine_tune_resnet=False,
-        )
+        if "show_attend_and_tell" in checkpoint_dir:
+            print("Loading sat image captioning model.")
+            word_embedding_size = 512
+            lstm_hidden_size = 512
+            model = ShowAttendAndTell(
+                word_embedding_size,
+                lstm_hidden_size,
+                vocab,
+                MAX_CAPTION_LEN,
+                fine_tune_resnet=False,
+            )
 
-    elif "ranking" in args.checkpoint:
-        print("Loading image sentence ranking model.")
-        model = ImageSentenceRanker(
-            word_embedding_size,
-            joint_embeddings_size,
-            lstm_hidden_size,
-            len(vocab),
-            fine_tune_resnet=False,
-        )
+        elif "show_and_tell" in checkpoint_dir:
+            print("Loading st image captioning model.")
+            model = ShowAndTell(
+                word_embedding_size,
+                visual_embedding_size,
+                lstm_hidden_size,
+                vocab,
+                MAX_CAPTION_LEN,
+                fine_tune_resnet=False,
+            )
 
-    elif "language_model" in args.checkpoint:
-        print("Loading language model.")
-        model = LanguageModel(word_embedding_size, lstm_hidden_size, vocab)
+        elif "sender" in checkpoint_dir:
+            print("Loading sender image captioning model.")
+            word_embedding_size = DEFAULT_WORD_EMBEDDINGS_SIZE
+            sender_hidden = DEFAULT_LSTM_HIDDEN_SIZE
+            encoder = ImageEncoder(sender_hidden, fine_tune_resnet=False)
+            model = RnnSenderMultitaskVisualRef(
+                encoder,
+                vocab=vocab,
+                embed_dim=word_embedding_size,
+                hidden_size=sender_hidden,
+                cell="lstm",
+                max_len=MAX_CAPTION_LEN,
+            )
 
-    else:
-        raise RuntimeError(f"Unknown model: {args.checkpoint}")
+        elif "joint" in checkpoint_dir:
+            print("Loading joint learner model.")
+            model = JointLearner(
+                word_embedding_size,
+                lstm_hidden_size,
+                vocab,
+                MAX_CAPTION_LEN,
+                joint_embeddings_size,
+                fine_tune_resnet=False,
+            )
 
-    model.load_state_dict(checkpoint["model_state_dict"])
+        elif "ranking" in checkpoint_dir:
+            print("Loading image sentence ranking model.")
+            model = ImageSentenceRanker(
+                word_embedding_size,
+                joint_embeddings_size,
+                lstm_hidden_size,
+                len(vocab),
+                fine_tune_resnet=False,
+            )
 
-    model = model.to(device)
+        elif "language_model" in checkpoint_dir:
+            print("Loading language model.")
+            model = LanguageModel(word_embedding_size, lstm_hidden_size, vocab)
 
-    semantics_eval_loaders = {
-        file: get_semantics_eval_dataloader(file, vocab)
-        for file in SEMANTICS_EVAL_FILES
-    }
+        else:
+            raise RuntimeError(f"Unknown model: {args.checkpoint}")
 
-    semantic_accuracies = {}
-    for name, semantic_images_loader in semantics_eval_loaders.items():
-        acc = eval_semantics_score(
-            model, semantic_images_loader, vocab, verbose=args.verbose
-        )
-        print(f"Accuracy for {name}: {acc:.3f}")
-        semantic_accuracies[name] = acc
+        model.load_state_dict(checkpoint["model_state_dict"])
+
+        model = model.to(device)
+
+        semantics_eval_loaders = {
+            file: get_semantics_eval_dataloader(file, vocab)
+            for file in SEMANTICS_EVAL_FILES
+        }
+
+        for name, semantic_images_loader in semantics_eval_loaders.items():
+            acc = eval_semantics_score(
+                model, semantic_images_loader, vocab, verbose=args.verbose
+            )
+            print(f"Accuracy for {LEGEND[name]}: {acc:.3f}")
+            semantic_accuracies[name].append(acc)
+
+    print("\nAverage stats:")
+    for name, accs in semantic_accuracies.items():
+        print(f"Accuracy for {LEGEND[name]}: {np.mean(accs):.3f} (stddev: {np.std(accs):.3f})")
 
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--checkpoint", type=str,
+        "--checkpoints", nargs="+", type=str,
     )
     parser.add_argument(
         "--verbose", default=False, action="store_true",
