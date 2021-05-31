@@ -25,6 +25,7 @@ from models.interactive.models import (
     RnnSenderMultitaskVisualRef,
     loss_cross_entropy,
 )
+from models.joint.joint_learner import JointLearner
 from models.joint.joint_learner_sat import JointLearnerSAT
 from preprocess import (
     IMAGES_FILENAME,
@@ -140,8 +141,7 @@ def main(args):
             fine_tune_resnet=args.fine_tune_resnet,
         )
     elif args.model == "joint":
-        word_embedding_size = 512
-        model = JointLearnerSAT(
+        model = JointLearner(
             word_embedding_size,
             lstm_hidden_size,
             vocab,
@@ -156,7 +156,7 @@ def main(args):
     optimizer = Adam(model.parameters(), lr=args.lr)
 
     if args.checkpoint:
-        print(f"Loading model checkpoints from: {args.checkpoint}")
+        print(f"Loading model checkpoint from: {args.checkpoint}")
         model_checkpoint = torch.load(args.checkpoint, map_location=device)
         model.load_state_dict(model_checkpoint["model_state_dict"])
 
@@ -210,7 +210,7 @@ def main(args):
             model.train()
 
             # Forward pass: RL
-            if args.model == "joint" or args.model == "interactive":
+            if args.model == "interactive":
                 raise NotImplementedError()
             else:
                 sequences, logits, entropies, decode_lengths = model.decode_sampling(

@@ -149,10 +149,14 @@ def main(args):
     print("Loading model checkpoint from {}".format(args.checkpoint))
     checkpoint = torch.load(args.checkpoint, map_location=device)
 
+    word_embedding_size = DEFAULT_WORD_EMBEDDINGS_SIZE
+    joint_embeddings_size = DEFAULT_LSTM_HIDDEN_SIZE
+    lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
+    visual_embedding_size = DEFAULT_LSTM_HIDDEN_SIZE
+
     if "show_attend_and_tell" in args.checkpoint:
         print("Loading sat image captioning model.")
         word_embedding_size = 512
-        visual_embedding_size = 512
         lstm_hidden_size = 512
         model = ShowAttendAndTell(
             word_embedding_size,
@@ -164,9 +168,6 @@ def main(args):
 
     elif "show_and_tell" in args.checkpoint:
         print("Loading st image captioning model.")
-        word_embedding_size = 128
-        visual_embedding_size = 512
-        lstm_hidden_size = 512
         model = ShowAndTell(
             word_embedding_size,
             visual_embedding_size,
@@ -192,10 +193,7 @@ def main(args):
 
     elif "joint" in args.checkpoint:
         print("Loading joint learner model.")
-        word_embedding_size = 512
-        joint_embeddings_size = 512
-        lstm_hidden_size = 512
-        model = JointLearnerSAT(
+        model = JointLearner(
             word_embedding_size,
             lstm_hidden_size,
             vocab,
@@ -206,9 +204,6 @@ def main(args):
 
     elif "ranking" in args.checkpoint:
         print("Loading image sentence ranking model.")
-        word_embedding_size = 100
-        joint_embeddings_size = 512
-        lstm_hidden_size = 512
         model = ImageSentenceRanker(
             word_embedding_size,
             joint_embeddings_size,
@@ -219,8 +214,6 @@ def main(args):
 
     elif "language_model" in args.checkpoint:
         print("Loading language model.")
-        word_embedding_size = 512
-        lstm_hidden_size = 512
         model = LanguageModel(word_embedding_size, lstm_hidden_size, vocab)
 
     else:
