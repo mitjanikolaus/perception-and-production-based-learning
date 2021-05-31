@@ -3,6 +3,7 @@ import math
 import pathlib
 import pickle
 import os
+import random
 from collections import defaultdict
 
 import numpy as np
@@ -34,7 +35,7 @@ from preprocess import (
     MAX_CAPTION_LEN,
     DATA_PATH,
 )
-from train_image_captioning import validate_model, save_model
+from train_image_captioning import validate_model, save_model, forward_pass
 from utils import (
     print_caption,
     CHECKPOINT_DIR_IMAGE_CAPTIONING,
@@ -71,6 +72,57 @@ class MeanBaseline:
         if self.mean_baseline.device != loss.device:
             self.mean_baseline = self.mean_baseline.to(loss.device)
         return self.mean_baseline
+
+
+def forward_pass_rl(model, images, captions, vocab, args):
+    sequences, logits, entropies, sequence_lengths = model.decode(
+        images, sampling=True
+    )
+    # Do another forward pass with greedy decoding for baseline:
+    with torch.no_grad():
+        model.eval()
+        sequences_greedy, _, _, decode_lengths_greedy = model.decode(
+            images, sampling=False
+        )
+        model.train()
+
+    reward = model.reward_rl(
+        sequences,
+        captions,
+        vocab
+    )
+    reward_baseline = model.reward_rl(
+        sequences_greedy,
+        captions,
+        vocab
+    )
+
+    # TODO: check whether this step is superfluous
+    # # the log prob/ entropy of the choices made by S before and including the eos symbol
+    effective_entropy = torch.zeros(entropies.shape[0], device=device)
+    effective_log_prob = torch.zeros(logits.shape[0], device=device)
+
+    for i in range(max(sequence_lengths)):
+        not_eosed = (i < sequence_lengths).float()
+        effective_entropy += entropies[:, i] * not_eosed
+        effective_log_prob += logits[:, i] * not_eosed
+    effective_entropy = effective_entropy / sequence_lengths.float()
+    effective_log_prob = effective_log_prob / sequence_lengths.float()
+
+    weighted_entropy = effective_entropy.mean() * args.entropy_coeff
+
+    length_loss = sequence_lengths.float() * args.length_cost
+
+    policy_length_loss = (
+            length_loss * effective_log_prob
+    ).mean()
+    policy_loss = - (
+            (reward - reward_baseline) * effective_log_prob
+    ).mean()
+
+    rl_loss = policy_length_loss + policy_loss - weighted_entropy
+
+    return rl_loss, reward
 
 
 def main(args):
@@ -162,12 +214,12 @@ def main(args):
 
     model = model.to(device)
 
-    # baselines = defaultdict(MeanBaseline)
-
     best_val_loss = math.inf
     accuracies_over_time = []
     for epoch in range(args.n_epochs):
         losses = []
+        losses_rl = []
+        losses_supervised = []
         bleu_scores = []
 
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(
@@ -193,7 +245,8 @@ def main(args):
                     os.path.join(args.out_checkpoints_dir, args.model + "_accuracies.csv")
                 )
                 print(
-                    f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | BLEU score (train): "
+                    f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | RL: {np.mean(losses_rl):.3f} |"
+                    f" supervised: {np.mean(losses_supervised):.3f} | BLEU score (train): "
                     f"{np.mean(bleu_scores):.3f} | val loss: {val_loss:.3f} | captioning loss:"
                     f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f}"
                 )
@@ -210,72 +263,27 @@ def main(args):
             model.train()
 
             # Forward pass: RL
-            if args.model == "interactive":
-                raise NotImplementedError()
-            else:
-                sequences, logits, entropies, sequence_lengths = model.decode(
-                    images, sampling=True
-                )
-                # Do another forward pass with greedy decoding for baseline:
-                with torch.no_grad():
-                    model.eval()
-                    sequences_greedy, _, _, decode_lengths_greedy = model.decode(
-                        images, sampling=False
-                    )
-                    model.train()
+            loss, reward = forward_pass_rl(model, images, captions, vocab, args)
+            losses_rl.append(loss.item())
 
-                reward = model.reward_rl(
-                    sequences,
-                    captions,
-                    vocab
-                )
-                reward_baseline = model.reward_rl(
-                    sequences_greedy,
-                    captions,
-                    vocab
-                )
+            # Do another forward pass for supervised learning
+            if args.weight_supervised_loss > 0:
+                # Sample target sentences:
+                sentence_idx = [random.choice(range(captions.shape[1])) for _ in range(images.shape[0])]
+                target_captions = captions[torch.arange(32), sentence_idx]
+                target_caption_lengths = caption_lengths[torch.arange(32), sentence_idx]
+                target_captions = target_captions[:, :max(target_caption_lengths)]
 
-                # TODO: check whether this step is superfluous
-                # # the log prob/ entropy of the choices made by S before and including the eos symbol
-                effective_entropy = torch.zeros(entropies.shape[0], device=device)
-                effective_log_prob = torch.zeros(logits.shape[0], device=device)
+                loss_supervised = forward_pass(model, images, target_captions, target_caption_lengths, args)
+                losses_supervised.append(loss_supervised.item())
 
-                for i in range(max(sequence_lengths)):
-                    not_eosed = (i < sequence_lengths).float()
-                    effective_entropy += entropies[:, i] * not_eosed
-                    effective_log_prob += logits[:, i] * not_eosed
-                effective_entropy = effective_entropy / sequence_lengths.float()
-                effective_log_prob = effective_log_prob / sequence_lengths.float()
+                loss += args.weight_supervised_loss * loss_supervised
 
-                weighted_entropy = effective_entropy.mean() * args.entropy_coeff
-
-                length_loss = sequence_lengths.float() * args.length_cost
-
-                # policy_length_loss = (
-                #     (length_loss - baselines["length"].predict(length_loss)) * log_prob
-                # ).mean()
-                # policy_loss = - (
-                #     (reward.detach() - baselines["loss"].predict(reward.detach()))
-                #     * log_prob
-                # ).mean()
-                policy_length_loss = (
-                        length_loss * effective_log_prob
-                ).mean()
-                policy_loss = - (
-                        (reward - reward_baseline) * effective_log_prob
-                ).mean()
-
-                rl_loss = policy_length_loss + policy_loss - weighted_entropy
-
-                # update baselines
-                # baselines["loss"].update(reward)
-                # baselines["length"].update(length_loss)
-
-            losses.append(rl_loss.item())
+            losses.append(loss.item())
             bleu_scores.append(reward.item())
 
             optimizer.zero_grad()
-            rl_loss.backward()
+            loss.backward()
             optimizer.step()
 
         print(
@@ -343,6 +351,12 @@ def get_args():
         "--seed",
         type=int,
         help="Random seed",
+    )
+    parser.add_argument(
+        "--weight-supervised-loss",
+        default=0,
+        type=float,
+        help="Supervised loss weight",
     )
 
     return parser.parse_args()

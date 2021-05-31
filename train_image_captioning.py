@@ -39,7 +39,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 PRINT_SAMPLE_CAPTIONS = 5
 
-NUM_BATCHES_VALIDATION = 100
+NUM_BATCHES_VALIDATION = 1
 
 WEIGH_RANKING_LOSS = 1
 
@@ -150,6 +150,43 @@ def save_model(model, optimizer, best_val_loss, epoch, path):
         },
         path,
     )
+
+
+def forward_pass(model, images, captions, caption_lengths, args):
+    model.train()
+
+    # Forward pass
+    if args.model == "joint":
+        (
+            scores,
+            decode_lengths,
+            alphas,
+            images_embedded,
+            captions_embedded,
+        ) = model(images, captions, caption_lengths)
+        loss_captioning, loss_ranking = model.loss(
+            scores,
+            captions,
+            decode_lengths,
+            alphas,
+            images_embedded,
+            captions_embedded,
+        )
+        # TODO weigh losses
+        loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
+        loss = loss_captioning + loss_ranking
+    elif args.model == "interactive":
+        scores, _, _ = model(
+            images, captions, caption_lengths
+        )
+        loss = loss_cross_entropy(scores, captions)
+    else:
+        scores, decode_lengths, alphas = model(
+            images, captions, caption_lengths
+        )
+        loss = model.loss(scores, captions, decode_lengths, alphas)
+
+    return loss.mean()
 
 
 def main(args):
@@ -288,40 +325,9 @@ def main(args):
                         CHECKPOINT_DIR_IMAGE_CAPTIONING + args.model + ".pt",
                     )
 
-            model.train()
+            loss = forward_pass(model, images, captions, caption_lengths, args)
 
-            # Forward pass
-            if args.model == "joint":
-                (
-                    scores,
-                    decode_lengths,
-                    alphas,
-                    images_embedded,
-                    captions_embedded,
-                ) = model(images, captions, caption_lengths)
-                loss_captioning, loss_ranking = model.loss(
-                    scores,
-                    captions,
-                    decode_lengths,
-                    alphas,
-                    images_embedded,
-                    captions_embedded,
-                )
-                # TODO weigh losses
-                loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
-                loss = loss_captioning + loss_ranking
-            elif args.model == "interactive":
-                scores, _, _ = model(
-                    images, captions, caption_lengths
-                )
-                loss = loss_cross_entropy(scores, captions)
-            else:
-                scores, decode_lengths, alphas = model(
-                    images, captions, caption_lengths
-                )
-                loss = model.loss(scores, captions, decode_lengths, alphas)
-
-            losses.append(loss.mean().item())
+            losses.append(loss.item())
 
             optimizer.zero_grad()
             loss.backward()
