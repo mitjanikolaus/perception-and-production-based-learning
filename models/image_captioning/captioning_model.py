@@ -532,10 +532,10 @@ class CaptioningModel(nn.Module):
 
                 next_words = distr.sample()
 
-                entropies[indices_incomplete_sequences, step + 1] = distr.entropy()[
+                entropies[indices_incomplete_sequences, step] = distr.entropy()[
                     indices_incomplete_sequences
                 ]
-                logits[indices_incomplete_sequences, step + 1] = distr.log_prob(next_words)[
+                logits[indices_incomplete_sequences, step] = distr.log_prob(next_words)[
                     indices_incomplete_sequences
                 ]
             else:
@@ -543,7 +543,7 @@ class CaptioningModel(nn.Module):
                 next_words = torch.argmax(scores, dim=1)
 
             # Add new words to sequences
-            sequences[indices_incomplete_sequences, step + 1] = next_words[
+            sequences[indices_incomplete_sequences, step] = next_words[
                 indices_incomplete_sequences
             ]
 

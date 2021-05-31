@@ -217,12 +217,12 @@ def main(args):
                     images, sampling=True
                 )
                 # Do another forward pass with greedy decoding for baseline:
-                model.eval()
                 with torch.no_grad():
+                    model.eval()
                     sequences_greedy, _, _, decode_lengths_greedy = model.decode(
                         images, sampling=False
                     )
-                model.train()
+                    model.train()
 
                 reward = model.reward_rl(
                     sequences,
