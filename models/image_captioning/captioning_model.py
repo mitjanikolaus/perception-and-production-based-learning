@@ -168,12 +168,7 @@ class CaptioningModel(nn.Module):
         self,
         sequences,
         target_captions,
-        logits,
-        entropies,
-        sequence_lengths,
         vocab,
-        entropy_coeff,
-        length_cost,
     ):
         sequences_decoded = [decode_caption(sequence, vocab) for sequence in sequences]
 
@@ -193,22 +188,7 @@ class CaptioningModel(nn.Module):
             dtype=torch.float,
         )
 
-        # TODO: check whether this step is superfluous
-        # # the log prob/ entropy of the choices made by S before and including the eos symbol
-        effective_entropy = torch.zeros(entropies.shape[0], device=device)
-        effective_log_prob = torch.zeros(logits.shape[0], device=device)
-
-        for i in range(max(sequence_lengths)):
-            not_eosed = (i < sequence_lengths).float()
-            effective_entropy += entropies[:, i] * not_eosed
-            effective_log_prob += logits[:, i] * not_eosed
-        effective_entropy = effective_entropy / sequence_lengths.float()
-
-        weighted_entropy = effective_entropy.mean() * entropy_coeff
-
-        length_loss = sequence_lengths.float() * length_cost
-
-        return reward, length_loss, effective_log_prob, weighted_entropy
+        return reward.detach()
 
     def beam_search(
         self,
@@ -358,7 +338,7 @@ class CaptioningModel(nn.Module):
             ]
         return sorted_sequences, sorted_alphas, beam
 
-    def decode(self, images, num_samples, top_p=0.9, print_beam=False):
+    def decode_nucleus_sampling(self, images, num_samples, top_p=0.9, print_beam=False):
         """Generate and return the top k sequences using nucleus sampling."""
         encoder_output = self.image_encoder(images)
 
@@ -477,7 +457,7 @@ class CaptioningModel(nn.Module):
         ]
         return sorted_sequences, None, None
 
-    def decode_sampling(self, images):
+    def decode(self, images, sampling=True):
         """Generate and return sampled sequences and probability scores for RL."""
         encoder_output = self.image_encoder(images)
 
@@ -547,18 +527,23 @@ class CaptioningModel(nn.Module):
             )
             scores = F.log_softmax(predictions, dim=1)
 
-            distr = Categorical(logits=scores)
+            if sampling:
+                distr = Categorical(logits=scores)
 
-            next_words = distr.sample()
+                next_words = distr.sample()
 
-            # Add new words to sequences, update entropies and logits
+                entropies[indices_incomplete_sequences, step + 1] = distr.entropy()[
+                    indices_incomplete_sequences
+                ]
+                logits[indices_incomplete_sequences, step + 1] = distr.log_prob(next_words)[
+                    indices_incomplete_sequences
+                ]
+            else:
+                # Greedy decoding
+                next_words = torch.argmax(scores, dim=1)
+
+            # Add new words to sequences
             sequences[indices_incomplete_sequences, step + 1] = next_words[
-                indices_incomplete_sequences
-            ]
-            entropies[indices_incomplete_sequences, step + 1] = distr.entropy()[
-                indices_incomplete_sequences
-            ]
-            logits[indices_incomplete_sequences, step + 1] = distr.log_prob(next_words)[
                 indices_incomplete_sequences
             ]
 

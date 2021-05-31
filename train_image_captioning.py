@@ -61,7 +61,7 @@ def print_captions(captions, target_captions, image_ids, vocab, num_captions=1):
 def print_sample_model_output(model, dataloader, vocab, num_captions=5):
     images, target_captions, caption_lengths, image_ids = next(iter(dataloader))
 
-    captions, _, _, _ = model.decode_sampling(images)
+    captions, _, _, _ = model.decode(images)
 
     print_captions(captions, target_captions, image_ids, vocab, num_captions)
 

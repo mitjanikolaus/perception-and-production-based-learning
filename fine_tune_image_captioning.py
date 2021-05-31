@@ -162,7 +162,7 @@ def main(args):
 
     model = model.to(device)
 
-    baselines = defaultdict(MeanBaseline)
+    # baselines = defaultdict(MeanBaseline)
 
     best_val_loss = math.inf
     accuracies_over_time = []
@@ -213,34 +213,60 @@ def main(args):
             if args.model == "interactive":
                 raise NotImplementedError()
             else:
-                sequences, logits, entropies, decode_lengths = model.decode_sampling(
-                    images
+                sequences, logits, entropies, sequence_lengths = model.decode(
+                    images, sampling=True
                 )
+                # Do another forward pass with greedy decoding for baseline:
+                with torch.no_grad():
+                    sequences_greedy, _, _, decode_lengths_greedy = model.decode(
+                        images, sampling=False
+                    )
 
-                reward, length_loss, log_prob, entropy = model.reward_rl(
+                reward = model.reward_rl(
                     sequences,
                     captions,
-                    logits,
-                    entropies,
-                    decode_lengths,
-                    vocab,
-                    args.entropy_coeff,
-                    args.length_cost,
+                    vocab
+                )
+                reward_baseline = model.reward_rl(
+                    sequences_greedy,
+                    captions,
+                    vocab
                 )
 
+                # TODO: check whether this step is superfluous
+                # # the log prob/ entropy of the choices made by S before and including the eos symbol
+                effective_entropy = torch.zeros(entropies.shape[0], device=device)
+                effective_log_prob = torch.zeros(logits.shape[0], device=device)
+
+                for i in range(max(sequence_lengths)):
+                    not_eosed = (i < sequence_lengths).float()
+                    effective_entropy += entropies[:, i] * not_eosed
+                    effective_log_prob += logits[:, i] * not_eosed
+                effective_entropy = effective_entropy / sequence_lengths.float()
+
+                weighted_entropy = effective_entropy.mean() * args.entropy_coeff
+
+                length_loss = sequence_lengths.float() * args.length_cost
+
+                # policy_length_loss = (
+                #     (length_loss - baselines["length"].predict(length_loss)) * log_prob
+                # ).mean()
+                # policy_loss = - (
+                #     (reward.detach() - baselines["loss"].predict(reward.detach()))
+                #     * log_prob
+                # ).mean()
                 policy_length_loss = (
-                    (length_loss - baselines["length"].predict(length_loss)) * log_prob
+                        length_loss * effective_log_prob
                 ).mean()
                 policy_loss = - (
-                    (reward.detach() - baselines["loss"].predict(reward.detach()))
-                    * log_prob
+                        (reward - reward_baseline) * effective_log_prob
                 ).mean()
 
-                rl_loss = policy_length_loss + policy_loss - entropy
+                rl_loss = policy_length_loss + policy_loss - weighted_entropy
 
                 # update baselines
-                baselines["loss"].update(reward)
-                baselines["length"].update(length_loss)
+                # baselines["loss"].update(reward)
+                # baselines["length"].update(length_loss)
 
             losses.append(rl_loss.item())
             bleu_scores.append(reward.item())
