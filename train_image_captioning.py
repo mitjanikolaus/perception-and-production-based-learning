@@ -1,5 +1,6 @@
 import argparse
 import math
+import pathlib
 import pickle
 import os
 
@@ -30,7 +31,6 @@ from preprocess import (
 )
 from utils import (
     print_caption,
-    CHECKPOINT_DIR_IMAGE_CAPTIONING,
     SEMANTICS_EVAL_FILES,
     DEFAULT_LOG_FREQUENCY, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE, LEGEND, set_seeds,
 )
@@ -194,8 +194,8 @@ def main(args):
         set_seeds(args.seed)
 
     # create model checkpoint directory
-    if not os.path.exists(CHECKPOINT_DIR_IMAGE_CAPTIONING):
-        os.makedirs(CHECKPOINT_DIR_IMAGE_CAPTIONING)
+    if not os.path.exists(args.out_checkpoints_dir):
+        os.makedirs(args.out_checkpoints_dir)
 
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
     print("Loading vocab from {}".format(vocab_path))
@@ -312,7 +312,7 @@ def main(args):
 
                 accuracies_over_time.append(accuracies)
                 pd.DataFrame(accuracies_over_time).to_csv(
-                    CHECKPOINT_DIR_IMAGE_CAPTIONING + args.model + "_accuracies.csv",
+                    os.path.join(args.out_checkpoints_dir, args.model + "_accuracies.csv")
                 )
                 print(
                     f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | val loss: {val_loss:.3f} | captioning loss:"
@@ -325,7 +325,7 @@ def main(args):
                         optimizer,
                         best_val_loss,
                         epoch,
-                        CHECKPOINT_DIR_IMAGE_CAPTIONING + args.model + ".pt",
+                        os.path.join(args.out_checkpoints_dir, args.model + ".pt"),
                     )
 
             loss = forward_pass(model, images, captions, caption_lengths, args)
@@ -388,6 +388,14 @@ def get_args():
         default=False,
         action="store_true",
         help="Eval semantics of model using 2AFC",
+    )
+    parser.add_argument(
+        "--out-checkpoints-dir",
+        type=str,
+        default=os.path.join(
+            pathlib.Path.home(), "data/visual_ref/checkpoints/captioning/"
+        ),
+        help="Directory to which checkpoints should be saved to",
     )
     parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
 
