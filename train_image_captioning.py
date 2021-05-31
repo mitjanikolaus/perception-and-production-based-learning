@@ -41,7 +41,7 @@ PRINT_SAMPLE_CAPTIONS = 5
 
 NUM_BATCHES_VALIDATION = 100
 
-WEIGH_RANKING_LOSS = 1 / 3
+WEIGH_RANKING_LOSS = 1
 
 
 def print_model_output(output, target_captions, image_ids, vocab, num_captions=1):
