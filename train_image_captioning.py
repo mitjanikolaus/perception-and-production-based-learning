@@ -32,14 +32,14 @@ from utils import (
     print_caption,
     CHECKPOINT_DIR_IMAGE_CAPTIONING,
     SEMANTICS_EVAL_FILES,
-    DEFAULT_LOG_FREQUENCY, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE, LEGEND,
+    DEFAULT_LOG_FREQUENCY, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE, LEGEND, set_seeds,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 PRINT_SAMPLE_CAPTIONS = 5
 
-NUM_BATCHES_VALIDATION = 1
+NUM_BATCHES_VALIDATION = 100
 
 WEIGH_RANKING_LOSS = 1
 
@@ -190,6 +190,9 @@ def forward_pass(model, images, captions, caption_lengths, args):
 
 
 def main(args):
+    if args.seed:
+        set_seeds(args.seed)
+
     # create model checkpoint directory
     if not os.path.exists(CHECKPOINT_DIR_IMAGE_CAPTIONING):
         os.makedirs(CHECKPOINT_DIR_IMAGE_CAPTIONING)
@@ -201,7 +204,7 @@ def main(args):
 
     train_loader = DataLoader(
         CaptionDataset(
-            DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab,
+            DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab, args.training_set_size
         ),
         batch_size=args.batch_size,
         shuffle=True,
@@ -368,6 +371,17 @@ def get_args():
         type=int,
         default=32,
         help="Input batch size for training (default: 32)",
+    )
+    parser.add_argument(
+        "--training-set-size",
+        type=float,
+        default=1.0,
+        help="Training set size (as fraction of total data)",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        help="Random seed",
     )
     parser.add_argument(
         "--eval-semantics",

@@ -140,7 +140,7 @@ def main(args):
 
     train_loader = DataLoader(
         CaptionRLDataset(
-            DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab,
+            DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab, args.training_set_size
         ),
         batch_size=args.batch_size,
         shuffle=True,
@@ -347,6 +347,12 @@ def get_args():
         help="Eval semantics of model using 2AFC",
     )
     parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
+    parser.add_argument(
+        "--training-set-size",
+        type=float,
+        default=1.0,
+        help="Training set size (as fraction of total data)",
+    )
     parser.add_argument(
         "--seed",
         type=int,

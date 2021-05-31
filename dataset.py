@@ -37,12 +37,14 @@ class CaptionDataset(Dataset):
         features_filename,
         captions_filename,
         vocab,
+        dataset_size=1.0,
         features_scale_factor=1 / 255.0,
     ):
         """
         :param data_folder: folder where data files are stored
         :param features_filename: Filename of the image features file
         :param normalize: PyTorch normalization transformation
+        :param dataset_size: Fraction of dataset to use
         :param features_scale_factor: Additional scale factor, applied before normalization
         """
         self.images = h5py.File(os.path.join(data_folder, features_filename), "r")
@@ -59,6 +61,9 @@ class CaptionDataset(Dataset):
         )
 
         self.image_ids = [int(i) for i in list(self.images.keys())]
+
+        if dataset_size < 1:
+            self.image_ids = random.sample(self.image_ids, round(len(self.image_ids) * dataset_size))
 
         self.vocab = vocab
 
@@ -91,7 +96,7 @@ class CaptionDataset(Dataset):
         return image, caption, image_id
 
     def __len__(self):
-        return len(self.images) * self.CAPTIONS_PER_IMAGE
+        return len(self.image_ids) * self.CAPTIONS_PER_IMAGE
 
     def pad_collate(batch):
         images = torch.stack([s[0] for s in batch])
@@ -122,6 +127,7 @@ class CaptionRLDataset(Dataset):
         features_filename,
         captions_filename,
         vocab,
+        dataset_size=1.0,
         features_scale_factor=1 / 255.0,
     ):
         """
@@ -144,6 +150,9 @@ class CaptionRLDataset(Dataset):
         )
 
         self.image_ids = [int(i) for i in list(self.images.keys())]
+
+        if dataset_size < 1:
+            self.image_ids = random.sample(self.image_ids, round(len(self.image_ids) * dataset_size))
 
         self.vocab = vocab
 
@@ -175,7 +184,7 @@ class CaptionRLDataset(Dataset):
         return image, captions, image_id
 
     def __len__(self):
-        return len(self.images)
+        return len(self.image_ids)
 
     def pad_collate(batch):
         images = torch.stack([s[0] for s in batch])
