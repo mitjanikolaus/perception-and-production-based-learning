@@ -245,6 +245,7 @@ def main(args):
                     effective_entropy += entropies[:, i] * not_eosed
                     effective_log_prob += logits[:, i] * not_eosed
                 effective_entropy = effective_entropy / sequence_lengths.float()
+                effective_log_prob = effective_log_prob / sequence_lengths.float()
 
                 weighted_entropy = effective_entropy.mean() * args.entropy_coeff
 
