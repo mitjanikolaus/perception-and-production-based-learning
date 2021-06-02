@@ -4,9 +4,8 @@ import seaborn as sns
 
 import matplotlib.pyplot as plt
 
-from utils import DEFAULT_BATCH_SIZE, LEGEND_GROUPED_NOUNS, LEGEND
+from utils import LEGEND_GROUPED_NOUNS, LEGEND
 
-TRAINING_SET_SIZE = 48198
 
 def main(args):
     sns.set_context(
@@ -30,16 +29,14 @@ def main(args):
                     scores[column_name].rolling(args.rolling_window, min_periods=1).mean()
                 )
 
-        if "epoch" in scores.columns:
-            scores["num_samples"] = scores.aggregate(lambda x: x["epoch"] * TRAINING_SET_SIZE + x["batch_id"] * DEFAULT_BATCH_SIZE, axis=1)
-            # print(
-            #     f"Epoch with max val acc:{scores[scores['val_acc'] == scores['val_acc'].max()]['epoch'].values[0]}"
-            # )
-        else:
-            scores["num_samples"] = scores.aggregate(lambda x: x["batch_id"] * DEFAULT_BATCH_SIZE, axis=1)
-
+        # metric = "val_acc" if "val_acc" in scores.columns else "bleu_score_train"
+        # if "epoch" in scores.columns:
+        #     print(
+        #         f"Epoch with max {metric}:{scores[scores[metric] == scores[metric].max()]['epoch'].values[0]}"
+        #     )
+        #
         # print(
-        #     f"num_samples with max val acc:{scores[scores['val_acc'] == scores['val_acc'].max()]['num_samples'].values[0]}"
+        #     f"num_samples with max {metric}:{scores[scores[metric] == scores[metric].max()]['num_samples'].values[0]}"
         # )
 
         scores.set_index("num_samples", inplace=True)
