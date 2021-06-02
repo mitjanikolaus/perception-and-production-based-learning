@@ -99,7 +99,7 @@ def forward_pass_rl(model, images, captions, vocab, args):
 
     rl_loss = policy_length_loss + policy_loss - weighted_entropy
 
-    return rl_loss, reward
+    return rl_loss, reward.mean()
 
 
 def main(args):
