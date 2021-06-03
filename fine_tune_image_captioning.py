@@ -42,24 +42,24 @@ def forward_pass_rl(model, images, captions, vocab, args):
     sequences, logits, entropies, sequence_lengths = model.decode(
         images, sampling=True
     )
-    # Do another forward pass with greedy decoding for baseline:
-    with torch.no_grad():
-        model.eval()
-        sequences_greedy, _, _, decode_lengths_greedy = model.decode(
-            images, sampling=False
-        )
-        model.train()
+    # # Do another forward pass with greedy decoding for baseline:
+    # with torch.no_grad():
+    #     model.eval()
+    #     sequences_greedy, _, _, decode_lengths_greedy = model.decode(
+    #         images, sampling=False
+    #     )
+    #     model.train()
 
     reward = model.reward_rl(
         sequences,
         captions,
         vocab
     )
-    reward_baseline = model.reward_rl(
-        sequences_greedy,
-        captions,
-        vocab
-    )
+    # reward_baseline = model.reward_rl(
+    #     sequences_greedy,
+    #     captions,
+    #     vocab
+    # )
 
     # TODO: check whether this step is superfluous
     # # the log prob/ entropy of the choices made by S before and including the eos symbol
@@ -80,12 +80,12 @@ def forward_pass_rl(model, images, captions, vocab, args):
     policy_length_loss = (
             length_loss * effective_log_prob
     ).mean()
-    # policy_loss = - (
-    #         (reward) * effective_log_prob
-    # ).mean()
     policy_loss = - (
-            (reward - reward_baseline) * effective_log_prob
+            (reward) * effective_log_prob
     ).mean()
+    # policy_loss = - (
+    #         (reward - reward_baseline) * effective_log_prob
+    # ).mean()
 
     rl_loss = policy_length_loss + policy_loss - weighted_entropy
 
