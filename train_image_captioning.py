@@ -153,13 +153,14 @@ def validate_model(
         np.mean(bleu_scores)
     )
 
-def save_model(model, optimizer, best_val_loss, epoch, path):
+
+def save_model(model, optimizer, best_bleu_score, epoch, path):
     torch.save(
         {
             "epoch": epoch,
             "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
-            "loss": best_val_loss,
+            "BLEU": best_bleu_score,
         },
         path,
     )
@@ -297,7 +298,7 @@ def main(args):
 
     model = model.to(device)
 
-    best_val_loss = math.inf
+    best_bleu_score = 0
     accuracies_over_time = []
     for epoch in range(args.n_epochs):
         losses = []
@@ -337,12 +338,12 @@ def main(args):
                     f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f} |"
                     f" BLEU score (val): {val_bleu_score:.3f} | "
                 )
-                if val_loss < best_val_loss:
-                    best_val_loss = val_loss
+                if val_bleu_score > best_bleu_score:
+                    best_bleu_score = val_bleu_score
                     save_model(
                         model,
                         optimizer,
-                        best_val_loss,
+                        best_bleu_score,
                         epoch,
                         os.path.join(args.out_checkpoints_dir, args.model + ".pt"),
                     )
@@ -356,7 +357,7 @@ def main(args):
             optimizer.step()
 
         print(
-            f"End of epoch: {epoch} | train loss: {np.mean(losses)} | best val loss: {best_val_loss}\n\n"
+            f"End of epoch: {epoch} | train loss: {np.mean(losses)} | best BLEU score: {best_bleu_score}\n\n"
         )
 
 

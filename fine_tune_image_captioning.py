@@ -182,7 +182,7 @@ def main(args):
 
     model = model.to(device)
 
-    best_val_loss = math.inf
+    best_bleu_score = 0
     accuracies_over_time = []
     for epoch in range(args.n_epochs):
         losses = []
@@ -222,12 +222,12 @@ def main(args):
                     f"{val_bleu_score:.3f} | val loss: {val_loss:.3f} | captioning loss:"
                     f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f}"
                 )
-                if val_loss < best_val_loss:
-                    best_val_loss = val_loss
+                if val_bleu_score > best_bleu_score:
+                    best_bleu_score = val_bleu_score
                     save_model(
                         model,
                         optimizer,
-                        best_val_loss,
+                        best_bleu_score,
                         epoch,
                         os.path.join(args.out_checkpoints_dir, args.model + ".pt"),
                     )
@@ -260,7 +260,7 @@ def main(args):
 
         print(
             f"End of epoch: {epoch} | train loss: {np.mean(losses)} | BLEU score: {np.mean(bleu_scores):.3f} | "
-            f"best val loss: {best_val_loss}\n\n"
+            f"best BLEU score: {best_bleu_score}\n\n"
         )
 
 
