@@ -255,7 +255,6 @@ def main(args):
                 losses_rl.append(loss.item())
 
                 bleu_scores.append(reward.item())
-                print("rl update")
 
             losses.append(loss.item())
 
