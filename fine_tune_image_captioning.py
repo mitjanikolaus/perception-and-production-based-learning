@@ -234,12 +234,10 @@ def main(args):
 
             model.train()
 
-            # Forward pass: RL
-            loss, reward = forward_pass_rl(model, images, captions, vocab, args)
-            losses_rl.append(loss.item())
+            # Alternative between supervised and RL
+            if args.frequency_rl_updates != -1 and batch_idx % (args.frequency_rl_updates+1) == 0:
+                # Do supervised update
 
-            # Do another forward pass for supervised learning
-            if args.weight_supervised_loss > 0:
                 # Sample target sentences:
                 sentence_idx = [random.choice(range(captions.shape[1])) for _ in range(images.shape[0])]
                 target_captions = captions[torch.arange(captions.shape[0]), sentence_idx]
@@ -249,10 +247,17 @@ def main(args):
                 loss_supervised = forward_pass(model, images, target_captions, target_caption_lengths, args)
                 losses_supervised.append(loss_supervised.item())
 
-                loss += args.weight_supervised_loss * loss_supervised
+                # loss += args.weight_supervised_loss * loss_supervised
+                loss = loss_supervised
+            else:
+                # Forward pass: RL
+                loss, reward = forward_pass_rl(model, images, captions, vocab, args)
+                losses_rl.append(loss.item())
+
+                bleu_scores.append(reward.item())
+                print("rl update")
 
             losses.append(loss.item())
-            bleu_scores.append(reward.item())
 
             optimizer.zero_grad()
             loss.backward()
@@ -330,11 +335,17 @@ def get_args():
         type=int,
         help="Random seed",
     )
+    # parser.add_argument(
+    #     "--weight-supervised-loss",
+    #     default=0,
+    #     type=float,
+    #     help="Supervised loss weight",
+    # )
     parser.add_argument(
-        "--weight-supervised-loss",
-        default=0,
-        type=float,
-        help="Supervised loss weight",
+        "--frequency-rl-updates",
+        default=-1,
+        type=int,
+        help="RL updates frequency (number of RL updates per supervised update, set to -1 for only RL)",
     )
 
     return parser.parse_args()
