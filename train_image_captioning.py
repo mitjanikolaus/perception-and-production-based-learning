@@ -98,7 +98,7 @@ def validate_model(
                     captions,
                     vocab
                 )
-                bleu_scores.extend(bleu_scores_batch)
+                bleu_scores.extend(bleu_scores_batch.tolist())
             else:
                 if args.model == "joint":
                     (

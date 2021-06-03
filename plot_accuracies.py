@@ -39,7 +39,7 @@ def main(args):
             )
             legend = LEGEND_GROUPED_NOUNS
 
-        metric = "val_acc" if "val_acc" in scores.columns else "bleu_score_train"
+        metric = "bleu_score_val" if "bleu_score_val" in scores.columns else "bleu_score_train"
         best_score = scores[scores[metric] == scores[metric].max()]
         if len(best_score) == 0:
             print("No best score, taking last value!")
