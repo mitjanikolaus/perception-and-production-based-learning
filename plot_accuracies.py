@@ -29,16 +29,6 @@ def main(args):
                     scores[column_name].rolling(args.rolling_window, min_periods=1).mean()
                 )
 
-        # metric = "val_acc" if "val_acc" in scores.columns else "bleu_score_train"
-        # if "epoch" in scores.columns:
-        #     print(
-        #         f"Epoch with max {metric}:{scores[scores[metric] == scores[metric].max()]['epoch'].values[0]}"
-        #     )
-        #
-        # print(
-        #     f"num_samples with max {metric}:{scores[scores[metric] == scores[metric].max()]['num_samples'].values[0]}"
-        # )
-
         scores.set_index("num_samples", inplace=True)
 
         legend = LEGEND
@@ -48,6 +38,25 @@ def main(args):
                 0, "nouns", scores[["persons", "animals", "objects"]].mean(axis=1)
             )
             legend = LEGEND_GROUPED_NOUNS
+
+        metric = "val_acc" if "val_acc" in scores.columns else "bleu_score_train"
+        best_score = scores[scores[metric] == scores[metric].max()]
+        if len(best_score) == 0:
+            print("No best score, taking last value!")
+            best_score = scores.tail(1)
+        if "epoch" in scores.columns:
+            print(
+                f"Epoch with max {metric}:{best_score['epoch'].values[0]}"
+            )
+
+        print(
+            f"num_samples with max {metric}:{best_score.index.values[0]}"
+        )
+
+        print("Top scores:")
+        for name in LEGEND.values():
+            print(f"Accuracy for {name}: {best_score[name].values[0]:.3f}")
+
 
         all_scores.append(scores.copy())
 
@@ -60,6 +69,9 @@ def main(args):
     if "bleu_score_train" in all_scores.columns:
         legend["bleu_score_train"] = "bleu_score_train"
 
+    if "val_loss" in all_scores.columns:
+        legend["val_loss"] = "val_loss"
+
     sns.lineplot(data=all_scores[list(legend.values())], ci="sd")
 
     if args.x_lim:
@@ -68,7 +80,7 @@ def main(args):
 
     # Add chance level line
     plt.axhline(y=0.5, color="black", label="Chance level", linestyle="--")
-    plt.text(440000, 0.507, "Chance level", fontsize=12, va="center", ha="center")
+    plt.text(0, 0.507, "Chance level", fontsize=12, va="center", ha="center")
 
     plt.ylabel("Accuracy")
     plt.tight_layout()

@@ -14,14 +14,13 @@ import torch.utils.data
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 
-from dataset import CaptionDataset
+from dataset import CaptionDataset, CaptionRLDataset
 from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.image_sentence_ranking.ranking_model import accuracy_discrimination
 from models.interactive.models import ImageEncoder, RnnSenderMultitaskVisualRef, loss_cross_entropy
 from models.joint.joint_learner import JointLearner
-from models.joint.joint_learner_sat import JointLearnerSAT
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -53,7 +52,7 @@ def print_captions(captions, target_captions, image_ids, vocab, num_captions=1):
     for i in range(num_captions):
         print(f"Image ID: {image_ids[i]}")
         print("Target: ", end="")
-        print_caption(target_captions[i], vocab)
+        print_caption(target_captions[i][0], vocab)
         print("Model output: ", end="")
         print_caption(captions[i], vocab)
 
@@ -67,7 +66,7 @@ def print_sample_model_output(model, dataloader, vocab, num_captions=5):
 
 
 def validate_model(
-    model, dataloader, semantic_images_loaders, vocab, args
+    model, dataloader, semantic_images_loaders, vocab, args, val_bleu_score=False
 ):
     semantic_accuracies = {}
 
@@ -86,49 +85,63 @@ def validate_model(
         captioning_losses = []
         ranking_losses = []
         val_accuracies = []
+        bleu_scores = []
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
-            if args.model == "joint":
-                (
-                    scores,
-                    decode_lengths,
-                    alphas,
-                    images_embedded,
-                    captions_embedded,
-                ) = model(images, captions, caption_lengths)
-                loss_captioning, loss_ranking = model.loss(
-                    scores,
+            if val_bleu_score:
+                # Validate by calculating BLEU score
+                sequences, logits, entropies, sequence_lengths = model.decode(
+                    images, sampling=True
+                )
+
+                bleu_scores_batch = model.reward_rl(
+                    sequences,
                     captions,
-                    decode_lengths,
-                    alphas,
-                    images_embedded,
-                    captions_embedded,
+                    vocab
                 )
-
-                # TODO weigh losses
-                loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
-                loss = loss_captioning + loss_ranking
-
-                acc = accuracy_discrimination(images_embedded, captions_embedded)
-                val_accuracies.append(acc)
-
-                captioning_losses.append(loss_captioning.item())
-                ranking_losses.append(loss_ranking.item())
-            elif args.model == "interactive":
-                scores, decode_lengths, _ = model(
-                    images, captions, caption_lengths
-                )
-                loss = loss_cross_entropy(scores, captions)
-
+                bleu_scores.extend(bleu_scores_batch)
             else:
-                scores, decode_lengths, alphas = model(
-                    images, captions, caption_lengths
-                )
-                loss = model.loss(scores, captions, decode_lengths, alphas)
+                if args.model == "joint":
+                    (
+                        scores,
+                        decode_lengths,
+                        alphas,
+                        images_embedded,
+                        captions_embedded,
+                    ) = model(images, captions, caption_lengths)
+                    loss_captioning, loss_ranking = model.loss(
+                        scores,
+                        captions,
+                        decode_lengths,
+                        alphas,
+                        images_embedded,
+                        captions_embedded,
+                    )
 
-            val_losses.append(loss.mean().item())
+                    # TODO weigh losses
+                    loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
+                    loss = loss_captioning + loss_ranking
 
-            if batch_idx > NUM_BATCHES_VALIDATION:
-                break
+                    acc = accuracy_discrimination(images_embedded, captions_embedded)
+                    val_accuracies.append(acc)
+
+                    captioning_losses.append(loss_captioning.item())
+                    ranking_losses.append(loss_ranking.item())
+                elif args.model == "interactive":
+                    scores, decode_lengths, _ = model(
+                        images, captions, caption_lengths
+                    )
+                    loss = loss_cross_entropy(scores, captions)
+
+                else:
+                    scores, decode_lengths, alphas = model(
+                        images, captions, caption_lengths
+                    )
+                    loss = model.loss(scores, captions, decode_lengths, alphas)
+
+                val_losses.append(loss.mean().item())
+
+                if batch_idx > NUM_BATCHES_VALIDATION:
+                    break
 
     model.train()
     return (
@@ -137,8 +150,8 @@ def validate_model(
         np.mean(captioning_losses),
         np.mean(ranking_losses),
         np.mean(val_accuracies),
+        np.mean(bleu_scores)
     )
-
 
 def save_model(model, optimizer, best_val_loss, epoch, path):
     torch.save(
@@ -214,14 +227,14 @@ def main(args):
         collate_fn=CaptionDataset.pad_collate,
     )
     val_images_loader = torch.utils.data.DataLoader(
-        CaptionDataset(
+        CaptionRLDataset(
             DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab
         ),
         batch_size=args.batch_size,
         shuffle=True,
         num_workers=0,
         pin_memory=False,
-        collate_fn=CaptionDataset.pad_collate,
+        collate_fn=CaptionRLDataset.pad_collate,
     )
 
     semantics_eval_loaders = {
@@ -298,14 +311,17 @@ def main(args):
                     captioning_loss,
                     ranking_loss,
                     val_acc,
+                    val_bleu_score,
                 ) = validate_model(
                     model,
                     val_images_loader,
                     semantics_eval_loaders,
                     vocab,
-                    args
+                    args,
+                    val_bleu_score=True
                 )
                 accuracies["val_loss"] = val_loss
+                accuracies["bleu_score_val"] = val_bleu_score
                 accuracies["batch_id"] = batch_idx
                 accuracies["captioninig_loss"] = captioning_loss
                 accuracies["ranking_loss"] = ranking_loss
@@ -318,7 +334,8 @@ def main(args):
                 )
                 print(
                     f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | val loss: {val_loss:.3f} | captioning loss:"
-                    f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f}"
+                    f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f} |"
+                    f" BLEU score (val): {val_bleu_score:.3f} | "
                 )
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss

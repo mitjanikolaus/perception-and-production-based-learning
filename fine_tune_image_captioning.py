@@ -4,7 +4,6 @@ import pathlib
 import pickle
 import os
 import random
-from collections import defaultdict
 
 import numpy as np
 
@@ -17,17 +16,10 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader
 
 from dataset import CaptionDataset, CaptionRLDataset
-from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
+from eval_semantics import get_semantics_eval_dataloader
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
-from models.image_sentence_ranking.ranking_model import accuracy_discrimination
-from models.interactive.models import (
-    ImageEncoder,
-    RnnSenderMultitaskVisualRef,
-    loss_cross_entropy,
-)
 from models.joint.joint_learner import JointLearner
-from models.joint.joint_learner_sat import JointLearnerSAT
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -35,10 +27,8 @@ from preprocess import (
     MAX_CAPTION_LEN,
     DATA_PATH,
 )
-from train_image_captioning import validate_model, save_model, forward_pass
+from train_image_captioning import save_model, forward_pass, validate_model
 from utils import (
-    print_caption,
-    CHECKPOINT_DIR_IMAGE_CAPTIONING,
     SEMANTICS_EVAL_FILES,
     DEFAULT_LOG_FREQUENCY,
     DEFAULT_WORD_EMBEDDINGS_SIZE,
@@ -126,15 +116,15 @@ def main(args):
         pin_memory=False,
         collate_fn=CaptionRLDataset.pad_collate,
     )
-    val_images_loader = torch.utils.data.DataLoader(
-        CaptionDataset(
+    val_images_loader = DataLoader(
+        CaptionRLDataset(
             DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab
         ),
         batch_size=args.batch_size,
         shuffle=True,
         num_workers=0,
         pin_memory=False,
-        collate_fn=CaptionDataset.pad_collate,
+        collate_fn=CaptionRLDataset.pad_collate,
     )
 
     semantics_eval_loaders = {
@@ -210,10 +200,12 @@ def main(args):
                     captioning_loss,
                     ranking_loss,
                     val_acc,
+                    val_bleu_score
                 ) = validate_model(
-                    model, val_images_loader, semantics_eval_loaders, vocab, args
+                    model, val_images_loader, semantics_eval_loaders, vocab, args, val_bleu_score=True
                 )
                 accuracies["val_loss"] = val_loss
+                accuracies["bleu_score_val"] = val_bleu_score
                 accuracies["batch_id"] = batch_idx
                 accuracies["epoch"] = epoch
                 accuracies["bleu_score_train"] = np.mean(bleu_scores)
@@ -226,7 +218,8 @@ def main(args):
                 print(
                     f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | RL: {np.mean(losses_rl):.3f} |"
                     f" supervised: {np.mean(losses_supervised):.3f} | BLEU score (train): "
-                    f"{np.mean(bleu_scores):.3f} | val loss: {val_loss:.3f} | captioning loss:"
+                    f"{np.mean(bleu_scores):.3f} | BLEU score (val): "
+                    f"{val_bleu_score:.3f} | val loss: {val_loss:.3f} | captioning loss:"
                     f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f}"
                 )
                 if val_loss < best_val_loss:
