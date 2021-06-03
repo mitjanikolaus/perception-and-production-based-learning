@@ -140,8 +140,8 @@ def validate_model(
 
                 val_losses.append(loss.mean().item())
 
-                if batch_idx > NUM_BATCHES_VALIDATION:
-                    break
+            if batch_idx > NUM_BATCHES_VALIDATION:
+                break
 
     model.train()
     return (
