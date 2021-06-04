@@ -49,19 +49,11 @@ def forward_pass_rl(model, images, captions, vocab, args):
         vocab
     )
 
-    # TODO: check whether this step is superfluous
     # # the log prob/ entropy of the choices made by S before and including the eos symbol
-    effective_entropy = torch.zeros(entropies.shape[0], device=device)
-    effective_log_prob = torch.zeros(logits.shape[0], device=device)
+    effective_entropy = entropies.sum(dim=1) / sequence_lengths.float()
+    effective_log_prob = logits.sum(dim=1) / sequence_lengths.float()
 
-    for i in range(max(sequence_lengths)):
-        not_eosed = (i < sequence_lengths).float()
-        effective_entropy += entropies[:, i] * not_eosed
-        effective_log_prob += logits[:, i] * not_eosed
-    effective_entropy = effective_entropy / sequence_lengths.float()
-    effective_log_prob = effective_log_prob / sequence_lengths.float()
-
-    weighted_entropy = effective_entropy.mean() * args.entropy_coeff
+    entropy_loss = effective_entropy.mean() * args.entropy_coeff
 
     length_loss = sequence_lengths.float() * args.length_cost
 
@@ -69,10 +61,10 @@ def forward_pass_rl(model, images, captions, vocab, args):
             length_loss * effective_log_prob
     ).mean()
     policy_loss = - (
-            (reward) * effective_log_prob
+            reward * effective_log_prob
     ).mean()
 
-    rl_loss = policy_length_loss + policy_loss - weighted_entropy
+    rl_loss = policy_length_loss + policy_loss - entropy_loss
 
     return rl_loss, reward.mean()
 
