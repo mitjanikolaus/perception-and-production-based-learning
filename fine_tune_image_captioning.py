@@ -311,7 +311,7 @@ def get_args():
         help="Input batch size for training (default: 32)",
     )
     parser.add_argument(
-        "--entropy-coeff", type=float, default=0.1, help="Entropy coefficient for RL",
+        "--entropy-coeff", type=float, default=0.0, help="Entropy coefficient for RL",
     )
     parser.add_argument(
         "--length-cost", type=float, default=0.0, help="Length penalty for RL",
