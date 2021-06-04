@@ -477,7 +477,7 @@ def get_args():
     )
     parser.add_argument(
         "--frequency-rl-updates",
-        default=-1,
+        default=0,
         type=int,
         help="RL updates frequency (number of RL updates per supervised update, set to -1 for only RL, or to 0 for only"
              "supervised updates)",
