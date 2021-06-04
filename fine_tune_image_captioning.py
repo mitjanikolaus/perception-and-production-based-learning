@@ -311,12 +311,6 @@ def get_args():
         type=int,
         help="Random seed",
     )
-    # parser.add_argument(
-    #     "--weight-supervised-loss",
-    #     default=0,
-    #     type=float,
-    #     help="Supervised loss weight",
-    # )
     parser.add_argument(
         "--frequency-rl-updates",
         default=-1,
