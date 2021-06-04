@@ -1,8 +1,8 @@
 import argparse
-import math
 import pathlib
 import pickle
 import os
+import random
 
 import numpy as np
 
@@ -14,12 +14,12 @@ import torch.utils.data
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 
-from dataset import CaptionDataset, CaptionRLDataset
+from dataset import CaptionRLDataset
 from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.image_sentence_ranking.ranking_model import accuracy_discrimination
-from models.interactive.models import ImageEncoder, RnnSenderMultitaskVisualRef, loss_cross_entropy
+from models.interactive.models import loss_cross_entropy
 from models.joint.joint_learner import JointLearner
 from preprocess import (
     IMAGES_FILENAME,
@@ -117,7 +117,7 @@ def validate_model(
                         captions_embedded,
                     )
 
-                    # TODO weigh losses
+                    # TODO weigh losses appropriately
                     loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
                     loss = loss_captioning + loss_ranking
 
@@ -166,7 +166,7 @@ def save_model(model, optimizer, best_bleu_score, epoch, path):
     )
 
 
-def forward_pass(model, images, captions, caption_lengths, args):
+def forward_pass_supervised(model, images, captions, caption_lengths, args):
     model.train()
 
     # Forward pass
@@ -186,7 +186,7 @@ def forward_pass(model, images, captions, caption_lengths, args):
             images_embedded,
             captions_embedded,
         )
-        # TODO weigh losses
+        # TODO weigh losses appropriately
         loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
         loss = loss_captioning + loss_ranking
     elif args.model == "interactive":
@@ -203,6 +203,37 @@ def forward_pass(model, images, captions, caption_lengths, args):
     return loss.mean()
 
 
+def forward_pass_rl(model, images, captions, vocab, args):
+    sequences, logits, entropies, sequence_lengths = model.decode(
+        images, sampling=True
+    )
+
+    reward = model.reward_rl(
+        sequences,
+        captions,
+        vocab
+    )
+
+    # # the log prob/ entropy of the choices made by S before and including the eos symbol
+    effective_entropy = entropies.sum(dim=1) / sequence_lengths.float()
+    effective_log_prob = logits.sum(dim=1) / sequence_lengths.float()
+
+    entropy_loss = effective_entropy.mean() * args.entropy_coeff
+
+    length_loss = sequence_lengths.float() * args.length_cost
+
+    policy_length_loss = (
+            length_loss * effective_log_prob
+    ).mean()
+    policy_loss = - (
+            reward * effective_log_prob
+    ).mean()
+
+    rl_loss = policy_length_loss + policy_loss - entropy_loss
+
+    return rl_loss, reward.mean()
+
+
 def main(args):
     if args.seed:
         set_seeds(args.seed)
@@ -216,7 +247,7 @@ def main(args):
     with open(vocab_path, "rb") as file:
         vocab = pickle.load(file)
 
-    train_dataset = CaptionDataset(
+    train_dataset = CaptionRLDataset(
         DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab, args.training_set_size
     )
     train_loader = DataLoader(
@@ -225,9 +256,9 @@ def main(args):
         shuffle=True,
         num_workers=0,
         pin_memory=False,
-        collate_fn=CaptionDataset.pad_collate,
+        collate_fn=CaptionRLDataset.pad_collate,
     )
-    val_images_loader = torch.utils.data.DataLoader(
+    val_images_loader = DataLoader(
         CaptionRLDataset(
             DATA_PATH, IMAGES_FILENAME["val"], CAPTIONS_FILENAME["val"], vocab
         ),
@@ -250,17 +281,7 @@ def main(args):
     dropout = 0.2
 
     if args.model == "interactive":
-        encoder = ImageEncoder(
-            joint_embeddings_size, fine_tune_resnet=False
-        )
-        model = RnnSenderMultitaskVisualRef(
-            encoder,
-            vocab=vocab,
-            embed_dim=word_embedding_size,
-            hidden_size=lstm_hidden_size,
-            cell="lstm",
-            max_len=MAX_CAPTION_LEN,
-        )
+        raise NotImplementedError()
 
     elif args.model == "show_attend_and_tell":
         model = ShowAttendAndTell(
@@ -296,12 +317,21 @@ def main(args):
 
     optimizer = Adam(model.parameters(), lr=args.lr)
 
+    if args.checkpoint:
+        print(f"Loading model checkpoint from: {args.checkpoint}")
+        model_checkpoint = torch.load(args.checkpoint, map_location=device)
+        model.load_state_dict(model_checkpoint["model_state_dict"])
+
     model = model.to(device)
 
     best_bleu_score = 0
     accuracies_over_time = []
     for epoch in range(args.n_epochs):
         losses = []
+        losses_rl = []
+        losses_supervised = []
+        bleu_scores = []
+
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(
             train_loader
         ):
@@ -312,21 +342,15 @@ def main(args):
                     captioning_loss,
                     ranking_loss,
                     val_acc,
-                    val_bleu_score,
+                    val_bleu_score
                 ) = validate_model(
-                    model,
-                    val_images_loader,
-                    semantics_eval_loaders,
-                    vocab,
-                    args,
-                    val_bleu_score=True
+                    model, val_images_loader, semantics_eval_loaders, vocab, args, val_bleu_score=True
                 )
                 accuracies["val_loss"] = val_loss
                 accuracies["bleu_score_val"] = val_bleu_score
                 accuracies["batch_id"] = batch_idx
-                accuracies["captioninig_loss"] = captioning_loss
-                accuracies["ranking_loss"] = ranking_loss
                 accuracies["epoch"] = epoch
+                accuracies["bleu_score_train"] = np.mean(bleu_scores)
                 accuracies["num_samples"] = epoch * len(train_dataset) + batch_idx * args.batch_size
 
                 accuracies_over_time.append(accuracies)
@@ -334,9 +358,11 @@ def main(args):
                     os.path.join(args.out_checkpoints_dir, args.model + "_accuracies.csv")
                 )
                 print(
-                    f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | val loss: {val_loss:.3f} | captioning loss:"
-                    f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f} |"
-                    f" BLEU score (val): {val_bleu_score:.3f} | "
+                    f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | RL: {np.mean(losses_rl):.3f} |"
+                    f" supervised: {np.mean(losses_supervised):.3f} | BLEU score (train): "
+                    f"{np.mean(bleu_scores):.3f} | BLEU score (val): "
+                    f"{val_bleu_score:.3f} | val loss: {val_loss:.3f} | captioning loss:"
+                    f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f}"
                 )
                 if val_bleu_score > best_bleu_score:
                     best_bleu_score = val_bleu_score
@@ -348,7 +374,28 @@ def main(args):
                         os.path.join(args.out_checkpoints_dir, args.model + ".pt"),
                     )
 
-            loss = forward_pass(model, images, captions, caption_lengths, args)
+            model.train()
+
+            # Alternative between supervised and RL
+            if args.frequency_rl_updates != -1 and batch_idx % (args.frequency_rl_updates+1) == 0:
+                #  Forward pass: Supervised
+
+                # Sample target sentences:
+                sentence_idx = [random.choice(range(captions.shape[1])) for _ in range(images.shape[0])]
+                target_captions = captions[torch.arange(captions.shape[0]), sentence_idx]
+                target_caption_lengths = caption_lengths[torch.arange(captions.shape[0]), sentence_idx]
+                target_captions = target_captions[:, :max(target_caption_lengths)]
+
+                loss_supervised = forward_pass_supervised(model, images, target_captions, target_caption_lengths, args)
+                losses_supervised.append(loss_supervised.item())
+
+                loss = loss_supervised
+            else:
+                # Forward pass: RL
+                loss, reward = forward_pass_rl(model, images, captions, vocab, args)
+                losses_rl.append(loss.item())
+
+                bleu_scores.append(reward.item())
 
             losses.append(loss.item())
 
@@ -357,7 +404,8 @@ def main(args):
             optimizer.step()
 
         print(
-            f"End of epoch: {epoch} | train loss: {np.mean(losses)} | best BLEU score: {best_bleu_score}\n\n"
+            f"End of epoch: {epoch} | train loss: {np.mean(losses)} | BLEU score: {np.mean(bleu_scores):.3f} | "
+            f"best BLEU score: {best_bleu_score}\n\n"
         )
 
 
@@ -367,6 +415,17 @@ def get_args():
         "--model",
         default="show_attend_and_tell",
         choices=["show_and_tell", "show_attend_and_tell", "joint", "interactive"],
+    )
+    parser.add_argument(
+        "--checkpoint", help="Path to checkpoint of pre-trained model",
+    )
+    parser.add_argument(
+        "--out-checkpoints-dir",
+        type=str,
+        default=os.path.join(
+            pathlib.Path.home(), "data/visual_ref/checkpoints/captioning_finetuned"
+        ),
+        help="Directory to which checkpoints should be saved to",
     )
     parser.add_argument(
         "--fine-tune-resnet",
@@ -393,6 +452,19 @@ def get_args():
         help="Input batch size for training (default: 32)",
     )
     parser.add_argument(
+        "--entropy-coeff", type=float, default=0.0, help="Entropy coefficient for RL",
+    )
+    parser.add_argument(
+        "--length-cost", type=float, default=0.0, help="Length penalty for RL",
+    )
+    parser.add_argument(
+        "--eval-semantics",
+        default=False,
+        action="store_true",
+        help="Eval semantics of model using 2AFC",
+    )
+    parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
+    parser.add_argument(
         "--training-set-size",
         type=float,
         default=1.0,
@@ -404,20 +476,12 @@ def get_args():
         help="Random seed",
     )
     parser.add_argument(
-        "--eval-semantics",
-        default=False,
-        action="store_true",
-        help="Eval semantics of model using 2AFC",
+        "--frequency-rl-updates",
+        default=-1,
+        type=int,
+        help="RL updates frequency (number of RL updates per supervised update, set to -1 for only RL, or to 0 for only"
+             "supervised updates)",
     )
-    parser.add_argument(
-        "--out-checkpoints-dir",
-        type=str,
-        default=os.path.join(
-            pathlib.Path.home(), "data/visual_ref/checkpoints/captioning/"
-        ),
-        help="Directory to which checkpoints should be saved to",
-    )
-    parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
 
     return parser.parse_args()
 
