@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 
 from utils import LEGEND_GROUPED_NOUNS, LEGEND
 
+import numpy as np
+
 
 def main(args):
     sns.set_context(
@@ -57,6 +59,8 @@ def main(args):
         for name in LEGEND.values():
             print(f"Accuracy for {name}: {best_score[name].values[0]:.3f}")
 
+        overall_average = np.mean([best_score[name].values[0] for name in LEGEND.values()])
+        print(f"Overview Average: {overall_average:.3f}")
 
         all_scores.append(scores.copy())
 
@@ -96,7 +100,7 @@ def get_args():
         "--scores-files", type=str, nargs="+", required=True,
     )
     parser.add_argument(
-        "--rolling-window", default=30, type=int,
+        "--rolling-window", default=1, type=int,
     )
     parser.add_argument(
         "--x-lim", default=None, type=int,
