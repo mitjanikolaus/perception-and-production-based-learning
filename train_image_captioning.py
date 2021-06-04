@@ -96,7 +96,8 @@ def validate_model(
                 bleu_scores_batch = model.reward_rl(
                     sequences,
                     captions,
-                    vocab
+                    vocab,
+                    args.weights_bleu,
                 )
                 bleu_scores.extend(bleu_scores_batch.tolist())
             else:
@@ -211,7 +212,8 @@ def forward_pass_rl(model, images, captions, vocab, args):
     reward = model.reward_rl(
         sequences,
         captions,
-        vocab
+        vocab,
+        args.weights_bleu,
     )
 
     # # the log prob/ entropy of the choices made by S before and including the eos symbol
@@ -481,6 +483,13 @@ def get_args():
         type=int,
         help="RL updates frequency (number of RL updates per supervised update, set to -1 for only RL, or to 0 for only"
              "supervised updates)",
+    )
+    parser.add_argument(
+        "--weights-bleu",
+        default=(0.25, 0.25, 0.25, 0.25),
+        type=float,
+        nargs=4,
+        help="Weights for BLEU score that is used as reward for RL",
     )
 
     return parser.parse_args()

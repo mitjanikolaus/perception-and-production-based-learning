@@ -6,8 +6,6 @@ from torch import nn
 import torch.nn.functional as F
 from torch.distributions import Categorical
 
-import numpy as np
-
 from preprocess import TOKEN_PADDING
 from utils import TOKEN_START, decode_caption, TOKEN_END
 
@@ -167,7 +165,7 @@ class CaptioningModel(nn.Module):
         )
 
     def reward_rl(
-        self, sequences, target_captions, vocab,
+        self, sequences, target_captions, vocab, weights_bleu=(0.25, 0.25, 0.25, 0.25)
     ):
         sequences_decoded = [decode_caption(sequence, vocab) for sequence in sequences]
 
@@ -178,7 +176,7 @@ class CaptioningModel(nn.Module):
             )
 
         bleu_scores = [
-            sentence_bleu(refs, seq, smoothing_function=SmoothingFunction().method1)
+            sentence_bleu(refs, seq, weights=weights_bleu, smoothing_function=SmoothingFunction().method1)
             for refs, seq in zip(references_decoded, sequences_decoded)
         ]
         reward = torch.tensor(bleu_scores, device=device, dtype=torch.float)
