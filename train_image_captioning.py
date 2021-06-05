@@ -44,7 +44,7 @@ PRINT_SAMPLE_CAPTIONS = 5
 
 NUM_BATCHES_VALIDATION = 100
 
-NUM_VALIDATIONS_NO_IMPROVEMENT_EARLY_STOPPING = 10
+NUM_VALIDATIONS_NO_IMPROVEMENT_EARLY_STOPPING = 25
 
 WEIGH_RANKING_LOSS = 1
 
@@ -377,7 +377,7 @@ def main(args):
                 else:
                     validations_no_improvement += 1
                     if validations_no_improvement >= NUM_VALIDATIONS_NO_IMPROVEMENT_EARLY_STOPPING:
-                        print(f"\nEarly stopping: no improvement for {validations_no_improvement} batches")
+                        print(f"\nEarly stopping: no improvement for {validations_no_improvement} validations")
                         return
 
 
