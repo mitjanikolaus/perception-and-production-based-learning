@@ -70,14 +70,8 @@ def main(args):
         print(f"Max val acc: {scores['val_acc'].max()}")
         legend["val_acc"] = "val_acc"
 
-    if "bleu_score_train" in all_scores.columns:
-        legend["bleu_score_train"] = "bleu_score_train"
-
     if "bleu_score_val" in all_scores.columns:
         legend["bleu_score_val"] = "bleu_score_val"
-
-    if "val_loss" in all_scores.columns:
-        legend["val_loss"] = "val_loss"
 
     sns.lineplot(data=all_scores[list(legend.values())], ci="sd")
 
