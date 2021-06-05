@@ -31,7 +31,11 @@ from preprocess import (
 from utils import (
     print_caption,
     SEMANTICS_EVAL_FILES,
-    DEFAULT_LOG_FREQUENCY, DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE, LEGEND, set_seeds,
+    DEFAULT_LOG_FREQUENCY,
+    DEFAULT_WORD_EMBEDDINGS_SIZE,
+    DEFAULT_LSTM_HIDDEN_SIZE,
+    LEGEND,
+    set_seeds,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -72,9 +76,7 @@ def validate_model(
 
     model.eval()
     with torch.no_grad():
-        print_sample_model_output(
-            model, dataloader, vocab, PRINT_SAMPLE_CAPTIONS
-        )
+        print_sample_model_output(model, dataloader, vocab, PRINT_SAMPLE_CAPTIONS)
         if args.eval_semantics:
             for name, semantic_images_loader in semantic_images_loaders.items():
                 acc = eval_semantics_score(model, semantic_images_loader, vocab)
@@ -94,10 +96,7 @@ def validate_model(
                 )
 
                 bleu_scores_batch = model.reward_rl(
-                    sequences,
-                    captions,
-                    vocab,
-                    args.weights_bleu,
+                    sequences, captions, vocab, args.weights_bleu,
                 )
                 bleu_scores.extend(bleu_scores_batch.tolist())
             else:
@@ -128,9 +127,7 @@ def validate_model(
                     captioning_losses.append(loss_captioning.item())
                     ranking_losses.append(loss_ranking.item())
                 elif args.model == "interactive":
-                    scores, decode_lengths, _ = model(
-                        images, captions, caption_lengths
-                    )
+                    scores, decode_lengths, _ = model(images, captions, caption_lengths)
                     loss = loss_cross_entropy(scores, captions)
 
                 else:
@@ -151,7 +148,7 @@ def validate_model(
         np.mean(captioning_losses),
         np.mean(ranking_losses),
         np.mean(val_accuracies),
-        np.mean(bleu_scores)
+        np.mean(bleu_scores),
     )
 
 
@@ -172,13 +169,9 @@ def forward_pass_supervised(model, images, captions, caption_lengths, args):
 
     # Forward pass
     if args.model == "joint":
-        (
-            scores,
-            decode_lengths,
-            alphas,
-            images_embedded,
-            captions_embedded,
-        ) = model(images, captions, caption_lengths)
+        (scores, decode_lengths, alphas, images_embedded, captions_embedded,) = model(
+            images, captions, caption_lengths
+        )
         loss_captioning, loss_ranking = model.loss(
             scores,
             captions,
@@ -191,30 +184,19 @@ def forward_pass_supervised(model, images, captions, caption_lengths, args):
         loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
         loss = loss_captioning + loss_ranking
     elif args.model == "interactive":
-        scores, _, _ = model(
-            images, captions, caption_lengths
-        )
+        scores, _, _ = model(images, captions, caption_lengths)
         loss = loss_cross_entropy(scores, captions)
     else:
-        scores, decode_lengths, alphas = model(
-            images, captions, caption_lengths
-        )
+        scores, decode_lengths, alphas = model(images, captions, caption_lengths)
         loss = model.loss(scores, captions, decode_lengths, alphas)
 
     return loss.mean()
 
 
 def forward_pass_rl(model, images, captions, vocab, args):
-    sequences, logits, entropies, sequence_lengths = model.decode(
-        images, sampling=True
-    )
+    sequences, logits, entropies, sequence_lengths = model.decode(images, sampling=True)
 
-    reward = model.reward_rl(
-        sequences,
-        captions,
-        vocab,
-        args.weights_bleu,
-    )
+    reward = model.reward_rl(sequences, captions, vocab, args.weights_bleu,)
 
     # # the log prob/ entropy of the choices made by S before and including the eos symbol
     effective_entropy = entropies.sum(dim=1) / sequence_lengths.float()
@@ -224,12 +206,8 @@ def forward_pass_rl(model, images, captions, vocab, args):
 
     length_loss = sequence_lengths.float() * args.length_cost
 
-    policy_length_loss = (
-            length_loss * effective_log_prob
-    ).mean()
-    policy_loss = - (
-            reward * effective_log_prob
-    ).mean()
+    policy_length_loss = (length_loss * effective_log_prob).mean()
+    policy_loss = -(reward * effective_log_prob).mean()
 
     rl_loss = policy_length_loss + policy_loss - entropy_loss
 
@@ -250,7 +228,11 @@ def main(args):
         vocab = pickle.load(file)
 
     train_dataset = CaptionRLDataset(
-        DATA_PATH, IMAGES_FILENAME["train"], CAPTIONS_FILENAME["train"], vocab, args.training_set_size
+        DATA_PATH,
+        IMAGES_FILENAME["train"],
+        CAPTIONS_FILENAME["train"],
+        vocab,
+        args.training_set_size,
     )
     train_loader = DataLoader(
         train_dataset,
@@ -344,20 +326,30 @@ def main(args):
                     captioning_loss,
                     ranking_loss,
                     val_acc,
-                    val_bleu_score
+                    val_bleu_score,
                 ) = validate_model(
-                    model, val_images_loader, semantics_eval_loaders, vocab, args, val_bleu_score=True
+                    model,
+                    val_images_loader,
+                    semantics_eval_loaders,
+                    vocab,
+                    args,
+                    val_bleu_score=True,
                 )
                 accuracies["val_loss"] = val_loss
                 accuracies["bleu_score_val"] = val_bleu_score
                 accuracies["batch_id"] = batch_idx
                 accuracies["epoch"] = epoch
                 accuracies["bleu_score_train"] = np.mean(bleu_scores)
-                accuracies["num_samples"] = epoch * len(train_dataset) + batch_idx * args.batch_size
+                accuracies["num_samples"] = (
+                    epoch * len(train_dataset) + batch_idx * args.batch_size
+                )
 
                 accuracies_over_time.append(accuracies)
                 pd.DataFrame(accuracies_over_time).to_csv(
-                    os.path.join(args.out_checkpoints_dir, args.model + "_accuracies.csv")
+                    os.path.join(
+                        args.out_checkpoints_dir,
+                        f"{args.model}_train_frac_{args.training_set_size}_accuracies.csv",
+                    )
                 )
                 print(
                     f"Batch {batch_idx}: train loss: {np.mean(losses):.3f} | RL: {np.mean(losses_rl):.3f} |"
@@ -373,22 +365,37 @@ def main(args):
                         optimizer,
                         best_bleu_score,
                         epoch,
-                        os.path.join(args.out_checkpoints_dir, args.model + ".pt"),
+                        os.path.join(
+                            args.out_checkpoints_dir,
+                            f"{args.model}_train_frac_{args.training_set_size}.pt",
+                        ),
                     )
 
             model.train()
 
             # Alternative between supervised and RL
-            if args.frequency_rl_updates != -1 and batch_idx % (args.frequency_rl_updates+1) == 0:
+            if (
+                args.frequency_rl_updates != -1
+                and batch_idx % (args.frequency_rl_updates + 1) == 0
+            ):
                 #  Forward pass: Supervised
 
                 # Sample target sentences:
-                sentence_idx = [random.choice(range(captions.shape[1])) for _ in range(images.shape[0])]
-                target_captions = captions[torch.arange(captions.shape[0]), sentence_idx]
-                target_caption_lengths = caption_lengths[torch.arange(captions.shape[0]), sentence_idx]
-                target_captions = target_captions[:, :max(target_caption_lengths)]
+                sentence_idx = [
+                    random.choice(range(captions.shape[1]))
+                    for _ in range(images.shape[0])
+                ]
+                target_captions = captions[
+                    torch.arange(captions.shape[0]), sentence_idx
+                ]
+                target_caption_lengths = caption_lengths[
+                    torch.arange(captions.shape[0]), sentence_idx
+                ]
+                target_captions = target_captions[:, : max(target_caption_lengths)]
 
-                loss_supervised = forward_pass_supervised(model, images, target_captions, target_caption_lengths, args)
+                loss_supervised = forward_pass_supervised(
+                    model, images, target_captions, target_caption_lengths, args
+                )
                 losses_supervised.append(loss_supervised.item())
 
                 loss = loss_supervised
@@ -473,16 +480,14 @@ def get_args():
         help="Training set size (as fraction of total data)",
     )
     parser.add_argument(
-        "--seed",
-        type=int,
-        help="Random seed",
+        "--seed", type=int, help="Random seed",
     )
     parser.add_argument(
         "--frequency-rl-updates",
         default=0,
         type=int,
         help="RL updates frequency (number of RL updates per supervised update, set to -1 for only RL, or to 0 for only"
-             "supervised updates)",
+        "supervised updates)",
     )
     parser.add_argument(
         "--weights-bleu",
