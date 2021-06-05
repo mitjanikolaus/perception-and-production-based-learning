@@ -44,6 +44,8 @@ PRINT_SAMPLE_CAPTIONS = 5
 
 NUM_BATCHES_VALIDATION = 100
 
+NUM_BATCHES_NO_IMPROVEMENT_EARLY_STOPPING = 100
+
 WEIGH_RANKING_LOSS = 1
 
 
@@ -309,6 +311,7 @@ def main(args):
     model = model.to(device)
 
     best_bleu_score = 0
+    batches_no_improvement = 0
     accuracies_over_time = []
     for epoch in range(args.n_epochs):
         losses = []
@@ -370,6 +373,13 @@ def main(args):
                             f"{args.model}_train_frac_{args.training_set_size}.pt",
                         ),
                     )
+                    batches_no_improvement = 0
+                else:
+                    batches_no_improvement += 1
+                    if batches_no_improvement >= NUM_BATCHES_NO_IMPROVEMENT_EARLY_STOPPING:
+                        print(f"\nEarly stopping: no improvement for {batches_no_improvement} batches")
+                        return
+
 
             model.train()
 
