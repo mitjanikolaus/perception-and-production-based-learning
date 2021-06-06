@@ -40,26 +40,32 @@ def main(args):
                 scores.rename(columns=legend, inplace=True)
                 if args.group_noun_accuracies:
                     scores.insert(
-                        0, "nouns", scores[["persons", "animals", "objects"]].mean(axis=1)
+                        0,
+                        "nouns",
+                        scores[["persons", "animals", "objects"]].mean(axis=1),
                     )
 
                 metric = "bleu_score_val"
-                best_score = scores[scores[metric] == scores[metric].max()].iloc[0].to_dict()
+                best_score = (
+                    scores[scores[metric] == scores[metric].max()].iloc[0].to_dict()
+                )
                 if "epoch" in scores.columns:
-                    print(
-                        f"Epoch with max {metric}:{best_score['epoch']}"
-                    )
+                    print(f"Epoch with max {metric}:{best_score['epoch']}")
 
                 print("Top scores:")
                 for name in LEGEND.values():
                     print(f"Accuracy for {name}: {best_score[name]:.3f}")
 
-                overall_average = np.mean([best_score[name] for name in LEGEND.values()])
+                overall_average = np.mean(
+                    [best_score[name] for name in LEGEND.values()]
+                )
                 print(f"Overview Average: {overall_average:.3f}")
                 best_score["average"] = overall_average
 
                 # Read train set frac information from file name
-                best_score["train_frac"] = float(str(scores_file.split("train_frac_")[1]).split("_accuracies")[0])
+                best_score["train_frac"] = float(
+                    str(scores_file.split("train_frac_")[1]).split("_accuracies")[0]
+                )
 
                 # Read train setup information from folder name
                 best_score["setup"] = scores_file.split("/")[-2]
@@ -70,7 +76,16 @@ def main(args):
 
     legend["train_frac"] = ["train_frac"]
 
-    sns.lineplot(data=all_scores, x="train_frac", y="average", hue="setup", markers=True, dashes=False, style="setup")
+    sns.lineplot(
+        data=all_scores,
+        x="train_frac",
+        y="average",
+        hue="setup",
+        markers=True,
+        dashes=False,
+        style="setup",
+        err_style="bars",
+    )
 
     plt.ylim((0.49, args.y_lim))
 
