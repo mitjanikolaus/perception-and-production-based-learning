@@ -423,8 +423,8 @@ def main(args):
             optimizer.step()
 
         print(
-            f"End of epoch: {epoch} | train loss: {np.mean(losses)} | BLEU score: {np.mean(bleu_scores):.3f} | "
-            f"best BLEU score: {best_bleu_score}\n\n"
+            f"End of epoch: {epoch} | train loss: {np.mean(losses)} | BLEU score (train): {np.mean(bleu_scores):.3f} | "
+            f"best BLEU score (val): {best_bleu_score}\n\n"
         )
 
 
