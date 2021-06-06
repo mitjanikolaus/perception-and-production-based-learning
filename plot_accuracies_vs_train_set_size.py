@@ -32,44 +32,45 @@ def main(args):
     for root, dirs, files in os.walk(args.results_folder):
         for name in files:
             scores_file = os.path.join(root, name)
-            scores = pd.read_csv(scores_file)
+            if scores_file.endswith(".csv"):
+                scores = pd.read_csv(scores_file)
 
-            scores.set_index("num_samples", inplace=True)
+                scores.set_index("num_samples", inplace=True)
 
-            scores.rename(columns=legend, inplace=True)
-            if args.group_noun_accuracies:
-                scores.insert(
-                    0, "nouns", scores[["persons", "animals", "objects"]].mean(axis=1)
-                )
+                scores.rename(columns=legend, inplace=True)
+                if args.group_noun_accuracies:
+                    scores.insert(
+                        0, "nouns", scores[["persons", "animals", "objects"]].mean(axis=1)
+                    )
 
-            metric = "bleu_score_val"
-            best_score = scores[scores[metric] == scores[metric].max()]
-            if "epoch" in scores.columns:
-                print(
-                    f"Epoch with max {metric}:{best_score['epoch'].values[0]}"
-                )
+                metric = "bleu_score_val"
+                best_score = scores[scores[metric] == scores[metric].max()].iloc[0].to_dict()
+                if "epoch" in scores.columns:
+                    print(
+                        f"Epoch with max {metric}:{best_score['epoch']}"
+                    )
 
-            print("Top scores:")
-            for name in LEGEND.values():
-                print(f"Accuracy for {name}: {best_score[name].values[0]:.3f}")
+                print("Top scores:")
+                for name in LEGEND.values():
+                    print(f"Accuracy for {name}: {best_score[name]:.3f}")
 
-            overall_average = np.mean([best_score[name].values[0] for name in LEGEND.values()])
-            print(f"Overview Average: {overall_average:.3f}")
-            best_score["average"] = overall_average
+                overall_average = np.mean([best_score[name] for name in LEGEND.values()])
+                print(f"Overview Average: {overall_average:.3f}")
+                best_score["average"] = overall_average
 
-            # Read train set frac information from file name
-            best_score["train_frac"] = float(str(scores_file.split("train_frac_")[1]).split("_accuracies")[0])
+                # Read train set frac information from file name
+                best_score["train_frac"] = float(str(scores_file.split("train_frac_")[1]).split("_accuracies")[0])
 
-            # Read train setup information from folder name
-            best_score["setup"] = scores_file.split("/")[-2]
+                # Read train setup information from folder name
+                best_score["setup"] = scores_file.split("/")[-2]
 
-            all_scores.append(best_score.copy())
+                all_scores.append(best_score.copy())
 
-    all_scores = pd.concat(all_scores)
+    all_scores = pd.DataFrame(all_scores)
 
     legend["train_frac"] = ["train_frac"]
 
-    sns.scatterplot(data=all_scores, x="train_frac", y="average", hue="setup")
+    sns.lineplot(data=all_scores, x="train_frac", y="average", hue="setup", markers=True, dashes=False, style="setup")
 
     plt.ylim((0.49, args.y_lim))
 
