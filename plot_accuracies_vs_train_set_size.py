@@ -37,7 +37,7 @@ def main(args):
 
                 scores.set_index("num_samples", inplace=True)
 
-                scores.rename(columns=legend, inplace=True)
+                scores.rename(columns=LEGEND, inplace=True)
                 if args.group_noun_accuracies:
                     scores.insert(
                         0,
@@ -70,24 +70,30 @@ def main(args):
                 # Read train setup information from folder name
                 best_score["setup"] = scores_file.split("/")[-2]
 
-                all_scores.append(best_score.copy())
+                if args.print_per_task_accs:
+                    for name in legend.values():
+                        all_scores.append({"setup": best_score["setup"], "train_frac": best_score["train_frac"], "task": name, "accuracy": best_score[name]})
+
+                else:
+                    all_scores.append({"setup": best_score["setup"], "train_frac": best_score["train_frac"], "accuracy": best_score["average"]})
 
     all_scores = pd.DataFrame(all_scores)
 
-    legend["train_frac"] = ["train_frac"]
 
+    all_scores.set_index("train_frac", inplace=True)
+
+    hue = "task" if args.print_per_task_accs else None
     sns.lineplot(
         data=all_scores,
         x="train_frac",
-        y="average",
-        hue="setup",
+        y="accuracy",
+        hue=hue,
         markers=True,
-        dashes=False,
         style="setup",
         err_style="bars",
     )
 
-    plt.ylim((0.49, args.y_lim))
+    plt.ylim((0.4, args.y_lim))
 
     # Add chance level line
     plt.axhline(y=0.5, color="black", label="Chance level", linestyle="--")
@@ -108,6 +114,9 @@ def get_args():
     )
     parser.add_argument(
         "--group-noun-accuracies", default=False, action="store_true",
+    )
+    parser.add_argument(
+        "--print-per-task-accs", default=False, action="store_true",
     )
 
     return parser.parse_args()
