@@ -12,17 +12,17 @@ import numpy as np
 
 
 def main(args):
-    sns.set_context(
-        "paper",
-        rc={
-            "font.size": 12,
-            "axes.titlesize": 12,
-            "axes.labelsize": 12,
-            "xtick.labelsize": 12,
-            "ytick.labelsize": 12,
-            "legend.fontsize": 12,
-        },
-    )
+    # sns.set_context(
+    #     "paper",
+    #     rc={
+    #         "font.size": 12,
+    #         "axes.titlesize": 12,
+    #         "axes.labelsize": 12,
+    #         "xtick.labelsize": 12,
+    #         "ytick.labelsize": 12,
+    #         "legend.fontsize": 12,
+    #     },
+    # )
 
     legend = LEGEND
     if args.group_noun_accuracies:
@@ -82,8 +82,8 @@ def main(args):
 
     all_scores.set_index("train_frac", inplace=True)
 
-    hue = "task" if args.print_per_task_accs else None
-    sns.lineplot(
+    hue = "task" if args.print_per_task_accs else "setup"
+    g = sns.lineplot(
         data=all_scores,
         x="train_frac",
         y="accuracy",
@@ -92,6 +92,9 @@ def main(args):
         style="setup",
         err_style="bars",
     )
+    # g.legend(loc='upper center', bbox_to_anchor=(0.5, 1.5), ncol=3)
+    plt.subplots_adjust(top=0.7)
+
 
     plt.ylim((0.4, args.y_lim))
 
