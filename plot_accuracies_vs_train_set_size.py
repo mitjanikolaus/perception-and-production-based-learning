@@ -83,13 +83,16 @@ def main(args):
     all_scores.set_index("train_frac", inplace=True)
 
     hue = "task" if args.print_per_task_accs else "setup"
+    style = "setup"
+    if all_scores.setup.unique().size == 1:
+        style = "task"
     g = sns.lineplot(
         data=all_scores,
         x="train_frac",
         y="accuracy",
         hue=hue,
         markers=True,
-        style="setup",
+        style=style,
         err_style="bars",
     )
     # g.legend(loc='upper center', bbox_to_anchor=(0.5, 1.5), ncol=3)
