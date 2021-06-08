@@ -67,15 +67,19 @@ def main(args):
                     str(scores_file.split("train_frac_")[1]).split("_accuracies")[0]
                 )
 
-                # Read train setup information from folder name
-                best_score["setup"] = scores_file.split("/")[-2]
-
                 if args.print_per_task_accs:
                     for name in legend.values():
-                        all_scores.append({"setup": best_score["setup"], "train_frac": best_score["train_frac"], "task": name, "accuracy": best_score[name]})
+                        score = {"train_frac": best_score["train_frac"], "task": name, "accuracy": best_score[name]}
+                        if args.read_setup_from_dirname:
+                            score["setup"] = scores_file.split("/")[-2]
+                        all_scores.append(score)
 
                 else:
-                    all_scores.append({"setup": best_score["setup"], "train_frac": best_score["train_frac"], "accuracy": best_score["average"]})
+                    score = {"train_frac": best_score["train_frac"], "accuracy": best_score["average"]}
+                    if args.read_setup_from_dirname:
+                        score["setup"] = scores_file.split("/")[-2]
+                    all_scores.append(score)
+
 
     all_scores = pd.DataFrame(all_scores)
 
@@ -83,8 +87,8 @@ def main(args):
     all_scores.set_index("train_frac", inplace=True)
 
     hue = "task" if args.print_per_task_accs else "setup"
-    style = "setup"
-    if all_scores.setup.unique().size == 1:
+    style = "setup" if args.read_setup_from_dirname else "task"
+    if "setup" in all_scores.attrs and all_scores.setup.unique().size == 1:
         style = "task"
     g = sns.lineplot(
         data=all_scores,
@@ -103,7 +107,7 @@ def main(args):
 
     # Add chance level line
     plt.axhline(y=0.5, color="black", label="Chance level", linestyle="--")
-    plt.text(0.85, 0.507, "Chance level", fontsize=12, va="center", ha="center")
+    plt.text(0.85, 0.51, "Chance level", fontsize=12, va="center", ha="center")
 
     plt.ylabel("Accuracy")
     plt.tight_layout()
@@ -123,6 +127,9 @@ def get_args():
     )
     parser.add_argument(
         "--print-per-task-accs", default=False, action="store_true",
+    )
+    parser.add_argument(
+        "--read-setup-from-dirname", default=False, action="store_true",
     )
 
     return parser.parse_args()

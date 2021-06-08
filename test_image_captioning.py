@@ -134,7 +134,7 @@ def main(args):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--checkpoints_dir", type=str,
+        "--checkpoints-dir", type=str,
     )
     parser.add_argument(
         "--eval-semantics",

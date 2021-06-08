@@ -14,6 +14,7 @@ import numpy as np
 def main(args):
     all_accuracies = {key: [] for key in LEGEND.values()}
     all_accuracies["average"] = []
+    all_accuracies["bleu"] = []
 
     for root, dirs, files in os.walk(args.results_folder):
         for name in files:
@@ -29,11 +30,12 @@ def main(args):
                 best_score = (
                     scores[scores[metric] == scores[metric].max()].iloc[0].to_dict()
                 )
+                best_score["bleu"] = scores[metric].max()
 
                 overall_average = np.mean(
                     [best_score[name] for name in LEGEND.values()]
                 )
-                print(f"Run Overview Average: {overall_average:.3f}")
+                print(f"Overview Average: {overall_average:.3f} | Max BLEU score: {best_score['bleu']:.3f}")
                 best_score["average"] = overall_average
 
                 for name in all_accuracies.keys():
