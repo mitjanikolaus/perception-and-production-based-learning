@@ -137,9 +137,6 @@ def get_args():
         "--checkpoints_dir", type=str,
     )
     parser.add_argument(
-        "--show-image", default=False, action="store_true",
-    )
-    parser.add_argument(
         "--eval-semantics",
         default=False,
         action="store_true",
