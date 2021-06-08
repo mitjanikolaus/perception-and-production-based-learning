@@ -110,12 +110,12 @@ def main(args):
                 model = model.to(device)
 
                 (
-                    val_loss,
+                    test_loss,
                     accuracies,
                     captioning_loss,
                     ranking_loss,
-                    val_acc,
-                    val_bleu_score,
+                    test_acc,
+                    test_bleu_score,
                 ) = validate_model(
                     model,
                     test_loader,
@@ -125,8 +125,8 @@ def main(args):
                     val_bleu_score=True,
                     max_batches=None
                 )
-                print(val_bleu_score)
-                bleu_scores.append(val_bleu_score)
+                print(f"BLEU: {test_bleu_score}")
+                bleu_scores.append(test_bleu_score)
 
     print(f"\nMean BLEU: {np.mean(bleu_scores):.4f} Stddev: {np.std(bleu_scores):.4f}")
 
@@ -143,6 +143,11 @@ def get_args():
         help="Eval semantics of model using 2AFC",
     )
     parser.add_argument(
+        "--produced-utterances-stats",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
         "--weights-bleu",
         default=(0.25, 0.25, 0.25, 0.25),
         type=float,
@@ -152,6 +157,7 @@ def get_args():
     parser.add_argument(
         "--seed", type=int, help="Random seed", default=1,
     )
+
 
     return parser.parse_args()
 

@@ -35,7 +35,7 @@ from utils import (
     DEFAULT_WORD_EMBEDDINGS_SIZE,
     DEFAULT_LSTM_HIDDEN_SIZE,
     LEGEND,
-    set_seeds,
+    set_seeds, decode_caption,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -90,6 +90,11 @@ def validate_model(
         ranking_losses = []
         val_accuracies = []
         bleu_scores = []
+
+        produced_sequences_lengths = []
+        jenny_occurrences = []
+        mike_occurrences = []
+
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
             if val_bleu_score:
                 # Validate by calculating BLEU score
@@ -101,6 +106,13 @@ def validate_model(
                     sequences, captions, vocab, args.weights_bleu,
                 )
                 bleu_scores.extend(bleu_scores_batch.tolist())
+
+                if args.produced_utterances_stats:
+                    sequences_decoded = [decode_caption(sequence, vocab) for sequence in sequences]
+                    produced_sequences_lengths.extend([len(sequence) for sequence in sequences_decoded])
+                    jenny_occurrences.extend([sequence.startswith("jenny") for sequence in sequences_decoded])
+                    mike_occurrences.extend([sequence.startswith("mike") for sequence in sequences_decoded])
+
             else:
                 if args.model == "joint":
                     (
@@ -142,6 +154,11 @@ def validate_model(
 
             if max_batches and batch_idx > max_batches:
                 break
+
+    if args.produced_utterances_stats:
+        print(f"Mean seq length: {np.mean(produced_sequences_lengths):.3f}")
+        print(f"Seq starting with 'jenny': {np.mean(jenny_occurrences):.3f}")
+        print(f"Seq starting with 'mike': {np.mean(mike_occurrences):.3f}")
 
     model.train()
     return (
