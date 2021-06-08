@@ -128,7 +128,7 @@ def main(args):
                 print(val_bleu_score)
                 bleu_scores.append(val_bleu_score)
 
-    print(f"\nMean BLEU: {np.mean(bleu_scores)} Stddev: {np.std(bleu_scores)}")
+    print(f"\nMean BLEU: {np.mean(bleu_scores):.4f} Stddev: {np.std(bleu_scores):.4f}")
 
 
 def get_args():
