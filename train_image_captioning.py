@@ -72,7 +72,7 @@ def print_sample_model_output(model, dataloader, vocab, num_captions=5):
 
 
 def validate_model(
-    model, dataloader, semantic_images_loaders, vocab, args, val_bleu_score=False
+    model, dataloader, semantic_images_loaders, vocab, args, val_bleu_score=False, max_batches=NUM_BATCHES_VALIDATION
 ):
     semantic_accuracies = {}
 
@@ -140,7 +140,7 @@ def validate_model(
 
                 val_losses.append(loss.mean().item())
 
-            if batch_idx > NUM_BATCHES_VALIDATION:
+            if max_batches and batch_idx > max_batches:
                 break
 
     model.train()
@@ -432,7 +432,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--model",
-        default="show_attend_and_tell",
+        default="show_and_tell",
         choices=["show_and_tell", "show_attend_and_tell", "joint", "interactive"],
     )
     parser.add_argument(

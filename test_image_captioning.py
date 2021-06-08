@@ -4,13 +4,13 @@ import argparse
 import pickle
 import os
 
-import h5py
-
 import torch
 import torch.distributions
 import torch.utils.data
+from torch.utils.data import DataLoader
 
-from dataset import CaptionDataset
+from dataset import CaptionRLDataset
+from eval_semantics import get_semantics_eval_dataloader
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.joint.joint_learner import JointLearner
@@ -20,112 +20,140 @@ from preprocess import (
     VOCAB_FILENAME,
     MAX_CAPTION_LEN,
     DATA_PATH,
-    show_image,
 )
-from train_image_captioning import print_captions
+from train_image_captioning import validate_model
+from utils import DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE, SEMANTICS_EVAL_FILES, set_seeds
+
+import numpy as np
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def print_test_images_captions(model, dataloader, images_data, vocab, args):
-    model.eval()
-
-    with torch.no_grad():
-        for (
-            batch_idx,
-            (images, target_captions, caption_lengths, image_ids),
-        ) in enumerate(dataloader):
-            captions, _, _ = model.decode_nucleus_sampling(images, 1, top_p=0.9)
-
-            print_captions(captions, target_captions, image_ids, vocab)
-
-            if args.show_image:
-                image_data = images_data[str(image_ids[0].item())][()]
-                image = torch.FloatTensor(image_data)
-                features_scale_factor = 255
-                image = image / features_scale_factor
-                show_image(image)
-
-
 def main(args):
+    if args.seed:
+        set_seeds(args.seed)
+
     vocab_path = os.path.join(DATA_PATH, VOCAB_FILENAME)
     print("Loading vocab from {}".format(vocab_path))
     with open(vocab_path, "rb") as file:
         vocab = pickle.load(file)
 
-    print("Loading model checkpoint from {}".format(args.checkpoint))
-    checkpoint = torch.load(args.checkpoint, map_location=device)
-
-    if "show_attend_and_tell" in args.checkpoint:
-        print("Loading sat image captioning model.")
-        word_embedding_size = 128
-        lstm_hidden_size = 512
-        model = ShowAttendAndTell(
-            word_embedding_size,
-            lstm_hidden_size,
-            vocab,
-            MAX_CAPTION_LEN,
-            fine_tune_resnet=False,
-        )
-
-    elif "show_and_tell" in args.checkpoint:
-        print("Loading st image captioning model.")
-        word_embedding_size = 512
-        visual_embedding_size = 512
-        lstm_hidden_size = 512
-        model = ShowAndTell(
-            word_embedding_size,
-            visual_embedding_size,
-            lstm_hidden_size,
-            vocab,
-            MAX_CAPTION_LEN,
-            fine_tune_resnet=False,
-        )
-
-    elif "joint" in args.checkpoint:
-        print("Loading joint learner model.")
-        word_embedding_size = 100
-        joint_embeddings_size = 512
-        lstm_hidden_size = 512
-        model = JointLearner(
-            word_embedding_size,
-            lstm_hidden_size,
-            vocab,
-            MAX_CAPTION_LEN,
-            joint_embeddings_size,
-            fine_tune_resnet=False,
-        )
-
-    else:
-        raise RuntimeError(f"Non supported model: {args.checkpoint}")
-
-    model.load_state_dict(checkpoint["model_state_dict"])
-
-    model = model.to(device)
-
-    test_images_loader = torch.utils.data.DataLoader(
-        CaptionDataset(
+    test_loader = DataLoader(
+        CaptionRLDataset(
             DATA_PATH, IMAGES_FILENAME["test"], CAPTIONS_FILENAME["test"], vocab
         ),
-        batch_size=1,
+        batch_size=32,
         shuffle=False,
         num_workers=0,
         pin_memory=False,
-        collate_fn=CaptionDataset.pad_collate,
+        collate_fn=CaptionRLDataset.pad_collate,
     )
+    semantics_eval_loaders = {
+        file: get_semantics_eval_dataloader(file, vocab)
+        for file in SEMANTICS_EVAL_FILES
+    }
 
-    images = h5py.File(os.path.join(DATA_PATH, IMAGES_FILENAME["test"]), "r")
+    bleu_scores = []
 
-    print_test_images_captions(model, test_images_loader, images, vocab, args)
+    for root, dirs, files in os.walk(args.checkpoints_dir):
+        for name in files:
+            checkpoint_path = os.path.join(root, name)
+            if checkpoint_path.endswith(".pt"):
+                print("Loading model checkpoint from {}".format(checkpoint_path))
+                checkpoint = torch.load(checkpoint_path, map_location=device)
+
+                word_embedding_size = DEFAULT_WORD_EMBEDDINGS_SIZE
+                visual_embedding_size = DEFAULT_LSTM_HIDDEN_SIZE
+                joint_embeddings_size = visual_embedding_size
+                lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
+
+                if "show_attend_and_tell" in checkpoint_path:
+                    print("Loading sat image captioning model.")
+                    args.model = "show_attend_and_tell"
+                    model = ShowAttendAndTell(
+                        word_embedding_size,
+                        lstm_hidden_size,
+                        vocab,
+                        MAX_CAPTION_LEN,
+                        fine_tune_resnet=False,
+                    )
+
+                elif "show_and_tell" in checkpoint_path:
+                    print("Loading st image captioning model.")
+                    args.model = "show_and_tell"
+                    model = ShowAndTell(
+                        word_embedding_size,
+                        visual_embedding_size,
+                        lstm_hidden_size,
+                        vocab,
+                        MAX_CAPTION_LEN,
+                        fine_tune_resnet=False,
+                    )
+
+                elif "joint" in checkpoint_path:
+                    print("Loading joint learner model.")
+                    args.model = "joint"
+                    model = JointLearner(
+                        word_embedding_size,
+                        lstm_hidden_size,
+                        vocab,
+                        MAX_CAPTION_LEN,
+                        joint_embeddings_size,
+                        fine_tune_resnet=False,
+                    )
+
+                else:
+                    raise RuntimeError(f"Non supported model: {checkpoint_path}")
+
+                model.load_state_dict(checkpoint["model_state_dict"])
+
+                model = model.to(device)
+
+                (
+                    val_loss,
+                    accuracies,
+                    captioning_loss,
+                    ranking_loss,
+                    val_acc,
+                    val_bleu_score,
+                ) = validate_model(
+                    model,
+                    test_loader,
+                    semantics_eval_loaders,
+                    vocab,
+                    args,
+                    val_bleu_score=True,
+                    max_batches=None
+                )
+                print(val_bleu_score)
+                bleu_scores.append(val_bleu_score)
+
+    print(f"\nMean BLEU: {np.mean(bleu_scores)} Stddev: {np.std(bleu_scores)}")
 
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--checkpoint", type=str,
+        "--checkpoints_dir", type=str,
     )
     parser.add_argument(
         "--show-image", default=False, action="store_true",
+    )
+    parser.add_argument(
+        "--eval-semantics",
+        default=False,
+        action="store_true",
+        help="Eval semantics of model using 2AFC",
+    )
+    parser.add_argument(
+        "--weights-bleu",
+        default=(0.25, 0.25, 0.25, 0.25),
+        type=float,
+        nargs=4,
+        help="Weights for BLEU score that is used as reward for RL",
+    )
+    parser.add_argument(
+        "--seed", type=int, help="Random seed", default=1,
     )
 
     return parser.parse_args()
