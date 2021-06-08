@@ -109,7 +109,7 @@ def validate_model(
 
                 if args.produced_utterances_stats:
                     sequences_decoded = [decode_caption(sequence, vocab) for sequence in sequences]
-                    produced_sequences_lengths.extend([len(sequence) for sequence in sequences])
+                    produced_sequences_lengths.extend(sequence_lengths.tolist())
                     jenny_occurrences.extend([sequence.startswith("jenny") for sequence in sequences_decoded])
                     mike_occurrences.extend([sequence.startswith("mike") for sequence in sequences_decoded])
 
