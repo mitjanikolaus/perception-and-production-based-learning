@@ -121,10 +121,10 @@ def validate_model(
                     ]
                     produced_sequences_lengths.extend(sequence_lengths.tolist())
                     jenny_occurrences.extend(
-                        ["jenny" in sequence.split(" ") for sequence in sequences_decoded]
+                        ["jenny" in sequence.split(" ") and not "mike" in sequence.split(" ") for sequence in sequences_decoded]
                     )
                     mike_occurrences.extend(
-                        ["mike" in sequence.split(" ") for sequence in sequences_decoded]
+                        ["mike" in sequence.split(" ") and not "jenny" in sequence.split(" ") for sequence in sequences_decoded]
                     )
 
             else:
@@ -171,8 +171,8 @@ def validate_model(
 
     if log_produced_utterance_stats:
         print(f"Mean seq length: {np.mean(produced_sequences_lengths):.3f}")
-        print(f"Seq starting with 'jenny': {np.mean(jenny_occurrences):.3f}")
-        print(f"Seq starting with 'mike': {np.mean(mike_occurrences):.3f}")
+        print(f"Seq containing 'jenny' (and not 'mike'): {np.mean(jenny_occurrences):.3f}")
+        print(f"Seq containing 'mike' (and not 'jenny'): {np.mean(mike_occurrences):.3f}")
 
     model.train()
     return (
