@@ -121,10 +121,10 @@ def validate_model(
                     ]
                     produced_sequences_lengths.extend(sequence_lengths.tolist())
                     jenny_occurrences.extend(
-                        [sequence.startswith("jenny") for sequence in sequences_decoded]
+                        ["jenny" in sequence.split(" ") for sequence in sequences_decoded]
                     )
                     mike_occurrences.extend(
-                        [sequence.startswith("mike") for sequence in sequences_decoded]
+                        ["mike" in sequence.split(" ") for sequence in sequences_decoded]
                     )
 
             else:
