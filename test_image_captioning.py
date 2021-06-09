@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 
 from dataset import CaptionRLDataset
 from eval_semantics import get_semantics_eval_dataloader
+from generate_semantics_eval_dataset import VERBS
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.joint.joint_learner import JointLearner
@@ -22,11 +23,18 @@ from preprocess import (
     DATA_PATH,
 )
 from train_image_captioning import validate_model
-from utils import DEFAULT_WORD_EMBEDDINGS_SIZE, DEFAULT_LSTM_HIDDEN_SIZE, SEMANTICS_EVAL_FILES, set_seeds
+from utils import (
+    DEFAULT_WORD_EMBEDDINGS_SIZE,
+    DEFAULT_LSTM_HIDDEN_SIZE,
+    SEMANTICS_EVAL_FILES,
+    set_seeds,
+)
 
 import numpy as np
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+UNIQUE_VERBS = list(np.unique(np.array(VERBS).flatten()))
 
 
 def main(args):
@@ -54,6 +62,11 @@ def main(args):
     }
 
     bleu_scores = []
+
+    produced_sequences_lengths = []
+    jenny_occurrences = []
+    mike_occurrences = []
+    verbs_occurrences = {verb: [] for verb in UNIQUE_VERBS}
 
     for root, dirs, files in os.walk(args.checkpoints_dir):
         for name in files:
@@ -116,6 +129,7 @@ def main(args):
                     ranking_loss,
                     test_acc,
                     test_bleu_score,
+                    produced_utterances,
                 ) = validate_model(
                     model,
                     test_loader,
@@ -124,12 +138,42 @@ def main(args):
                     args,
                     val_bleu_score=True,
                     max_batches=None,
-                    log_produced_utterance_stats=args.produced_utterances_stats,
+                    return_produced_sequences=args.log_produced_utterances_stats,
                 )
                 print(f"BLEU: {test_bleu_score}")
                 bleu_scores.append(test_bleu_score)
 
+                if args.log_produced_utterances_stats:
+                    produced_sequences_lengths.extend([
+                        len(sequence.split(" ")) for sequence in produced_utterances
+                    ])
+                    jenny_occurrences.extend([
+                        "jenny" in sequence.split(" ")
+                        and not "mike" in sequence.split(" ")
+                        for sequence in produced_utterances
+                    ])
+
+                    mike_occurrences.extend([
+                        "mike" in sequence.split(" ")
+                        and not "jenny" in sequence.split(" ")
+                        for sequence in produced_utterances
+                    ])
+
+                    for verb in UNIQUE_VERBS:
+                        verbs_occurrences[verb].extend(
+                            verb in sequence.split(" ")
+                            for sequence in produced_utterances
+                        )
+
     print(f"\nMean BLEU: {np.mean(bleu_scores):.4f} Stddev: {np.std(bleu_scores):.4f}")
+
+    if args.log_produced_utterances_stats:
+        print(f"Mean seq length: {np.mean(produced_sequences_lengths):.3f}")
+        print(f"Seq containing 'jenny' (and not 'mike'): {np.mean(jenny_occurrences):.3f}")
+        print(f"Seq containing 'mike' (and not 'jenny'): {np.mean(mike_occurrences):.3f}")
+
+        for verb in UNIQUE_VERBS:
+            print(f"Seq containing '{verb}': {np.mean(verbs_occurrences[verb]):.3f}")
 
 
 def get_args():
@@ -144,9 +188,7 @@ def get_args():
         help="Eval semantics of model using 2AFC",
     )
     parser.add_argument(
-        "--produced-utterances-stats",
-        default=False,
-        action="store_true",
+        "--log-produced-utterances-stats", default=False, action="store_true",
     )
     parser.add_argument(
         "--weights-bleu",
@@ -158,7 +200,6 @@ def get_args():
     parser.add_argument(
         "--seed", type=int, help="Random seed", default=1,
     )
-
 
     return parser.parse_args()
 

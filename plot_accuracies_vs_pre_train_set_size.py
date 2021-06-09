@@ -12,18 +12,6 @@ import numpy as np
 
 
 def main(args):
-    # sns.set_context(
-    #     "paper",
-    #     rc={
-    #         "font.size": 12,
-    #         "axes.titlesize": 12,
-    #         "axes.labelsize": 12,
-    #         "xtick.labelsize": 12,
-    #         "ytick.labelsize": 12,
-    #         "legend.fontsize": 12,
-    #     },
-    # )
-
     legend = LEGEND
     if args.group_noun_accuracies:
         legend = LEGEND_GROUPED_NOUNS

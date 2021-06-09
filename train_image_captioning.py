@@ -80,7 +80,7 @@ def validate_model(
     args,
     val_bleu_score=False,
     max_batches=NUM_BATCHES_VALIDATION,
-    log_produced_utterance_stats=False,
+    return_produced_sequences=False,
 ):
     semantic_accuracies = {}
 
@@ -98,10 +98,7 @@ def validate_model(
         ranking_losses = []
         val_accuracies = []
         bleu_scores = []
-
-        produced_sequences_lengths = []
-        jenny_occurrences = []
-        mike_occurrences = []
+        produced_sequences = []
 
         for batch_idx, (images, captions, caption_lengths, _) in enumerate(dataloader):
             if val_bleu_score:
@@ -115,17 +112,11 @@ def validate_model(
                 )
                 bleu_scores.extend(bleu_scores_batch.tolist())
 
-                if log_produced_utterance_stats:
-                    sequences_decoded = [
+                if return_produced_sequences:
+                    produced_sequences.extend([
                         decode_caption(sequence, vocab) for sequence in sequences
-                    ]
-                    produced_sequences_lengths.extend(sequence_lengths.tolist())
-                    jenny_occurrences.extend(
-                        ["jenny" in sequence.split(" ") and not "mike" in sequence.split(" ") for sequence in sequences_decoded]
-                    )
-                    mike_occurrences.extend(
-                        ["mike" in sequence.split(" ") and not "jenny" in sequence.split(" ") for sequence in sequences_decoded]
-                    )
+                    ])
+
 
             else:
                 if args.model == "joint":
@@ -169,11 +160,6 @@ def validate_model(
             if max_batches and batch_idx > max_batches:
                 break
 
-    if log_produced_utterance_stats:
-        print(f"Mean seq length: {np.mean(produced_sequences_lengths):.3f}")
-        print(f"Seq containing 'jenny' (and not 'mike'): {np.mean(jenny_occurrences):.3f}")
-        print(f"Seq containing 'mike' (and not 'jenny'): {np.mean(mike_occurrences):.3f}")
-
     model.train()
     return (
         np.mean(val_losses),
@@ -182,6 +168,7 @@ def validate_model(
         np.mean(ranking_losses),
         np.mean(val_accuracies),
         np.mean(bleu_scores),
+        produced_sequences,
     )
 
 
@@ -361,6 +348,7 @@ def main(args):
                     ranking_loss,
                     val_acc,
                     val_bleu_score,
+                    _,
                 ) = validate_model(
                     model,
                     val_images_loader,
