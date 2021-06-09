@@ -35,7 +35,8 @@ from utils import (
     DEFAULT_WORD_EMBEDDINGS_SIZE,
     DEFAULT_LSTM_HIDDEN_SIZE,
     LEGEND,
-    set_seeds, decode_caption,
+    set_seeds,
+    decode_caption,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -72,7 +73,14 @@ def print_sample_model_output(model, dataloader, vocab, num_captions=5):
 
 
 def validate_model(
-    model, dataloader, semantic_images_loaders, vocab, args, val_bleu_score=False, max_batches=NUM_BATCHES_VALIDATION
+    model,
+    dataloader,
+    semantic_images_loaders,
+    vocab,
+    args,
+    val_bleu_score=False,
+    max_batches=NUM_BATCHES_VALIDATION,
+    log_produced_utterance_stats=False,
 ):
     semantic_accuracies = {}
 
@@ -107,11 +115,17 @@ def validate_model(
                 )
                 bleu_scores.extend(bleu_scores_batch.tolist())
 
-                if args.produced_utterances_stats:
-                    sequences_decoded = [decode_caption(sequence, vocab) for sequence in sequences]
+                if log_produced_utterance_stats:
+                    sequences_decoded = [
+                        decode_caption(sequence, vocab) for sequence in sequences
+                    ]
                     produced_sequences_lengths.extend(sequence_lengths.tolist())
-                    jenny_occurrences.extend([sequence.startswith("jenny") for sequence in sequences_decoded])
-                    mike_occurrences.extend([sequence.startswith("mike") for sequence in sequences_decoded])
+                    jenny_occurrences.extend(
+                        [sequence.startswith("jenny") for sequence in sequences_decoded]
+                    )
+                    mike_occurrences.extend(
+                        [sequence.startswith("mike") for sequence in sequences_decoded]
+                    )
 
             else:
                 if args.model == "joint":
@@ -155,7 +169,7 @@ def validate_model(
             if max_batches and batch_idx > max_batches:
                 break
 
-    if args.produced_utterances_stats:
+    if log_produced_utterance_stats:
         print(f"Mean seq length: {np.mean(produced_sequences_lengths):.3f}")
         print(f"Seq starting with 'jenny': {np.mean(jenny_occurrences):.3f}")
         print(f"Seq starting with 'mike': {np.mean(mike_occurrences):.3f}")
@@ -393,10 +407,14 @@ def main(args):
                     validations_no_improvement = 0
                 else:
                     validations_no_improvement += 1
-                    if validations_no_improvement >= NUM_VALIDATIONS_NO_IMPROVEMENT_EARLY_STOPPING:
-                        print(f"\nEarly stopping: no improvement for {validations_no_improvement} validations")
+                    if (
+                        validations_no_improvement
+                        >= NUM_VALIDATIONS_NO_IMPROVEMENT_EARLY_STOPPING
+                    ):
+                        print(
+                            f"\nEarly stopping: no improvement for {validations_no_improvement} validations"
+                        )
                         return
-
 
             model.train()
 

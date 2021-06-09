@@ -123,7 +123,8 @@ def main(args):
                     vocab,
                     args,
                     val_bleu_score=True,
-                    max_batches=None
+                    max_batches=None,
+                    log_produced_utterance_stats=args.produced_utterances_stats,
                 )
                 print(f"BLEU: {test_bleu_score}")
                 bleu_scores.append(test_bleu_score)
