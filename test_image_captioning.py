@@ -22,7 +22,7 @@ from preprocess import (
     MAX_CAPTION_LEN,
     DATA_PATH,
 )
-from train_image_captioning import validate_model
+from train_image_captioning import validate_model, UNIQUE_VERBS
 from utils import (
     DEFAULT_WORD_EMBEDDINGS_SIZE,
     DEFAULT_LSTM_HIDDEN_SIZE,
@@ -33,8 +33,6 @@ from utils import (
 import numpy as np
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-UNIQUE_VERBS = list(np.unique(np.array(VERBS).flatten()))
 
 
 def main(args):

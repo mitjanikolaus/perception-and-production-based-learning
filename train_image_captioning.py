@@ -16,6 +16,7 @@ from torch.utils.data import DataLoader
 
 from dataset import CaptionRLDataset
 from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
+from generate_semantics_eval_dataset import VERBS
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
 from models.image_sentence_ranking.ranking_model import accuracy_discrimination
@@ -49,6 +50,8 @@ NUM_VALIDATIONS_NO_IMPROVEMENT_EARLY_STOPPING = 50
 
 WEIGH_RANKING_LOSS = 1
 
+UNIQUE_VERBS = list(np.unique(np.array(VERBS).flatten()))
+
 
 def print_model_output(output, target_captions, image_ids, vocab, num_captions=1):
     captions_model = torch.argmax(output, dim=1)
@@ -70,6 +73,15 @@ def print_sample_model_output(model, dataloader, vocab, num_captions=5):
     captions, _, _, _ = model.decode(images)
 
     print_captions(captions, target_captions, image_ids, vocab, num_captions)
+
+
+def print_produced_utterances_stats(produced_utterances):
+    print(f"Mean seq length: {np.mean([len(sequence.split(' ')) for sequence in produced_utterances]):.3f}")
+    print(f"Seq containing 'jenny' (and not 'mike'): {np.mean(['jenny' in sequence.split(' ') and not 'mike' in sequence.split(' ') for sequence in produced_utterances]):.3f}")
+    print(f"Seq containing 'mike' (and not 'jenny'): {np.mean(['mike' in sequence.split(' ') and not 'jenny' in sequence.split(' ') for sequence in produced_utterances]):.3f}")
+
+    for verb in UNIQUE_VERBS:
+        print(f"Seq containing '{verb}': {np.mean([verb in sequence.split(' ') for sequence in produced_utterances]):.3f}")
 
 
 def validate_model(
@@ -116,7 +128,6 @@ def validate_model(
                     produced_sequences.extend([
                         decode_caption(sequence, vocab) for sequence in sequences
                     ])
-
 
             else:
                 if args.model == "joint":
@@ -348,7 +359,7 @@ def main(args):
                     ranking_loss,
                     val_acc,
                     val_bleu_score,
-                    _,
+                    produced_utterances,
                 ) = validate_model(
                     model,
                     val_images_loader,
@@ -356,6 +367,7 @@ def main(args):
                     vocab,
                     args,
                     val_bleu_score=True,
+                    return_produced_sequences=args.log_produced_utterances_stats,
                 )
                 accuracies["val_loss"] = val_loss
                 accuracies["bleu_score_val"] = val_bleu_score
@@ -380,6 +392,9 @@ def main(args):
                     f"{val_bleu_score:.3f} | val loss: {val_loss:.3f} | captioning loss:"
                     f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f}"
                 )
+                if args.log_produced_utterances_stats:
+                    print_produced_utterances_stats(produced_utterances)
+
                 if val_bleu_score > best_bleu_score:
                     best_bleu_score = val_bleu_score
                     save_model(
@@ -528,6 +543,9 @@ def get_args():
         type=float,
         nargs=4,
         help="Weights for BLEU score that is used as reward for RL",
+    )
+    parser.add_argument(
+        "--log-produced-utterances-stats", default=False, action="store_true",
     )
 
     return parser.parse_args()
