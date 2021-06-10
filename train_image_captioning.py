@@ -76,12 +76,26 @@ def print_sample_model_output(model, dataloader, vocab, num_captions=5):
 
 
 def print_produced_utterances_stats(produced_utterances):
-    print(f"Mean seq length: {np.mean([len(sequence.split(' ')) for sequence in produced_utterances]):.3f}")
-    print(f"Seq containing 'jenny' (and not 'mike'): {np.mean(['jenny' in sequence.split(' ') and not 'mike' in sequence.split(' ') for sequence in produced_utterances]):.3f}")
-    print(f"Seq containing 'mike' (and not 'jenny'): {np.mean(['mike' in sequence.split(' ') and not 'jenny' in sequence.split(' ') for sequence in produced_utterances]):.3f}")
+    mean_seq_length = np.mean([len(sequence.split(' ')) for sequence in produced_utterances])
+    jenny_occurrences = np.mean(['jenny' in sequence.split(' ') and not 'mike' in sequence.split(' ') for sequence in produced_utterances])
+    mike_occurrences = np.mean(['mike' in sequence.split(' ') and not 'jenny' in sequence.split(' ') for sequence in produced_utterances])
+    print(f"Mean seq length: {mean_seq_length:.3f}")
+    print(f"Seq containing 'jenny' (and not 'mike'): {jenny_occurrences:.3f}")
+    print(f"Seq containing 'mike' (and not 'jenny'): {mike_occurrences:.3f}")
+
+    stats = {
+        "seq_lengths": mean_seq_length,
+        "jenny_occurrences": jenny_occurrences,
+        "mike_occurrences": mike_occurrences,
+    }
 
     for verb in UNIQUE_VERBS:
-        print(f"Seq containing '{verb}': {np.mean([verb in sequence.split(' ') for sequence in produced_utterances]):.3f}")
+        verb_occurrences = np.mean([verb in sequence.split(' ') for sequence in produced_utterances])
+        print(f"Seq containing '{verb}': {verb_occurrences:.3f}")
+        stats[verb] = verb_occurrences
+
+    return stats
+
 
 
 def validate_model(
@@ -377,6 +391,9 @@ def main(args):
                 accuracies["num_samples"] = (
                     epoch * len(train_dataset) + batch_idx * args.batch_size
                 )
+                if args.log_produced_utterances_stats:
+                    stats = print_produced_utterances_stats(produced_utterances)
+                    accuracies.update(stats)
 
                 accuracies_over_time.append(accuracies)
                 pd.DataFrame(accuracies_over_time).to_csv(
@@ -392,8 +409,6 @@ def main(args):
                     f"{val_bleu_score:.3f} | val loss: {val_loss:.3f} | captioning loss:"
                     f" {captioning_loss:.3f} | ranking loss: {ranking_loss:.3f} | val acc: {val_acc:.3f}"
                 )
-                if args.log_produced_utterances_stats:
-                    print_produced_utterances_stats(produced_utterances)
 
                 if val_bleu_score > best_bleu_score:
                     best_bleu_score = val_bleu_score
