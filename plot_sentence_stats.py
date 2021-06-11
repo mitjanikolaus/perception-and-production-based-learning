@@ -88,47 +88,62 @@ def main(args):
 
         all_scores.extend(scores_setup.copy())
 
-    fig, axes = plt.subplots(2, 2, sharey="row", sharex="all")  # figsize=(15, 5)
+    fig, axes = plt.subplots(1, 2, sharey="row", sharex="all")
 
     all_scores = pd.DataFrame(all_scores)
 
     for axis_y, setup in enumerate(all_scores.setup.unique()):
-        for axis_x, legend in enumerate(
-            [LEGEND_STATS_PERSONS, LEGEND_STATS_VERBS]
-        ):
-            legend_values = legend.values()
-            scores_setup = all_scores[(all_scores.setup == setup) & (all_scores.score.isin(legend_values))]
-            legend = True if axis_y == 1 else False
-            g = sns.lineplot(
-                ax=axes[axis_x][axis_y],
-                data=scores_setup,
-                x="num_samples",
-                y="value",
-                hue="score",
-                # style="score",
-                legend=legend,
-            )
-            if axis_x == 1:
-                axes[axis_x][axis_y].set_ylabel("Occurrences/Sentence")
-            else:
-                axes[axis_x][axis_y].set_ylabel("Occurrences/Sentence")
-            if axis_y == 1:
-                g.legend(loc='best', fontsize=9, ncol=2)
-            if axis_x == 1:
-                plt.ylim((0, 0.15))
+        legend = LEGEND_STATS_PERSONS
+        legend_values = legend.values()
+        scores_setup = all_scores[(all_scores.setup == setup) & (all_scores.score.isin(legend_values))]
+        legend = True if axis_y == 1 else False
+        g = sns.lineplot(
+            ax=axes[axis_y],
+            data=scores_setup,
+            x="num_samples",
+            y="value",
+            hue="score",
+            legend=legend,
+        )
+        axes[axis_y].set_ylabel("Occurrences/Sentence")
+        if axis_y == 1:
+            g.legend(loc='best', fontsize=9, ncol=2)
 
-    axes[0][0].set_title(f"{all_scores.setup.unique()[0]}")
-    axes[0][1].set_title(f"{all_scores.setup.unique()[1]}")
-
-    # plt.ylabel("Occurrences/Sentence")
+    axes[0].set_title("XSL+ICF")
+    axes[1].set_title("XSL+Alt")
 
     if args.x_lim:
         plt.xlim((0, args.x_lim))
-    # plt.ylim((0.49, args.y_lim))
 
-    # plt.xlabel("num_samples")
+    plt.tight_layout()
+    plt.show()
 
-    # plt.ylabel("Accuracy")
+    fig, axes = plt.subplots(1, 2, sharey="row", sharex="all")  # figsize=(15, 5)
+
+    for axis_y, setup in enumerate(all_scores.setup.unique()):
+        legend = LEGEND_STATS_VERBS
+
+        legend_values = legend.values()
+        scores_setup = all_scores[(all_scores.setup == setup) & (all_scores.score.isin(legend_values))]
+        legend = True if axis_y == 1 else False
+        g = sns.lineplot(
+            ax=axes[axis_y],
+            data=scores_setup,
+            x="num_samples",
+            y="value",
+            hue="score",
+            legend=legend,
+        )
+        axes[axis_y].set_ylabel("Occurrences/Sentence")
+        if axis_y == 1:
+            g.legend(loc='best', fontsize=9, ncol=2)
+
+    axes[0].set_title("XSL+ICF")
+    axes[1].set_title("XSL+Alt")
+
+    if args.x_lim:
+        plt.xlim((0, args.x_lim))
+
     plt.tight_layout()
     plt.show()
 
