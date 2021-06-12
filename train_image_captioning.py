@@ -436,7 +436,7 @@ def main(args):
 
             model.train()
 
-            # Alternative between supervised and RL
+            # Alternate between supervised and RL
             if (
                 args.frequency_rl_updates != -1
                 and batch_idx % (args.frequency_rl_updates + 1) == 0

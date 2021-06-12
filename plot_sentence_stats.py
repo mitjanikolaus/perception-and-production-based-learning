@@ -167,8 +167,8 @@ def main(args):
         )
         axes[axis_y].set_ylabel("Mean Sentence Length")
 
-    axes[0].set_title(f"{all_scores.setup.unique()[0]}")
-    axes[1].set_title(f"{all_scores.setup.unique()[1]}")
+    axes[0].set_title("XSL+ICF")
+    axes[1].set_title("XSL+Alt")
 
     if args.x_lim:
         plt.xlim((0, args.x_lim))
