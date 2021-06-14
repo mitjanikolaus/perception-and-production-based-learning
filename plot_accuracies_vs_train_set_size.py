@@ -110,6 +110,7 @@ def main(args):
     plt.text(0.85, 0.51, "Chance level", fontsize=12, va="center", ha="center")
 
     plt.ylabel("Accuracy")
+    plt.xlabel("Fraction of training set used for training")
     plt.tight_layout()
     plt.show()
 

@@ -12,7 +12,7 @@ from preprocess import TOKEN_START, TOKEN_END, TOKEN_PADDING
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 DEFAULT_LOG_FREQUENCY = 100
-DEFAULT_BATCH_SIZE = 100
+DEFAULT_BATCH_SIZE = 32
 
 DEFAULT_MAX_NUM_VAL_SAMPLES = 1000
 
