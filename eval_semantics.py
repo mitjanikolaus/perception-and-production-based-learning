@@ -13,14 +13,6 @@ import torch.utils.data
 from dataset import SemanticsEvalDataset
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
-from models.image_sentence_ranking.ranking_model import ImageSentenceRanker, cosine_sim
-from models.image_sentence_ranking.ranking_model_grounded import (
-    ImageSentenceRankerGrounded,
-)
-from models.interactive.models import RnnSenderMultitaskVisualRef, ImageEncoder
-from models.joint.joint_learner import JointLearner
-from models.joint.joint_learner_sat import JointLearnerSAT
-from models.language_modeling.language_model import LanguageModel
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,

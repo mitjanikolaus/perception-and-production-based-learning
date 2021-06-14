@@ -5,8 +5,6 @@ import random
 import nltk
 import pandas as pd
 import h5py as h5py
-import imageio
-from skimage.transform import resize
 import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
@@ -18,7 +16,6 @@ from preprocess import (
     MEAN_ABSTRACT_SCENES,
     STD_ABSTRACT_SCENES,
     encode_caption,
-    show_image,
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

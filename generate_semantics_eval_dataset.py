@@ -6,7 +6,6 @@ import os
 import h5py
 import pandas as pd
 
-import egg.core as core
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -682,7 +681,7 @@ def main(args):
 def get_args():
     parser = argparse.ArgumentParser()
 
-    return core.init(parser)
+    return parser.parse_args()
 
 
 if __name__ == "__main__":

@@ -11,10 +11,8 @@ from torch.utils.data import DataLoader
 
 from dataset import CaptionRLDataset
 from eval_semantics import get_semantics_eval_dataloader
-from generate_semantics_eval_dataset import VERBS
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
-from models.joint.joint_learner import JointLearner
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -75,7 +73,6 @@ def main(args):
 
                 word_embedding_size = DEFAULT_WORD_EMBEDDINGS_SIZE
                 visual_embedding_size = DEFAULT_LSTM_HIDDEN_SIZE
-                joint_embeddings_size = visual_embedding_size
                 lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
 
                 if "show_attend_and_tell" in checkpoint_path:
@@ -98,18 +95,6 @@ def main(args):
                         lstm_hidden_size,
                         vocab,
                         MAX_CAPTION_LEN,
-                        fine_tune_resnet=False,
-                    )
-
-                elif "joint" in checkpoint_path:
-                    print("Loading joint learner model.")
-                    args.model = "joint"
-                    model = JointLearner(
-                        word_embedding_size,
-                        lstm_hidden_size,
-                        vocab,
-                        MAX_CAPTION_LEN,
-                        joint_embeddings_size,
                         fine_tune_resnet=False,
                     )
 

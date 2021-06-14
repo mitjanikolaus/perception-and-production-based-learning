@@ -19,9 +19,6 @@ from eval_semantics import eval_semantics_score, get_semantics_eval_dataloader
 from generate_semantics_eval_dataset import VERBS
 from models.image_captioning.show_and_tell import ShowAndTell
 from models.image_captioning.show_attend_and_tell import ShowAttendAndTell
-from models.image_sentence_ranking.ranking_model import accuracy_discrimination
-from models.interactive.models import loss_cross_entropy
-from models.joint.joint_learner import JointLearner
 from preprocess import (
     IMAGES_FILENAME,
     CAPTIONS_FILENAME,
@@ -47,8 +44,6 @@ PRINT_SAMPLE_CAPTIONS = 5
 NUM_BATCHES_VALIDATION = 100
 
 NUM_VALIDATIONS_NO_IMPROVEMENT_EARLY_STOPPING = 50
-
-WEIGH_RANKING_LOSS = 1
 
 UNIQUE_VERBS = list(np.unique(np.array(VERBS).flatten()))
 
@@ -144,41 +139,10 @@ def validate_model(
                     ])
 
             else:
-                if args.model == "joint":
-                    (
-                        scores,
-                        decode_lengths,
-                        alphas,
-                        images_embedded,
-                        captions_embedded,
-                    ) = model(images, captions, caption_lengths)
-                    loss_captioning, loss_ranking = model.loss(
-                        scores,
-                        captions,
-                        decode_lengths,
-                        alphas,
-                        images_embedded,
-                        captions_embedded,
-                    )
-
-                    # TODO weigh losses appropriately
-                    loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
-                    loss = loss_captioning + loss_ranking
-
-                    acc = accuracy_discrimination(images_embedded, captions_embedded)
-                    val_accuracies.append(acc)
-
-                    captioning_losses.append(loss_captioning.item())
-                    ranking_losses.append(loss_ranking.item())
-                elif args.model == "interactive":
-                    scores, decode_lengths, _ = model(images, captions, caption_lengths)
-                    loss = loss_cross_entropy(scores, captions)
-
-                else:
-                    scores, decode_lengths, alphas = model(
-                        images, captions, caption_lengths
-                    )
-                    loss = model.loss(scores, captions, decode_lengths, alphas)
+                scores, decode_lengths, alphas = model(
+                    images, captions, caption_lengths
+                )
+                loss = model.loss(scores, captions, decode_lengths, alphas)
 
                 val_losses.append(loss.mean().item())
 
@@ -213,27 +177,8 @@ def forward_pass_supervised(model, images, captions, caption_lengths, args):
     model.train()
 
     # Forward pass
-    if args.model == "joint":
-        (scores, decode_lengths, alphas, images_embedded, captions_embedded,) = model(
-            images, captions, caption_lengths
-        )
-        loss_captioning, loss_ranking = model.loss(
-            scores,
-            captions,
-            decode_lengths,
-            alphas,
-            images_embedded,
-            captions_embedded,
-        )
-        # TODO weigh losses appropriately
-        loss_ranking = WEIGH_RANKING_LOSS * loss_ranking
-        loss = loss_captioning + loss_ranking
-    elif args.model == "interactive":
-        scores, _, _ = model(images, captions, caption_lengths)
-        loss = loss_cross_entropy(scores, captions)
-    else:
-        scores, decode_lengths, alphas = model(images, captions, caption_lengths)
-        loss = model.loss(scores, captions, decode_lengths, alphas)
+    scores, decode_lengths, alphas = model(images, captions, caption_lengths)
+    loss = model.loss(scores, captions, decode_lengths, alphas)
 
     return loss.mean()
 
@@ -305,7 +250,6 @@ def main(args):
 
     word_embedding_size = DEFAULT_WORD_EMBEDDINGS_SIZE
     visual_embedding_size = DEFAULT_LSTM_HIDDEN_SIZE
-    joint_embeddings_size = visual_embedding_size
     lstm_hidden_size = DEFAULT_LSTM_HIDDEN_SIZE
     dropout = 0.2
 
@@ -328,16 +272,6 @@ def main(args):
             lstm_hidden_size,
             vocab,
             MAX_CAPTION_LEN,
-            dropout,
-            fine_tune_resnet=args.fine_tune_resnet,
-        )
-    elif args.model == "joint":
-        model = JointLearner(
-            word_embedding_size,
-            lstm_hidden_size,
-            vocab,
-            MAX_CAPTION_LEN,
-            joint_embeddings_size,
             dropout,
             fine_tune_resnet=args.fine_tune_resnet,
         )
@@ -486,7 +420,7 @@ def get_args():
     parser.add_argument(
         "--model",
         default="show_and_tell",
-        choices=["show_and_tell", "show_attend_and_tell", "joint", "interactive"],
+        choices=["show_and_tell", "show_attend_and_tell"],
     )
     parser.add_argument(
         "--checkpoint", help="Path to checkpoint of pre-trained model",
