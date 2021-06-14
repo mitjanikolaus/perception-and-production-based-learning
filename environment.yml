@@ -1,14 +1,14 @@
-name: egg
+name: xsl
 channels:
   - pytorch
-  - conda-forge
   - anaconda
+  - conda-forge
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
   - brotlipy=0.7.0=py36h27cfd23_1003
-  - ca-certificates=2021.1.19=h06a4308_0
-  - certifi=2020.12.5=py36h06a4308_0
+  - ca-certificates=2021.5.25=h06a4308_1
+  - certifi=2021.5.30=py36h06a4308_0
   - cffi=1.14.4=py36h261ae71_0
   - chardet=4.0.0=py36h06a4308_1003
   - click=7.1.2=py_0
@@ -50,7 +50,8 @@ dependencies:
   - ninja=1.10.2=py36hff7bd54_0
   - nltk=3.5=py_0
   - olefile=0.46=pyh9f0ad1d_1
-  - openssl=1.1.1i=h27cfd23_0
+  - openssl=1.1.1k=h27cfd23_0
+  - pandas=1.1.5=py36ha9443f7_0
   - pip=20.3.3=py36h06a4308_0
   - pycparser=2.20=py_2
   - pyopenssl=20.0.1=pyhd3eb1b0_1
@@ -59,7 +60,7 @@ dependencies:
   - python=3.6.12=hcff3b4d_2
   - python-dateutil=2.8.1=py_0
   - python_abi=3.6=1_cp36m
-  - pytorch=1.4.0=py3.6_cuda10.1.243_cudnn7.6.3_0
+  - pytz=2021.1=pyhd3eb1b0_0
   - pywavelets=1.1.1=py36h7b6447c_2
   - pyyaml=5.4.1=py36h27cfd23_1
   - readline=8.0=h7b6447c_0
@@ -105,4 +106,3 @@ dependencies:
     - torchvision==0.4.0
     - typing-extensions==3.7.4.3
     - zipp==3.4.0
-prefix: /storage/raid1/homedirs/mitja.nikolaus/anaconda3/envs/egg
