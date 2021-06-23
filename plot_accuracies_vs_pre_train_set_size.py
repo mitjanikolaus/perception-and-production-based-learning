@@ -86,6 +86,7 @@ def main(args):
     plt.axhline(y=0.5, color="black", label="Chance level", linestyle="--")
     plt.text(0.85, 0.51, "Chance level", fontsize=12, va="center", ha="center")
 
+    plt.xlabel("Fraction of training set used for perception-based pretraining")
     plt.ylabel("Accuracy")
     plt.tight_layout()
     plt.show()
