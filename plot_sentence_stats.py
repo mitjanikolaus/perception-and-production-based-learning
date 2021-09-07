@@ -109,7 +109,7 @@ def main(args):
         if axis_y == 1:
             g.legend(loc='best', fontsize=9, ncol=2)
 
-    axes[0].set_title("XSL+ICF")
+    axes[0].set_title("XSL+CF")
     axes[1].set_title("XSL+Alt")
 
     if args.x_lim:
@@ -138,7 +138,7 @@ def main(args):
         if axis_y == 1:
             g.legend(loc='best', fontsize=9, ncol=2)
 
-    axes[0].set_title("XSL+ICF")
+    axes[0].set_title("XSL+CF")
     axes[1].set_title("XSL+Alt")
 
     if args.x_lim:
@@ -167,7 +167,7 @@ def main(args):
         )
         axes[axis_y].set_ylabel("Mean Sentence Length")
 
-    axes[0].set_title("XSL+ICF")
+    axes[0].set_title("XSL+CF")
     axes[1].set_title("XSL+Alt")
 
     if args.x_lim:
